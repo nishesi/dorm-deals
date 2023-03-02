@@ -1,5 +1,6 @@
 package ru.itis.master.party.dormdeals.dto;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -14,10 +15,15 @@ import java.util.stream.Collectors;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@Schema(description = "Магазин")
 public class ShopDto {
+    @Schema(description = "название магазина", example = "TopShop")
     private String name;
+    @Schema(description = "описание магазина", example = "Here we sell the best products")
     private String description;
+    @Schema(description = "рейтинг магазина", example = "5")
     private int rating;
+    @Schema(description = "владелец магазина")
     private User owner;
 
     public static ShopDto from(Shop shop) {
