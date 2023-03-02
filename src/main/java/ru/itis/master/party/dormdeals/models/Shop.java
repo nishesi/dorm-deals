@@ -19,7 +19,7 @@ public class Shop {
     private String description;
     private int rating;
 
-    @ManyToOne
-    @JoinColumn(name = "owner_id")
-    private User owner;
+//    @ManyToOne
+//    @JoinColumn(name = "owner_id")
+//    private User owner;
 }

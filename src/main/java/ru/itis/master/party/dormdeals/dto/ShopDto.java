@@ -6,7 +6,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import ru.itis.master.party.dormdeals.models.Shop;
-import ru.itis.master.party.dormdeals.models.User;
+//import ru.itis.master.party.dormdeals.models.User;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -23,15 +23,15 @@ public class ShopDto {
     private String description;
     @Schema(description = "рейтинг магазина", example = "5")
     private int rating;
-    @Schema(description = "владелец магазина")
-    private User owner;
+//    @Schema(description = "владелец магазина")
+//    private User owner;
 
     public static ShopDto from(Shop shop) {
         return ShopDto.builder()
                 .name(shop.getName())
                 .description(shop.getDescription())
                 .rating(shop.getRating())
-                .owner(shop.getOwner())
+//                .owner(shop.getOwner())
                 .build();
     }
 

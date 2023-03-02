@@ -6,5 +6,5 @@ import org.springframework.data.repository.CrudRepository;
 import ru.itis.master.party.dormdeals.models.Shop;
 
 public interface ShopsRepository extends CrudRepository<Shop, Long> {
-    Page<Shop> findAllOrderById(Pageable pageable);
+    Page<Shop> findAllByOrderByIdAsc(Pageable pageable);
 }

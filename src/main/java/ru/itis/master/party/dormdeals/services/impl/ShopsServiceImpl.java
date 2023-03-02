@@ -7,11 +7,10 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import ru.itis.master.party.dormdeals.dto.ShopDto;
 import ru.itis.master.party.dormdeals.dto.ShopsPage;
+import ru.itis.master.party.dormdeals.exceptions.NotFoundException;
 import ru.itis.master.party.dormdeals.models.Shop;
 import ru.itis.master.party.dormdeals.repositories.ShopsRepository;
 import ru.itis.master.party.dormdeals.services.ShopsService;
-
-import java.util.NoSuchElementException;
 
 import static ru.itis.master.party.dormdeals.dto.ShopDto.from;
 
@@ -31,7 +30,7 @@ public class ShopsServiceImpl implements ShopsService {
     @Override
     public ShopsPage getAllShops(int page) {
         PageRequest pageRequest = PageRequest.of(page, defaultPageSize);
-        Page<Shop> shopsPage = shopsRepository.findAllOrderById(pageRequest);
+        Page<Shop> shopsPage = shopsRepository.findAllByOrderByIdAsc(pageRequest);
 
         return ShopsPage.builder()
                 .shops(from(shopsPage.getContent()))
@@ -45,7 +44,7 @@ public class ShopsServiceImpl implements ShopsService {
                 .name(shopDto.getName())
                 .description(shopDto.getDescription())
                 .rating(shopDto.getRating())
-                .owner(shopDto.getOwner())
+//                .owner(shopDto.getOwner())
                 .build();
 
         shopsRepository.save(shop);
@@ -60,7 +59,7 @@ public class ShopsServiceImpl implements ShopsService {
         shopForUpdate.setName(updatedShopDto.getName());
         shopForUpdate.setDescription(updatedShopDto.getDescription());
         shopForUpdate.setRating(updatedShopDto.getRating());
-        shopForUpdate.setOwner(updatedShopDto.getOwner());
+//        shopForUpdate.setOwner(updatedShopDto.getOwner());
 
         shopsRepository.save(shopForUpdate);
 
@@ -75,6 +74,6 @@ public class ShopsServiceImpl implements ShopsService {
     @Override
     public Shop getShopOrThrow(long id) {
         return shopsRepository.findById(id)
-                .orElseThrow(() -> new NoSuchElementException("Магазин с идентификатором <" + id + "> не найден"));
+                .orElseThrow(() -> new NotFoundException("Магазин с идентификатором <" + id + "> не найден"));
     }
 }
