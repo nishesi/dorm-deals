@@ -16,8 +16,6 @@ import ru.itis.master.party.dormdeals.dto.*;
 @Tags(value = {
         @Tag(name = "Products")
 })
-
-
 @RequestMapping("/product")
 public interface ProductApi {
 
