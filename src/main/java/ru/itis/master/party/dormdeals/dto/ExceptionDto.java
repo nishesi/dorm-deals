@@ -10,10 +10,11 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
+@ResponseStatus(HttpStatus.NOT_FOUND)
 @Schema(description = "Сведения об ошибке")
 public class ExceptionDto {
     @Schema(description = "Текст ошибки", example = "Товар не найден")
     private String message;
     @Schema(description = "HTTP-код ошибки", example = "404")
-    private int status;
+    private int statusCode;
 }
