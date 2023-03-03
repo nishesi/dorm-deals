@@ -2,6 +2,8 @@ package ru.itis.master.party.dormdeals.models;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -16,7 +18,10 @@ import lombok.NoArgsConstructor;
 @Builder
 @Entity(name = "users")
 public class User {
-
+    public enum State {
+        ACTIVE,
+        DELETED
+    }
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -26,4 +31,6 @@ public class User {
     private String firstName;
     private String lastName;
     private String telephone;
+    @Enumerated(EnumType.STRING)
+    private State state;
 }
