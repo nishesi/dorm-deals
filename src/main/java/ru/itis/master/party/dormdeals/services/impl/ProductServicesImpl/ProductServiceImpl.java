@@ -49,7 +49,7 @@ public class ProductServiceImpl implements ProductService {
                 .description(newProduct.getDescription())
                 .category(newProduct.getCategory())
                 .price(newProduct.getPrice())
-                .count_in_storage(newProduct.getCount_in_storage())
+                .countInStorage(newProduct.getCountInStorage())
                 .shop(shop)
                 .state(Product.State.ACTIVE)
                 .build();
@@ -72,7 +72,7 @@ public class ProductServiceImpl implements ProductService {
         productForUpdate.setName(updatedProduct.getName());
         productForUpdate.setDescription(updatedProduct.getDescription());
         productForUpdate.setPrice(updatedProduct.getPrice());
-        productForUpdate.setCount_in_storage(updatedProduct.getCount_in_storage());
+        productForUpdate.setCountInStorage(updatedProduct.getCountInStorage());
 
         productsRepository.save(productForUpdate);
 

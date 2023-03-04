@@ -28,7 +28,7 @@ public class ProductDto {
     @Schema(description = "цена товара", example = "100")
     private Integer price;
     @Schema(description = "количество на складе", example = "13")
-    private Integer count_in_storage;
+    private Integer countInStorage;
 //    private UUID uuid_photos;
 
     public static ProductDto from(Product product) {
@@ -38,7 +38,7 @@ public class ProductDto {
                 .description(product.getDescription())
                 .category(product.getCategory())
                 .price(product.getPrice())
-                .count_in_storage(product.getCount_in_storage())
+                .countInStorage(product.getCountInStorage())
                 .build();
     }
 

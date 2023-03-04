@@ -17,6 +17,6 @@ public class NewProduct {
     private String description;
     private String category;
     private Integer price;
-    private Integer count_in_storage;
+    private Integer countInStorage;
 //    private UUID uuid_photos;
 }

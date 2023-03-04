@@ -1,6 +1,8 @@
 package ru.itis.master.party.dormdeals.services.ShopServices;
 
+import ru.itis.master.party.dormdeals.dto.ShopDto.NewShop;
 import ru.itis.master.party.dormdeals.dto.ShopDto.ShopDto;
+import ru.itis.master.party.dormdeals.dto.ShopDto.UpdateShop;
 import ru.itis.master.party.dormdeals.models.Shop;
 import ru.itis.master.party.dormdeals.dto.ShopDto.ShopsPage;
 
@@ -9,9 +11,9 @@ public interface ShopsService {
 
     ShopsPage getAllShops(int page);
 
-    ShopDto createShop(ShopDto shopDto, Long ownerId);
+    ShopDto createShop(NewShop newShop, Long ownerId);
 
-    ShopDto updateShop(Long id, ShopDto updatedShopDto);
+    ShopDto updateShop(Long id, UpdateShop updateShop);
 
     void deleteShop(Long id);
 

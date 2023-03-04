@@ -18,7 +18,8 @@ public class Product {
     public enum State {
         ACTIVE,
         DELETED
-    };
+    }
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -26,8 +27,8 @@ public class Product {
     private String description;
     private String category;
     private Integer price;
-    private Integer count_in_storage;
-    private UUID uuid_photos;
+    private Integer countInStorage;
+    private UUID uuidOfPhotos;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "shop_id")
     private Shop shop;

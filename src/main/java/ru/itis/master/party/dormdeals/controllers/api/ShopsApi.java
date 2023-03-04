@@ -11,8 +11,10 @@ import io.swagger.v3.oas.annotations.tags.Tags;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.itis.master.party.dormdeals.dto.ExceptionDto;
+import ru.itis.master.party.dormdeals.dto.ShopDto.NewShop;
 import ru.itis.master.party.dormdeals.dto.ShopDto.ShopDto;
 import ru.itis.master.party.dormdeals.dto.ShopDto.ShopsPage;
+import ru.itis.master.party.dormdeals.dto.ShopDto.UpdateShop;
 import ru.itis.master.party.dormdeals.models.User;
 
 @Tags(value = {
@@ -41,7 +43,8 @@ public interface ShopsApi {
             )
     })
     @PostMapping
-    ResponseEntity<ShopDto> createShop(@RequestBody ShopDto newShop, @Parameter(description = "Идентификатор владельца магазина") Long ownerId);
+    ResponseEntity<ShopDto> createShop(@RequestBody NewShop newShop, @Parameter(description = "Идентификатор владельца магазина")
+    @RequestParam("ownerId") Long ownerId);
 
     @Operation(summary = "Получение магазина")
     @ApiResponses(value = {
@@ -80,7 +83,7 @@ public interface ShopsApi {
     @PutMapping("/{shop-id}")
     ResponseEntity<ShopDto> updateShop(
             @Parameter(description = "Идентификатор магазина", example = "1") @PathVariable("shop-id") Long shopId,
-            @RequestBody ShopDto updatedShop);
+            @RequestBody UpdateShop updateShop);
 
     @Operation(summary = "Удаление магазина")
     @ApiResponses(value = {
