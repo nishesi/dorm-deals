@@ -25,6 +25,7 @@ public class User {
     private String firstName;
     private String lastName;
     private String telephone;
+    private String dormitory;
     @Enumerated(EnumType.STRING)
     private State state;
 }

@@ -50,6 +50,7 @@ public class ShopsServiceImpl implements ShopsService {
                 .name(shopDto.getName())
                 .description(shopDto.getDescription())
                 .rating(shopDto.getRating())
+                .place_sells(shopDto.getPlace_sells())
                 .owner(owner)
                 .build();
 

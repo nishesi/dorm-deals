@@ -6,7 +6,6 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.List;
 
 @Entity
 @Data
@@ -19,6 +18,7 @@ public class Shop {
     private Long id;
     private String name;
     private String description;
+    private String place_sells;
     private int rating;
     @OneToOne
     @JoinColumn(name = "owner_id")

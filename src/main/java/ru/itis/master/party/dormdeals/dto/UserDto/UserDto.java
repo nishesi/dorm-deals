@@ -23,6 +23,8 @@ public class UserDto {
     private String lastName;
     @Schema(example = "89993335566")
     private String telephone;
+    @Schema(example = "Universiade Village, 18")
+    private String dormitory;
 
     public static UserDto from(User user) {
         return UserDto.builder()
@@ -30,6 +32,7 @@ public class UserDto {
                 .firstName(user.getFirstName())
                 .lastName(user.getLastName())
                 .telephone(user.getTelephone())
+                .dormitory(user.getDormitory())
                 .build();
     }
 }
