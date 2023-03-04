@@ -5,7 +5,7 @@ import org.springframework.web.multipart.MultipartFile;
 import ru.itis.master.party.dormdeals.dto.FileDto.FileLinkDto;
 
 public interface FilesService {
-    FileLinkDto upload(MultipartFile multipart, String description);
+    FileLinkDto upload(MultipartFile multipart);
 
     void addFileToResponse(String fileName, HttpServletResponse response);
 }

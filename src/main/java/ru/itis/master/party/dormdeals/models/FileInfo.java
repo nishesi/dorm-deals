@@ -19,8 +19,6 @@ public class FileInfo {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    private String description;
     private Long size;
     private String type;
     private String originalFileName;
