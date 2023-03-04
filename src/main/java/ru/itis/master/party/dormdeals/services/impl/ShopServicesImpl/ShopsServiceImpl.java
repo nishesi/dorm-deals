@@ -46,6 +46,8 @@ public class ShopsServiceImpl implements ShopsService {
     public ShopDto createShop(ShopDto shopDto, Long ownerId) {
         User owner = userRepository.findById(ownerId).orElseThrow(() -> new NotFoundException("Пользователь не найден"));
 
+        owner.setOwner_shop(true);
+
         Shop shop = Shop.builder()
                 .name(shopDto.getName())
                 .description(shopDto.getDescription())

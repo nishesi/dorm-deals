@@ -26,6 +26,7 @@ public class User {
     private String lastName;
     private String telephone;
     private String dormitory;
+    private Boolean owner_shop;
     @Enumerated(EnumType.STRING)
     private State state;
 }

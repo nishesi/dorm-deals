@@ -24,6 +24,7 @@ public class UserServiceImpl implements UserService {
                 .firstName(userDto.getFirstName())
                 .lastName(userDto.getLastName())
                 .telephone(userDto.getTelephone())
+                .owner_shop(false)
                 .build());
         return UserDto.from(returnedUser);
     }
