@@ -20,14 +20,19 @@ public class ProductController implements ProductApi {
     private final ProductService productService;
 
     @Override
+    public ResponseEntity<ProductsPage> getAllProductsByShop(int page, Long shopId) {
+        return ResponseEntity.ok(productService.getAllProductsByShop(page, shopId));
+    }
+
+    @Override
     public ResponseEntity<ProductsPage> getAllProducts(int page) {
         return ResponseEntity.ok(productService.getAllProducts(page));
     }
 
     @Override
-    public ResponseEntity<ProductDto> addProduct(NewProduct newProduct) {
+    public ResponseEntity<ProductDto> addProduct(NewProduct newProduct, Long shopId) {
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(productService.addProduct(newProduct));
+                .body(productService.addProduct(newProduct, shopId));
     }
 
     @Override

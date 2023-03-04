@@ -9,7 +9,9 @@ import ru.itis.master.party.dormdeals.dto.ShopDto.ShopDto;
 import ru.itis.master.party.dormdeals.dto.ShopDto.ShopsPage;
 import ru.itis.master.party.dormdeals.exceptions.NotFoundException;
 import ru.itis.master.party.dormdeals.models.Shop;
+import ru.itis.master.party.dormdeals.models.User;
 import ru.itis.master.party.dormdeals.repositories.ShopsRepository;
+import ru.itis.master.party.dormdeals.repositories.UserRepository;
 import ru.itis.master.party.dormdeals.services.ShopServices.ShopsService;
 
 import static ru.itis.master.party.dormdeals.dto.ShopDto.ShopDto.from;
@@ -18,6 +20,8 @@ import static ru.itis.master.party.dormdeals.dto.ShopDto.ShopDto.from;
 @RequiredArgsConstructor
 public class ShopsServiceImpl implements ShopsService {
     private final ShopsRepository shopsRepository;
+    private final UserRepository userRepository;
+
 
     @Value("${default.page-size}")
     private int defaultPageSize;
@@ -39,12 +43,14 @@ public class ShopsServiceImpl implements ShopsService {
     }
 
     @Override
-    public ShopDto addShop(ShopDto shopDto) {
+    public ShopDto createShop(ShopDto shopDto, Long ownerId) {
+        User owner = userRepository.findById(ownerId).orElseThrow(() -> new NotFoundException("Пользователь не найден"));
+
         Shop shop = Shop.builder()
                 .name(shopDto.getName())
                 .description(shopDto.getDescription())
                 .rating(shopDto.getRating())
-//                .owner(shopDto.getOwner())
+                .owner(owner)
                 .build();
 
         shopsRepository.save(shop);

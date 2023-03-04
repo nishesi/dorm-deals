@@ -20,17 +20,27 @@ import ru.itis.master.party.dormdeals.dto.ProductDto.UpdateProduct;
 @Tags(value = {
         @Tag(name = "Products")
 })
-@RequestMapping("/product")
+
 public interface ProductApi {
 
-    @Operation(summary = "Получение списка продуктов")
+    @Operation(summary = "Получение списка продуктов c идентификатором магазина")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Страница с продуктами",
                     content = {
                             @Content(mediaType = "application/json", schema = @Schema(implementation = ProductsPage.class))
                     })
     })
-    @GetMapping
+    @GetMapping("/{shop-id}/products")
+    ResponseEntity<ProductsPage> getAllProductsByShop(@Parameter(description = "Номер страницы") @RequestParam("page") int page, @Parameter(description = "Идентификатор магазина") @PathVariable("shop-id") Long shopId);
+
+    @Operation(summary = "Получение списка продуктов без идентификатора магазина")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Страница с продуктами",
+                    content = {
+                            @Content(mediaType = "application/json", schema = @Schema(implementation = ProductsPage.class))
+                    })
+    })
+    @GetMapping("/products")
     ResponseEntity<ProductsPage> getAllProducts(@Parameter(description = "Номер страницы") @RequestParam("page") int page);
 
 
@@ -40,8 +50,8 @@ public interface ProductApi {
                     content =
                     @Content(mediaType = "application/json", schema = @Schema(implementation = ProductDto.class)))
     })
-    @PostMapping
-    ResponseEntity<ProductDto> addProduct(@Parameter(description = "Данные нового товара") @RequestBody NewProduct newProduct);
+    @PostMapping("/{shop-id}/product")
+    ResponseEntity<ProductDto> addProduct(@Parameter(description = "Данные нового товара") @RequestBody NewProduct newProduct, @Parameter(description = "Идентификатор магазина") @PathVariable("shop-id") Long shopId);
 
 
     @Operation(summary = "Получение товара")
@@ -60,7 +70,7 @@ public interface ProductApi {
             )
     })
 
-    @GetMapping("/{product-id}")
+    @GetMapping("/product/{product-id}")
     ResponseEntity<ProductDto> getProduct(@Parameter(description = "Получение товара по идентификатору", example = "1")
                                           @PathVariable("product-id") Long productId);
 

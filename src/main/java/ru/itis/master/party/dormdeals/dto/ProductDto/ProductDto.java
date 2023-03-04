@@ -17,11 +17,17 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 @Schema(description = "Товар")
 public class ProductDto {
+    @Schema(description = "идентификатор товара", example = "1")
     private Long id;
+    @Schema(description = "название товара", example = "Adrenaline Rush")
     private String name;
+    @Schema(description = "описание товара", example = "бодрит")
     private String description;
+    @Schema(description = "категория товара", example = "продукты/напитки")
     private String category;
+    @Schema(description = "цена товара", example = "100")
     private Integer price;
+    @Schema(description = "количество на складе", example = "13")
     private Integer count_in_storage;
 //    private UUID uuid_photos;
 

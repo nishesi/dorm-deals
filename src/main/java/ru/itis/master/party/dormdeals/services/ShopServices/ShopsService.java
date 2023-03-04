@@ -9,7 +9,7 @@ public interface ShopsService {
 
     ShopsPage getAllShops(int page);
 
-    ShopDto addShop(ShopDto shopDto);
+    ShopDto createShop(ShopDto shopDto, Long ownerId);
 
     ShopDto updateShop(Long id, ShopDto updatedShopDto);
 

@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.RestController;
 import ru.itis.master.party.dormdeals.controllers.api.ShopsApi;
 import ru.itis.master.party.dormdeals.dto.ShopDto.ShopDto;
 import ru.itis.master.party.dormdeals.dto.ShopDto.ShopsPage;
+import ru.itis.master.party.dormdeals.models.User;
 import ru.itis.master.party.dormdeals.services.ShopServices.ShopsService;
 
 @RestController
@@ -21,9 +22,9 @@ public class ShopsController implements ShopsApi {
     }
 
     @Override
-    public ResponseEntity<ShopDto> addShop(ShopDto newShop) {
+    public ResponseEntity<ShopDto> createShop(ShopDto newShop, Long ownerId) {
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(shopsService.addShop(newShop));
+                .body(shopsService.createShop(newShop, ownerId));
     }
 
     @Override

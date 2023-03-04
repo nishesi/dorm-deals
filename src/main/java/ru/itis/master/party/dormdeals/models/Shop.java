@@ -6,6 +6,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @Entity
 @Data
 @NoArgsConstructor
@@ -18,8 +20,7 @@ public class Shop {
     private String name;
     private String description;
     private int rating;
-
-//    @ManyToOne
-//    @JoinColumn(name = "owner_id")
-//    private User owner;
+    @OneToOne
+    @JoinColumn(name = "owner_id")
+    private User owner;
 }
