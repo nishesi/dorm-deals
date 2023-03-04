@@ -1,4 +1,4 @@
-package ru.itis.master.party.dormdeals.services.UserServices;
+package ru.itis.master.party.dormdeals.services;
 
 import ru.itis.master.party.dormdeals.dto.UserDto.UserDto;
 
