@@ -28,7 +28,7 @@ public class Product {
     private Integer price;
     private Integer count_in_storage;
     private UUID uuid_photos;
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "shop_id")
     private Shop shop;
 
