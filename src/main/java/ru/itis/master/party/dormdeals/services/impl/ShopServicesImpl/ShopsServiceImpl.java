@@ -1,23 +1,27 @@
-package ru.itis.master.party.dormdeals.services.impl;
+package ru.itis.master.party.dormdeals.services.impl.ShopServicesImpl;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
-import ru.itis.master.party.dormdeals.dto.ShopDto;
-import ru.itis.master.party.dormdeals.dto.ShopsPage;
+import ru.itis.master.party.dormdeals.dto.ShopDto.ShopDto;
+import ru.itis.master.party.dormdeals.dto.ShopDto.ShopsPage;
 import ru.itis.master.party.dormdeals.exceptions.NotFoundException;
 import ru.itis.master.party.dormdeals.models.Shop;
+import ru.itis.master.party.dormdeals.models.User;
 import ru.itis.master.party.dormdeals.repositories.ShopsRepository;
-import ru.itis.master.party.dormdeals.services.ShopsService;
+import ru.itis.master.party.dormdeals.repositories.UserRepository;
+import ru.itis.master.party.dormdeals.services.ShopServices.ShopsService;
 
-import static ru.itis.master.party.dormdeals.dto.ShopDto.from;
+import static ru.itis.master.party.dormdeals.dto.ShopDto.ShopDto.from;
 
 @Service
 @RequiredArgsConstructor
 public class ShopsServiceImpl implements ShopsService {
     private final ShopsRepository shopsRepository;
+    private final UserRepository userRepository;
+
 
     @Value("${default.page-size}")
     private int defaultPageSize;
@@ -39,12 +43,17 @@ public class ShopsServiceImpl implements ShopsService {
     }
 
     @Override
-    public ShopDto addShop(ShopDto shopDto) {
+    public ShopDto createShop(ShopDto shopDto, Long ownerId) {
+        User owner = userRepository.findById(ownerId).orElseThrow(() -> new NotFoundException("Пользователь не найден"));
+
+        owner.setOwner_shop(true);
+
         Shop shop = Shop.builder()
                 .name(shopDto.getName())
                 .description(shopDto.getDescription())
                 .rating(shopDto.getRating())
-//                .owner(shopDto.getOwner())
+                .place_sells(shopDto.getPlace_sells())
+                .owner(owner)
                 .build();
 
         shopsRepository.save(shop);

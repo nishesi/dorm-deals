@@ -6,6 +6,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+
 @Entity
 @Data
 @NoArgsConstructor
@@ -17,9 +18,9 @@ public class Shop {
     private Long id;
     private String name;
     private String description;
+    private String place_sells;
     private int rating;
-
-//    @ManyToOne
-//    @JoinColumn(name = "owner_id")
-//    private User owner;
+    @OneToOne
+    @JoinColumn(name = "owner_id")
+    private User owner;
 }

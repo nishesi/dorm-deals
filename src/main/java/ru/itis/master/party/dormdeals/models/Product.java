@@ -28,8 +28,10 @@ public class Product {
     private Integer price;
     private Integer count_in_storage;
     private UUID uuid_photos;
-//    @Id
-//    private Long id_shop;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "shop_id")
+    private Shop shop;
+
     @Enumerated(value = EnumType.STRING)
     private State state;
 }

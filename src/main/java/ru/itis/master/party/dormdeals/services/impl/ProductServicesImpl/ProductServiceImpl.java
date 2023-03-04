@@ -1,4 +1,4 @@
-package ru.itis.master.party.dormdeals.services.impl;
+package ru.itis.master.party.dormdeals.services.impl.ProductServicesImpl;
 
 
 
@@ -7,23 +7,25 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
-import ru.itis.master.party.dormdeals.dto.NewProduct;
-import ru.itis.master.party.dormdeals.dto.ProductDto;
-import ru.itis.master.party.dormdeals.dto.ProductsPage;
-import ru.itis.master.party.dormdeals.dto.UpdateProduct;
+import ru.itis.master.party.dormdeals.dto.ProductDto.NewProduct;
+import ru.itis.master.party.dormdeals.dto.ProductDto.ProductDto;
+import ru.itis.master.party.dormdeals.dto.ProductDto.ProductsPage;
+import ru.itis.master.party.dormdeals.dto.ProductDto.UpdateProduct;
 import ru.itis.master.party.dormdeals.exceptions.NotFoundException;
 import ru.itis.master.party.dormdeals.models.Product;
+import ru.itis.master.party.dormdeals.models.Shop;
 import ru.itis.master.party.dormdeals.repositories.ProductsRepository;
-import ru.itis.master.party.dormdeals.services.ProductService;
+import ru.itis.master.party.dormdeals.repositories.ShopsRepository;
+import ru.itis.master.party.dormdeals.services.ProductServices.ProductService;
 
-import java.awt.print.Pageable;
-
-import static ru.itis.master.party.dormdeals.dto.ProductDto.from;
+import static ru.itis.master.party.dormdeals.dto.ProductDto.ProductDto.from;
 
 @Service
 @RequiredArgsConstructor
 public class ProductServiceImpl implements ProductService {
     private final ProductsRepository productsRepository;
+    private final ShopsRepository shopsRepository;
+
     @Value("${default.page-size}")
     private int defaultPageSize;
 
@@ -39,7 +41,8 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public ProductDto addProduct(NewProduct newProduct) {
+    public ProductDto addProduct(NewProduct newProduct, Long shopId) {
+        Shop shop = shopsRepository.findById(shopId).orElseThrow(() -> new NotFoundException("Магазин не найден"));
 
         Product product = Product.builder()
                 .name(newProduct.getName())
@@ -47,6 +50,7 @@ public class ProductServiceImpl implements ProductService {
                 .category(newProduct.getCategory())
                 .price(newProduct.getPrice())
                 .count_in_storage(newProduct.getCount_in_storage())
+                .shop(shop)
                 .state(Product.State.ACTIVE)
                 .build();
 
@@ -81,6 +85,17 @@ public class ProductServiceImpl implements ProductService {
 
         productForDelete.setState(Product.State.DELETED);
         productsRepository.save(productForDelete);
+    }
+
+    @Override
+    public ProductsPage getAllProductsByShop(int page, Long shopId) {
+        PageRequest pageRequest = PageRequest.of(page, defaultPageSize);
+        Page<Product> productsPage = productsRepository.findAllByShopIdAndStateOrderById(shopId, Product.State.ACTIVE, pageRequest);
+
+        return ProductsPage.builder()
+                .products(from(productsPage.getContent()))
+                .totalPageCount(productsPage.getTotalPages())
+                .build();
     }
 
 

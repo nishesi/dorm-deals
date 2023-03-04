@@ -6,11 +6,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 import ru.itis.master.party.dormdeals.controllers.api.ProductApi;
-import ru.itis.master.party.dormdeals.dto.NewProduct;
-import ru.itis.master.party.dormdeals.dto.ProductDto;
-import ru.itis.master.party.dormdeals.dto.ProductsPage;
-import ru.itis.master.party.dormdeals.dto.UpdateProduct;
-import ru.itis.master.party.dormdeals.services.ProductService;
+import ru.itis.master.party.dormdeals.dto.ProductDto.NewProduct;
+import ru.itis.master.party.dormdeals.dto.ProductDto.ProductDto;
+import ru.itis.master.party.dormdeals.dto.ProductDto.ProductsPage;
+import ru.itis.master.party.dormdeals.dto.ProductDto.UpdateProduct;
+import ru.itis.master.party.dormdeals.services.ProductServices.ProductService;
 
 @RestController
 @RequiredArgsConstructor
@@ -20,14 +20,19 @@ public class ProductController implements ProductApi {
     private final ProductService productService;
 
     @Override
+    public ResponseEntity<ProductsPage> getAllProductsByShop(int page, Long shopId) {
+        return ResponseEntity.ok(productService.getAllProductsByShop(page, shopId));
+    }
+
+    @Override
     public ResponseEntity<ProductsPage> getAllProducts(int page) {
         return ResponseEntity.ok(productService.getAllProducts(page));
     }
 
     @Override
-    public ResponseEntity<ProductDto> addProduct(NewProduct newProduct) {
+    public ResponseEntity<ProductDto> addProduct(NewProduct newProduct, Long shopId) {
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(productService.addProduct(newProduct));
+                .body(productService.addProduct(newProduct, shopId));
     }
 
     @Override

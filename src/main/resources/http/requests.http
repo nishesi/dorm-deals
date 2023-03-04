@@ -22,3 +22,7 @@ GET http://localhost/product/1
 ###
 
 DELETE localhost/product/1
+
+###
+
+POST localhost/users

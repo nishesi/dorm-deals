@@ -6,6 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import ru.itis.master.party.dormdeals.dto.ExceptionDto;
+import ru.itis.master.party.dormdeals.exceptions.NotAllowedException;
 import ru.itis.master.party.dormdeals.exceptions.NotFoundException;
 
 @RestControllerAdvice
@@ -27,4 +28,15 @@ public class RestExceptionHandler {
                         .statusCode(HttpStatus.BAD_REQUEST.value())
                         .build());
     }
+
+    @ExceptionHandler(NotAllowedException.class)
+    public ResponseEntity<ExceptionDto> handle(NotAllowedException ex) {
+        return ResponseEntity.status(HttpStatus.METHOD_NOT_ALLOWED).body(
+                ExceptionDto.builder()
+                        .message(ex.getMessage())
+                        .statusCode(HttpStatus.METHOD_NOT_ALLOWED.value())
+                        .build()
+        );
+    }
+
 }

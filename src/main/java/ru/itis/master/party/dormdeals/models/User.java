@@ -1,12 +1,6 @@
 package ru.itis.master.party.dormdeals.models;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -31,6 +25,8 @@ public class User {
     private String firstName;
     private String lastName;
     private String telephone;
+    private String dormitory;
+    private Boolean owner_shop;
     @Enumerated(EnumType.STRING)
     private State state;
 }
