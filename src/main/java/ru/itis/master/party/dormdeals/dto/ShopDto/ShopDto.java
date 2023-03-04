@@ -25,7 +25,7 @@ public class ShopDto {
     @Schema(description = "рейтинг магазина", example = "5")
     private int rating;
     @Schema(description = "место продаж", example = "Пушкина, 9")
-    private String place_sells;
+    private String placeSells;
     @Schema(description = "владелец магазина")
     private User owner;
 
@@ -34,7 +34,7 @@ public class ShopDto {
                 .name(shop.getName())
                 .description(shop.getDescription())
                 .rating(shop.getRating())
-                .place_sells(shop.getPlace_sells())
+                .placeSells(shop.getPlaceSells())
                 .owner(shop.getOwner())
                 .build();
     }

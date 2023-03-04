@@ -5,8 +5,10 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
+import ru.itis.master.party.dormdeals.dto.ShopDto.NewShop;
 import ru.itis.master.party.dormdeals.dto.ShopDto.ShopDto;
 import ru.itis.master.party.dormdeals.dto.ShopDto.ShopsPage;
+import ru.itis.master.party.dormdeals.dto.ShopDto.UpdateShop;
 import ru.itis.master.party.dormdeals.exceptions.NotFoundException;
 import ru.itis.master.party.dormdeals.models.Shop;
 import ru.itis.master.party.dormdeals.models.User;
@@ -43,16 +45,16 @@ public class ShopsServiceImpl implements ShopsService {
     }
 
     @Override
-    public ShopDto createShop(ShopDto shopDto, Long ownerId) {
+    public ShopDto createShop(NewShop newShop, Long ownerId) {
         User owner = userRepository.findById(ownerId).orElseThrow(() -> new NotFoundException("Пользователь не найден"));
 
         owner.setOwner_shop(true);
 
         Shop shop = Shop.builder()
-                .name(shopDto.getName())
-                .description(shopDto.getDescription())
-                .rating(shopDto.getRating())
-                .place_sells(shopDto.getPlace_sells())
+                .name(newShop.getName())
+                .description(newShop.getDescription())
+                .rating(newShop.getRating())
+                .placeSells(newShop.getPlaceSells())
                 .owner(owner)
                 .build();
 
@@ -62,13 +64,14 @@ public class ShopsServiceImpl implements ShopsService {
     }
 
     @Override
-    public ShopDto updateShop(Long id, ShopDto updatedShopDto) {
+    public ShopDto updateShop(Long id, UpdateShop updateShop) {
         Shop shopForUpdate = getShopOrThrow(id);
 
-        shopForUpdate.setName(updatedShopDto.getName());
-        shopForUpdate.setDescription(updatedShopDto.getDescription());
-        shopForUpdate.setRating(updatedShopDto.getRating());
-//        shopForUpdate.setOwner(updatedShopDto.getOwner());
+        shopForUpdate.setName(updateShop.getName());
+        shopForUpdate.setDescription(updateShop.getDescription());
+        shopForUpdate.setRating(updateShop.getRating());
+        shopForUpdate.setPlaceSells(updateShop.getPlaceSells());
+//        shopForUpdate.setOwner(updateShop.getOwner());
 
         shopsRepository.save(shopForUpdate);
 

@@ -5,8 +5,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 import ru.itis.master.party.dormdeals.controllers.api.ShopsApi;
+import ru.itis.master.party.dormdeals.dto.ShopDto.NewShop;
 import ru.itis.master.party.dormdeals.dto.ShopDto.ShopDto;
 import ru.itis.master.party.dormdeals.dto.ShopDto.ShopsPage;
+import ru.itis.master.party.dormdeals.dto.ShopDto.UpdateShop;
 import ru.itis.master.party.dormdeals.models.User;
 import ru.itis.master.party.dormdeals.services.ShopServices.ShopsService;
 
@@ -22,7 +24,7 @@ public class ShopsController implements ShopsApi {
     }
 
     @Override
-    public ResponseEntity<ShopDto> createShop(ShopDto newShop, Long ownerId) {
+    public ResponseEntity<ShopDto> createShop(NewShop newShop, Long ownerId) {
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(shopsService.createShop(newShop, ownerId));
     }
@@ -33,8 +35,8 @@ public class ShopsController implements ShopsApi {
     }
 
     @Override
-    public ResponseEntity<ShopDto> updateShop(Long shopId, ShopDto updatedShop) {
-        return ResponseEntity.accepted().body(shopsService.updateShop(shopId, updatedShop));
+    public ResponseEntity<ShopDto> updateShop(Long shopId, UpdateShop updateShop) {
+        return ResponseEntity.accepted().body(shopsService.updateShop(shopId, updateShop));
     }
 
     @Override

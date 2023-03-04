@@ -1,26 +1,21 @@
-package ru.itis.master.party.dormdeals.models;
+package ru.itis.master.party.dormdeals.dto.ShopDto;
 
-import jakarta.persistence.*;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import ru.itis.master.party.dormdeals.models.User;
 
-
-@Entity
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Shop {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+@Schema(description = "Новый магазин")
+public class NewShop {
     private String name;
     private String description;
-    private String placeSells;
     private int rating;
-    @OneToOne
-    @JoinColumn(name = "owner_id")
+    private String placeSells;
     private User owner;
 }
