@@ -1,4 +1,4 @@
-package ru.itis.master.party.dormdeals.services.impl.ProductServicesImpl;
+package ru.itis.master.party.dormdeals.services.impl;
 
 
 
@@ -16,7 +16,7 @@ import ru.itis.master.party.dormdeals.models.Product;
 import ru.itis.master.party.dormdeals.models.Shop;
 import ru.itis.master.party.dormdeals.repositories.ProductsRepository;
 import ru.itis.master.party.dormdeals.repositories.ShopsRepository;
-import ru.itis.master.party.dormdeals.services.ProductServices.ProductService;
+import ru.itis.master.party.dormdeals.services.ProductService;
 
 import static ru.itis.master.party.dormdeals.dto.ProductDto.ProductDto.from;
 

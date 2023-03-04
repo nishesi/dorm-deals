@@ -1,4 +1,4 @@
-package ru.itis.master.party.dormdeals.services.ShopServices;
+package ru.itis.master.party.dormdeals.services;
 
 import ru.itis.master.party.dormdeals.dto.ShopDto.NewShop;
 import ru.itis.master.party.dormdeals.dto.ShopDto.ShopDto;

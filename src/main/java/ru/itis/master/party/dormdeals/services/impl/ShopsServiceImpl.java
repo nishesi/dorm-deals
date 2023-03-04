@@ -1,4 +1,4 @@
-package ru.itis.master.party.dormdeals.services.impl.ShopServicesImpl;
+package ru.itis.master.party.dormdeals.services.impl;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -14,7 +14,7 @@ import ru.itis.master.party.dormdeals.models.Shop;
 import ru.itis.master.party.dormdeals.models.User;
 import ru.itis.master.party.dormdeals.repositories.ShopsRepository;
 import ru.itis.master.party.dormdeals.repositories.UserRepository;
-import ru.itis.master.party.dormdeals.services.ShopServices.ShopsService;
+import ru.itis.master.party.dormdeals.services.ShopsService;
 
 import static ru.itis.master.party.dormdeals.dto.ShopDto.ShopDto.from;
 

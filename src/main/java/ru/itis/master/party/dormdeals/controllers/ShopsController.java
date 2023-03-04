@@ -9,8 +9,7 @@ import ru.itis.master.party.dormdeals.dto.ShopDto.NewShop;
 import ru.itis.master.party.dormdeals.dto.ShopDto.ShopDto;
 import ru.itis.master.party.dormdeals.dto.ShopDto.ShopsPage;
 import ru.itis.master.party.dormdeals.dto.ShopDto.UpdateShop;
-import ru.itis.master.party.dormdeals.models.User;
-import ru.itis.master.party.dormdeals.services.ShopServices.ShopsService;
+import ru.itis.master.party.dormdeals.services.ShopsService;
 
 @RestController
 @RequiredArgsConstructor
