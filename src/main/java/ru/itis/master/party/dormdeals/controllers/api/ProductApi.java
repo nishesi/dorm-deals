@@ -12,6 +12,10 @@ import io.swagger.v3.oas.annotations.tags.Tags;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.itis.master.party.dormdeals.dto.*;
+import ru.itis.master.party.dormdeals.dto.ProductDto.NewProduct;
+import ru.itis.master.party.dormdeals.dto.ProductDto.ProductDto;
+import ru.itis.master.party.dormdeals.dto.ProductDto.ProductsPage;
+import ru.itis.master.party.dormdeals.dto.ProductDto.UpdateProduct;
 
 @Tags(value = {
         @Tag(name = "Products")

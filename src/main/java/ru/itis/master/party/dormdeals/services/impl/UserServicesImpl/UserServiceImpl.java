@@ -1,15 +1,16 @@
-package ru.itis.master.party.dormdeals.services;
+package ru.itis.master.party.dormdeals.services.impl.UserServicesImpl;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import ru.itis.master.party.dormdeals.dto.UserDto;
+import ru.itis.master.party.dormdeals.dto.UserDto.UserDto;
 import ru.itis.master.party.dormdeals.exceptions.NotFoundException;
 import ru.itis.master.party.dormdeals.models.User;
 import ru.itis.master.party.dormdeals.repositories.UserRepository;
+import ru.itis.master.party.dormdeals.services.UserServices.UserService;
 
 @Service
 @RequiredArgsConstructor
-public class UserService {
+public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
 
@@ -42,14 +43,14 @@ public class UserService {
         return UserDto.from(userRepository.save(updatedUser));
     }
 
-    private User getUserFromRepository(String email) {
-        return userRepository.getByEmail(email)
-                .orElseThrow(() -> new NotFoundException("User with email = <" + email + "> is not found"));
-    }
-
     public void deleteUser(String email) {
         User user = getUserFromRepository(email);
         user.setState(User.State.DELETED);
         userRepository.save(user);
+    }
+
+    private User getUserFromRepository(String email) {
+        return userRepository.getByEmail(email)
+                .orElseThrow(() -> new NotFoundException("User with email = <" + email + "> is not found"));
     }
 }

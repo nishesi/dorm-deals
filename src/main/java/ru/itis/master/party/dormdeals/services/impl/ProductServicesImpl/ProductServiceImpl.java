@@ -1,4 +1,4 @@
-package ru.itis.master.party.dormdeals.services.impl;
+package ru.itis.master.party.dormdeals.services.impl.ProductServicesImpl;
 
 
 
@@ -7,18 +7,16 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
-import ru.itis.master.party.dormdeals.dto.NewProduct;
-import ru.itis.master.party.dormdeals.dto.ProductDto;
-import ru.itis.master.party.dormdeals.dto.ProductsPage;
-import ru.itis.master.party.dormdeals.dto.UpdateProduct;
+import ru.itis.master.party.dormdeals.dto.ProductDto.NewProduct;
+import ru.itis.master.party.dormdeals.dto.ProductDto.ProductDto;
+import ru.itis.master.party.dormdeals.dto.ProductDto.ProductsPage;
+import ru.itis.master.party.dormdeals.dto.ProductDto.UpdateProduct;
 import ru.itis.master.party.dormdeals.exceptions.NotFoundException;
 import ru.itis.master.party.dormdeals.models.Product;
 import ru.itis.master.party.dormdeals.repositories.ProductsRepository;
-import ru.itis.master.party.dormdeals.services.ProductService;
+import ru.itis.master.party.dormdeals.services.ProductServices.ProductService;
 
-import java.awt.print.Pageable;
-
-import static ru.itis.master.party.dormdeals.dto.ProductDto.from;
+import static ru.itis.master.party.dormdeals.dto.ProductDto.ProductDto.from;
 
 @Service
 @RequiredArgsConstructor

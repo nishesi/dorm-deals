@@ -1,8 +1,7 @@
-package ru.itis.master.party.dormdeals.dto;
+package ru.itis.master.party.dormdeals.dto.ProductDto;
 
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import jakarta.persistence.Id;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -10,7 +9,6 @@ import lombok.NoArgsConstructor;
 import ru.itis.master.party.dormdeals.models.Product;
 
 import java.util.List;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Data

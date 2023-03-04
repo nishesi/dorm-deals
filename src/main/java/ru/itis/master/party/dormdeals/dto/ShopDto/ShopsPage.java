@@ -1,4 +1,4 @@
-package ru.itis.master.party.dormdeals.dto;
+package ru.itis.master.party.dormdeals.dto.ShopDto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;

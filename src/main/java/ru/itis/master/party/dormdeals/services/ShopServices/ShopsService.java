@@ -1,8 +1,8 @@
-package ru.itis.master.party.dormdeals.services;
+package ru.itis.master.party.dormdeals.services.ShopServices;
 
-import ru.itis.master.party.dormdeals.dto.ShopDto;
+import ru.itis.master.party.dormdeals.dto.ShopDto.ShopDto;
 import ru.itis.master.party.dormdeals.models.Shop;
-import ru.itis.master.party.dormdeals.dto.ShopsPage;
+import ru.itis.master.party.dormdeals.dto.ShopDto.ShopsPage;
 
 public interface ShopsService {
     ShopDto getShop(long id);

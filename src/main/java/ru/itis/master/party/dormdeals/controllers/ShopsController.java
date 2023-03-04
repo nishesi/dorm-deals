@@ -5,9 +5,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 import ru.itis.master.party.dormdeals.controllers.api.ShopsApi;
-import ru.itis.master.party.dormdeals.dto.ShopDto;
-import ru.itis.master.party.dormdeals.dto.ShopsPage;
-import ru.itis.master.party.dormdeals.services.ShopsService;
+import ru.itis.master.party.dormdeals.dto.ShopDto.ShopDto;
+import ru.itis.master.party.dormdeals.dto.ShopDto.ShopsPage;
+import ru.itis.master.party.dormdeals.services.ShopServices.ShopsService;
 
 @RestController
 @RequiredArgsConstructor

@@ -4,8 +4,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 import ru.itis.master.party.dormdeals.controllers.api.UserApi;
-import ru.itis.master.party.dormdeals.dto.UserDto;
-import ru.itis.master.party.dormdeals.services.UserService;
+import ru.itis.master.party.dormdeals.dto.UserDto.UserDto;
+import ru.itis.master.party.dormdeals.services.UserServices.UserService;
 
 @RestController
 @RequiredArgsConstructor

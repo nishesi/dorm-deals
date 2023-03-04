@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import ru.itis.master.party.dormdeals.dto.ExceptionDto;
-import ru.itis.master.party.dormdeals.dto.UserDto;
+import ru.itis.master.party.dormdeals.dto.UserDto.UserDto;
 
 @Tags(value = {
         @Tag(name = "Users")
