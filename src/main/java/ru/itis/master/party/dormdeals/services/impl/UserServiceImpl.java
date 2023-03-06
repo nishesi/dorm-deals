@@ -1,4 +1,4 @@
-package ru.itis.master.party.dormdeals.services.impl.UserServicesImpl;
+package ru.itis.master.party.dormdeals.services.impl;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -6,7 +6,7 @@ import ru.itis.master.party.dormdeals.dto.UserDto.UserDto;
 import ru.itis.master.party.dormdeals.exceptions.NotFoundException;
 import ru.itis.master.party.dormdeals.models.User;
 import ru.itis.master.party.dormdeals.repositories.UserRepository;
-import ru.itis.master.party.dormdeals.services.UserServices.UserService;
+import ru.itis.master.party.dormdeals.services.UserService;
 
 @Service
 @RequiredArgsConstructor

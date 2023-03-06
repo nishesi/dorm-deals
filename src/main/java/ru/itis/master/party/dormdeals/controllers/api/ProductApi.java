@@ -21,17 +21,20 @@ import ru.itis.master.party.dormdeals.dto.ProductDto.UpdateProduct;
         @Tag(name = "Products")
 })
 
+
+@RequestMapping("/products")
 public interface ProductApi {
 
-    @Operation(summary = "Получение списка продуктов c идентификатором магазина")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Страница с продуктами",
-                    content = {
-                            @Content(mediaType = "application/json", schema = @Schema(implementation = ProductsPage.class))
-                    })
-    })
-    @GetMapping("/{shop-id}/products")
-    ResponseEntity<ProductsPage> getAllProductsByShop(@Parameter(description = "Номер страницы") @RequestParam("page") int page, @Parameter(description = "Идентификатор магазина") @PathVariable("shop-id") Long shopId);
+
+//    @Operation(summary = "Получение списка продуктов c идентификатором магазина")
+//    @ApiResponses(value = {
+//            @ApiResponse(responseCode = "200", description = "Страница с продуктами",
+//                    content = {
+//                            @Content(mediaType = "application/json", schema = @Schema(implementation = ProductsPage.class))
+//                    })
+//    })
+//    @GetMapping("/shop/{shop-id}")
+//    ResponseEntity<ProductsPage> getAllProductsByShop(@Parameter(description = "Номер страницы") @RequestParam("page") int page, @Parameter(description = "Идентификатор магазина") @PathVariable("shop-id") Long shopId);
 
     @Operation(summary = "Получение списка продуктов без идентификатора магазина")
     @ApiResponses(value = {
@@ -40,7 +43,7 @@ public interface ProductApi {
                             @Content(mediaType = "application/json", schema = @Schema(implementation = ProductsPage.class))
                     })
     })
-    @GetMapping("/products")
+    @GetMapping()
     ResponseEntity<ProductsPage> getAllProducts(@Parameter(description = "Номер страницы") @RequestParam("page") int page);
 
 
@@ -50,7 +53,7 @@ public interface ProductApi {
                     content =
                     @Content(mediaType = "application/json", schema = @Schema(implementation = ProductDto.class)))
     })
-    @PostMapping("/{shop-id}/product")
+    @PostMapping("/{shop-id}")
     ResponseEntity<ProductDto> addProduct(@Parameter(description = "Данные нового товара") @RequestBody NewProduct newProduct, @Parameter(description = "Идентификатор магазина") @PathVariable("shop-id") Long shopId);
 
 
@@ -70,7 +73,7 @@ public interface ProductApi {
             )
     })
 
-    @GetMapping("/product/{product-id}")
+    @GetMapping("/{product-id}")
     ResponseEntity<ProductDto> getProduct(@Parameter(description = "Получение товара по идентификатору", example = "1")
                                           @PathVariable("product-id") Long productId);
 
@@ -96,7 +99,7 @@ public interface ProductApi {
 
     @Operation(summary = "Удаление товара")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "202", description = "товар удален"),
+            @ApiResponse(responseCode = "202", description = "Товар удален"),
             @ApiResponse(responseCode = "404", description = "Сведения об ошибке",
                     content = {
                             @Content(mediaType = "application/json",
@@ -108,7 +111,17 @@ public interface ProductApi {
     @DeleteMapping("/{product-id}")
     ResponseEntity<?> deleteProduct(@Parameter(description = "Удаление товара", example = "1") @PathVariable("product-id") Long productId);
 
-//    @PutMapping("/{product-id}")
-//    ResponseEntity<ProductDto> returnProductInSell(@Parameter(description = "Возвращение товара в продажу", example = "1")
-//                                                   @PathVariable("product-id") Long productId);
+    @Operation(summary = "Возврат товара в продажу")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "202", description = "Товар возвращен"),
+            @ApiResponse(responseCode = "404", description = "Сведения об ошибке",
+                    content = {
+                            @Content(mediaType = "application/json",
+                                    schema = @Schema(implementation = ExceptionDto.class))
+                    }
+            )
+    })
+    @PutMapping("/{product-id}/restore")
+    ResponseEntity<ProductDto> returnProductInSell(@Parameter(description = "Возвращение товара в продажу", example = "1")
+                                                   @PathVariable("product-id") Long productId);
 }

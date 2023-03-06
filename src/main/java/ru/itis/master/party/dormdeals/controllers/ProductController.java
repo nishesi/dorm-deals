@@ -10,7 +10,7 @@ import ru.itis.master.party.dormdeals.dto.ProductDto.NewProduct;
 import ru.itis.master.party.dormdeals.dto.ProductDto.ProductDto;
 import ru.itis.master.party.dormdeals.dto.ProductDto.ProductsPage;
 import ru.itis.master.party.dormdeals.dto.ProductDto.UpdateProduct;
-import ru.itis.master.party.dormdeals.services.ProductServices.ProductService;
+import ru.itis.master.party.dormdeals.services.ProductService;
 
 @RestController
 @RequiredArgsConstructor
@@ -19,10 +19,10 @@ public class ProductController implements ProductApi {
 
     private final ProductService productService;
 
-    @Override
-    public ResponseEntity<ProductsPage> getAllProductsByShop(int page, Long shopId) {
-        return ResponseEntity.ok(productService.getAllProductsByShop(page, shopId));
-    }
+//    @Override
+//    public ResponseEntity<ProductsPage> getAllProductsByShop(int page, Long shopId) {
+//        return ResponseEntity.ok(productService.getAllProductsByShop(page, shopId));
+//    }
 
     @Override
     public ResponseEntity<ProductsPage> getAllProducts(int page) {
@@ -48,14 +48,14 @@ public class ProductController implements ProductApi {
     @Override
     public ResponseEntity<?> deleteProduct(Long productId) {
         productService.deleteProduct(productId);
-
         return ResponseEntity.accepted().build();
     }
 
-//    @Override
-//    public ResponseEntity<ProductDto> returnProductInSell(Long productId) {
-//        return null;
-//    }
+    @Override
+    public ResponseEntity<ProductDto> returnProductInSell(Long productId) {
+        productService.returnInSell(productId);
+        return ResponseEntity.accepted().build();
+    }
 
 
 }

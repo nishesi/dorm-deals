@@ -9,8 +9,9 @@ import ru.itis.master.party.dormdeals.dto.ShopDto.NewShop;
 import ru.itis.master.party.dormdeals.dto.ShopDto.ShopDto;
 import ru.itis.master.party.dormdeals.dto.ShopDto.ShopsPage;
 import ru.itis.master.party.dormdeals.dto.ShopDto.UpdateShop;
-import ru.itis.master.party.dormdeals.models.User;
-import ru.itis.master.party.dormdeals.services.ShopServices.ShopsService;
+import ru.itis.master.party.dormdeals.models.Shop;
+import ru.itis.master.party.dormdeals.models.ShopWithProducts;
+import ru.itis.master.party.dormdeals.services.ShopsService;
 
 @RestController
 @RequiredArgsConstructor
@@ -44,4 +45,11 @@ public class ShopsController implements ShopsApi {
         shopsService.deleteShop(shopId);
         return ResponseEntity.accepted().build();
     }
+
+    @Override
+    public ResponseEntity<ShopWithProducts> getAllProductsThisShop(Long shopId, int page) {
+        return ResponseEntity.ok().body(shopsService.getAllProductsThisShop(shopId, page));
+    }
+
+
 }

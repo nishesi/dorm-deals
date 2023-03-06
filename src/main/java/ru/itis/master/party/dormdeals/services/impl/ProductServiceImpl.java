@@ -1,4 +1,4 @@
-package ru.itis.master.party.dormdeals.services.impl.ProductServicesImpl;
+package ru.itis.master.party.dormdeals.services.impl;
 
 
 
@@ -16,7 +16,7 @@ import ru.itis.master.party.dormdeals.models.Product;
 import ru.itis.master.party.dormdeals.models.Shop;
 import ru.itis.master.party.dormdeals.repositories.ProductsRepository;
 import ru.itis.master.party.dormdeals.repositories.ShopsRepository;
-import ru.itis.master.party.dormdeals.services.ProductServices.ProductService;
+import ru.itis.master.party.dormdeals.services.ProductService;
 
 import static ru.itis.master.party.dormdeals.dto.ProductDto.ProductDto.from;
 
@@ -50,6 +50,7 @@ public class ProductServiceImpl implements ProductService {
                 .category(newProduct.getCategory())
                 .price(newProduct.getPrice())
                 .countInStorage(newProduct.getCountInStorage())
+                .uuidOfPhotos(newProduct.getUuidOfPhotos())
                 .shop(shop)
                 .state(Product.State.ACTIVE)
                 .build();
@@ -87,15 +88,23 @@ public class ProductServiceImpl implements ProductService {
         productsRepository.save(productForDelete);
     }
 
-    @Override
-    public ProductsPage getAllProductsByShop(int page, Long shopId) {
-        PageRequest pageRequest = PageRequest.of(page, defaultPageSize);
-        Page<Product> productsPage = productsRepository.findAllByShopIdAndStateOrderById(shopId, Product.State.ACTIVE, pageRequest);
+//    @Override
+//    public ProductsPage getAllProductsByShop(int page, Long shopId) {
+//        PageRequest pageRequest = PageRequest.of(page, defaultPageSize);
+//        Page<Product> productsPage = productsRepository.findAllByShopIdAndStateOrderById(shopId, Product.State.ACTIVE, pageRequest);
+//
+//        return ProductsPage.builder()
+//                .products(from(productsPage.getContent()))
+//                .totalPageCount(productsPage.getTotalPages())
+//                .build();
+//    }
 
-        return ProductsPage.builder()
-                .products(from(productsPage.getContent()))
-                .totalPageCount(productsPage.getTotalPages())
-                .build();
+    @Override
+    public void returnInSell(Long productId) {
+        Product productForReturn = getProductOrThrow(productId);
+
+        productForReturn.setState(Product.State.ACTIVE);
+        productsRepository.save(productForReturn);
     }
 
 
