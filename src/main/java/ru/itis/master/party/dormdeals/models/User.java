@@ -1,16 +1,12 @@
 package ru.itis.master.party.dormdeals.models;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.util.Collection;
 
 @Data
 @NoArgsConstructor
@@ -19,9 +15,11 @@ import lombok.NoArgsConstructor;
 @Entity(name = "users")
 public class User {
     public enum State {
+        NOT_CONFIRMED,
         ACTIVE,
         DELETED
     }
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -33,4 +31,7 @@ public class User {
     private String telephone;
     @Enumerated(EnumType.STRING)
     private State state;
+
+    @ManyToMany(targetEntity = Authority.class, fetch = FetchType.EAGER)
+    private Collection<Authority> authorities;
 }

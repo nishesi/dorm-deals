@@ -4,8 +4,12 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.itis.master.party.dormdeals.dto.UserDto;
 import ru.itis.master.party.dormdeals.exceptions.NotFoundException;
+import ru.itis.master.party.dormdeals.models.Authority;
+import ru.itis.master.party.dormdeals.models.Role;
 import ru.itis.master.party.dormdeals.models.User;
 import ru.itis.master.party.dormdeals.repositories.UserRepository;
+
+import java.util.Collections;
 
 @Service
 @RequiredArgsConstructor
@@ -22,6 +26,7 @@ public class UserService {
                 .password(userDto.getPassword())
                 .firstName(userDto.getFirstName())
                 .lastName(userDto.getLastName())
+                        .authorities(Collections.singleton(new Authority(null, null, Role.USER)))
                 .telephone(userDto.getTelephone())
                 .build());
         return UserDto.from(returnedUser);
