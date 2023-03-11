@@ -14,24 +14,31 @@ import java.util.Collection;
 @Builder
 @Entity(name = "users")
 public class User {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @Column(unique = true)
+    private String email;
+
+    private String hashPassword;
+
+    private String firstName;
+
+    private String lastName;
+
+    private String telephone;
+
+    @Enumerated(EnumType.STRING)
+    private State state;
+
+    @Enumerated(EnumType.STRING)
+    private Role role;
+
     public enum State {
         NOT_CONFIRMED,
         ACTIVE,
         DELETED
     }
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-    @Column(unique = true)
-    private String email;
-    private String password;
-    private String firstName;
-    private String lastName;
-    private String telephone;
-    @Enumerated(EnumType.STRING)
-    private State state;
-
-    @ManyToMany(targetEntity = Authority.class, fetch = FetchType.EAGER)
-    private Collection<Authority> authorities;
 }

@@ -1,36 +1,59 @@
 package ru.itis.master.party.dormdeals.security;
 
-import org.springframework.beans.factory.annotation.Value;
+import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
+import org.springframework.security.config.Customizer;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.config.annotation.web.configurers.LogoutConfigurer;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import ru.itis.master.party.dormdeals.security.details.UserDetailsServiceImpl;
+import ru.itis.master.party.dormdeals.security.filters.TokenAuthenticationFilter;
+import ru.itis.master.party.dormdeals.security.filters.TokenAuthorizationFilter;
 
 @Configuration
 @EnableWebSecurity
+@RequiredArgsConstructor
 public class SecurityConfig {
 
-    @Bean
-    PasswordEncoder passwordEncoder(@Value("${password.encoder.strength}") int value) {
-        return new BCryptPasswordEncoder(value);
-    }
+    private final PasswordEncoder passwordEncoder;
+
+    private final UserDetailsServiceImpl userDetailsService;
 
     @Bean
-    SecurityFilterChain chain(HttpSecurity http) throws Exception {
+    SecurityFilterChain chain(HttpSecurity http,
+                              TokenAuthenticationFilter authenticationFilter,
+                              TokenAuthorizationFilter authorizationFilter,
+                              TokenLogoutHandler tokenLogoutHandler) throws Exception {
+        http
+                .csrf().disable()
+                .addFilter(authenticationFilter)
+                .addFilterBefore(authorizationFilter, UsernamePasswordAuthenticationFilter.class)
+                .sessionManagement(configurer -> configurer.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
         http
                 .authorizeHttpRequests((requests) -> requests
+                        .shouldFilterAllDispatcherTypes(false)
                         .requestMatchers("/", "/home").permitAll()
-                        .anyRequest().authenticated()
-                )
-                .formLogin((form) -> form
-                        .loginPage("/login")
-                        .permitAll()
-                )
-                .logout((logout) -> logout.permitAll());
+                        .requestMatchers("/swagger-ui.html", "/swagger-ui/**", "/v3/**").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/user").permitAll()
+                        .requestMatchers("/auth/token").permitAll()
+                        .anyRequest().authenticated())
+                .logout(logout -> logout
+                        .logoutUrl("/logout")
+                        .addLogoutHandler(tokenLogoutHandler));
 
         return http.build();
+    }
+
+    @Autowired
+    public void configureAuthentication(AuthenticationManagerBuilder builder) throws Exception {
+        builder.userDetailsService(userDetailsService).passwordEncoder(passwordEncoder);
     }
 }

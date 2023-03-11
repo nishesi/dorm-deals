@@ -16,11 +16,11 @@ public class DefaultController {
         return "Home page";
     }
 
-    @GetMapping("/post")
+    @GetMapping("/test")
     public String getPost() {
         return "Post page";
     }
-    @PostMapping("/post")
+//    @PostMapping("/auth/token")
     public String doPost() {
         return "Post accepted";
     }

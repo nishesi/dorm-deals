@@ -1,27 +1,30 @@
-package ru.itis.master.party.dormdeals.security;
+package ru.itis.master.party.dormdeals.security.details;
 
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 import ru.itis.master.party.dormdeals.models.User;
 
 import java.util.Collection;
+import java.util.List;
 
+@Getter
 @RequiredArgsConstructor
 public class UserDetailsImpl implements UserDetails {
     private final User user;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return user.getAuthorities().stream()
-                .map(authority -> new SimpleGrantedAuthority(authority.getRole().name()))
-                .toList();
+        return List.of(new SimpleGrantedAuthority(user.getRole().toString()));
     }
 
     @Override
     public String getPassword() {
-        return user.getPassword();
+        return user.getHashPassword();
     }
 
     @Override

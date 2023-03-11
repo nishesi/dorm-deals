@@ -1,6 +1,7 @@
 package ru.itis.master.party.dormdeals.services;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import ru.itis.master.party.dormdeals.dto.UserDto;
 import ru.itis.master.party.dormdeals.exceptions.NotFoundException;
@@ -17,16 +18,19 @@ public class UserService {
 
     private final UserRepository userRepository;
 
+    private final PasswordEncoder passwordEncoder;
+
     public UserDto register(UserDto userDto) {
         if (userRepository.existsUserByEmail(userDto.getEmail()))
             throw new IllegalArgumentException("User with email = <" + userDto.getEmail() + "> is exist");
 
         User returnedUser = userRepository.save(User.builder()
                 .email(userDto.getEmail())
-                .password(userDto.getPassword())
+                .hashPassword(passwordEncoder.encode(userDto.getPassword()))
                 .firstName(userDto.getFirstName())
                 .lastName(userDto.getLastName())
-                        .authorities(Collections.singleton(new Authority(null, null, Role.USER)))
+                .role(Role.USER)
+                .state(User.State.ACTIVE)
                 .telephone(userDto.getTelephone())
                 .build());
         return UserDto.from(returnedUser);
@@ -39,7 +43,7 @@ public class UserService {
 
     public UserDto updateUser(UserDto userDto) {
         User updatedUser = getUserFromRepository(userDto.getEmail());
-        updatedUser.setPassword(userDto.getPassword());
+        updatedUser.setHashPassword(userDto.getPassword());
         updatedUser.setFirstName(userDto.getFirstName());
         updatedUser.setLastName(userDto.getLastName());
         updatedUser.setTelephone(userDto.getTelephone());
