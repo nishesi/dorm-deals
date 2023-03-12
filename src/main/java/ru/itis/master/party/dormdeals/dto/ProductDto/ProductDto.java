@@ -2,6 +2,8 @@ package ru.itis.master.party.dormdeals.dto.ProductDto;
 
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -9,6 +11,7 @@ import lombok.NoArgsConstructor;
 import ru.itis.master.party.dormdeals.models.Product;
 
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Data
@@ -17,10 +20,13 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 @Schema(description = "Товар")
 public class ProductDto {
+
     @Schema(description = "идентификатор товара", example = "1")
     private Long id;
+
     @Schema(description = "название товара", example = "Adrenaline Rush")
     private String name;
+
     @Schema(description = "описание товара", example = "бодрит")
     private String description;
     @Schema(description = "категория товара", example = "продукты/напитки")
@@ -29,7 +35,7 @@ public class ProductDto {
     private Integer price;
     @Schema(description = "количество на складе", example = "13")
     private Integer countInStorage;
-//    private UUID uuid_photos;
+    private UUID uuidOfPhotos;
 
     public static ProductDto from(Product product) {
         return ProductDto.builder()
@@ -39,6 +45,7 @@ public class ProductDto {
                 .category(product.getCategory())
                 .price(product.getPrice())
                 .countInStorage(product.getCountInStorage())
+                .uuidOfPhotos(product.getUuidOfPhotos())
                 .build();
     }
 

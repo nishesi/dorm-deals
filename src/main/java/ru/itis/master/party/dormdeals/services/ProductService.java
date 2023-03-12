@@ -1,4 +1,4 @@
-package ru.itis.master.party.dormdeals.services.ProductServices;
+package ru.itis.master.party.dormdeals.services;
 
 import ru.itis.master.party.dormdeals.dto.ProductDto.NewProduct;
 import ru.itis.master.party.dormdeals.dto.ProductDto.ProductDto;
@@ -16,5 +16,7 @@ public interface ProductService {
 
     void deleteProduct(Long productId);
 
-    ProductsPage getAllProductsByShop(int page, Long shopId);
+//    ProductsPage getAllProductsByShop(int page, Long shopId);
+
+    void returnInSell(Long productId);
 }

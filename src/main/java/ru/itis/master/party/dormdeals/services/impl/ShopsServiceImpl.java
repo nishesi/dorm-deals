@@ -1,20 +1,25 @@
-package ru.itis.master.party.dormdeals.services.impl.ShopServicesImpl;
+package ru.itis.master.party.dormdeals.services.impl;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
+import ru.itis.master.party.dormdeals.dto.ProductDto.ProductDto;
+import ru.itis.master.party.dormdeals.dto.ProductDto.ProductsPage;
 import ru.itis.master.party.dormdeals.dto.ShopDto.NewShop;
 import ru.itis.master.party.dormdeals.dto.ShopDto.ShopDto;
 import ru.itis.master.party.dormdeals.dto.ShopDto.ShopsPage;
 import ru.itis.master.party.dormdeals.dto.ShopDto.UpdateShop;
 import ru.itis.master.party.dormdeals.exceptions.NotFoundException;
+import ru.itis.master.party.dormdeals.models.Product;
 import ru.itis.master.party.dormdeals.models.Shop;
+import ru.itis.master.party.dormdeals.models.ShopWithProducts;
 import ru.itis.master.party.dormdeals.models.User;
+import ru.itis.master.party.dormdeals.repositories.ProductsRepository;
 import ru.itis.master.party.dormdeals.repositories.ShopsRepository;
 import ru.itis.master.party.dormdeals.repositories.UserRepository;
-import ru.itis.master.party.dormdeals.services.ShopServices.ShopsService;
+import ru.itis.master.party.dormdeals.services.ShopsService;
 
 import static ru.itis.master.party.dormdeals.dto.ShopDto.ShopDto.from;
 
@@ -23,6 +28,7 @@ import static ru.itis.master.party.dormdeals.dto.ShopDto.ShopDto.from;
 public class ShopsServiceImpl implements ShopsService {
     private final ShopsRepository shopsRepository;
     private final UserRepository userRepository;
+    private final ProductsRepository productsRepository;
 
 
     @Value("${default.page-size}")
@@ -81,6 +87,23 @@ public class ShopsServiceImpl implements ShopsService {
     @Override
     public void deleteShop(Long id) {
         shopsRepository.deleteById(id);
+    }
+
+    @Override
+    public ShopWithProducts getAllProductsThisShop(Long shopId, int page) {
+        Shop thisShop = getShopOrThrow(shopId);
+        PageRequest pageRequest = PageRequest.of(page, defaultPageSize);
+        Page<Product> productsPageTemp = productsRepository
+                .findAllByShopIdAndStateOrderById(shopId, Product.State.ACTIVE, pageRequest);
+        ProductsPage productsPage= ProductsPage.builder()
+                .products(ProductDto.from(productsPageTemp.getContent()))
+                .totalPageCount(productsPageTemp.getTotalPages())
+                .build();
+
+        return ShopWithProducts.builder()
+                .shop(thisShop)
+                .productsPage(productsPage)
+                .build();
     }
 
     @Override

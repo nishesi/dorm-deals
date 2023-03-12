@@ -8,13 +8,19 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import io.swagger.v3.oas.annotations.tags.Tags;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.itis.master.party.dormdeals.dto.ExceptionDto;
+import ru.itis.master.party.dormdeals.dto.ProductDto.ProductDto;
+import ru.itis.master.party.dormdeals.dto.ProductDto.ProductsPage;
 import ru.itis.master.party.dormdeals.dto.ShopDto.NewShop;
 import ru.itis.master.party.dormdeals.dto.ShopDto.ShopDto;
 import ru.itis.master.party.dormdeals.dto.ShopDto.ShopsPage;
 import ru.itis.master.party.dormdeals.dto.ShopDto.UpdateShop;
+import ru.itis.master.party.dormdeals.models.Product;
+import ru.itis.master.party.dormdeals.models.Shop;
+import ru.itis.master.party.dormdeals.models.ShopWithProducts;
 import ru.itis.master.party.dormdeals.models.User;
 
 @Tags(value = {
@@ -34,6 +40,7 @@ public interface ShopsApi {
     ResponseEntity<ShopsPage> getAllShops(@Parameter(description = "Номер страницы") @RequestParam("page") int page);
 
     @Operation(summary = "Добавление магазина")
+
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "Добавленный магазин",
                     content = {
@@ -63,7 +70,7 @@ public interface ShopsApi {
     })
     @GetMapping("/{shop-id}")
     ResponseEntity<ShopDto> getShop(@Parameter(description = "Идентификатор магазина", example = "1")
-                                        @PathVariable("shop-id") Long shopId);
+                                    @PathVariable("shop-id") Long shopId);
 
     @Operation(summary = "Обновление магазина")
     @ApiResponses(value = {
@@ -98,5 +105,24 @@ public interface ShopsApi {
     @DeleteMapping("/{shop-id}")
     ResponseEntity<?> deleteShop(
             @Parameter(description = "Идентификатор магазина", example = "1") @PathVariable("shop-id") Long shopId);
+
+
+    @Operation(summary = "Получение главной страницы магазина с его товарами постранично")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Информация о магазине и его товары",
+                    content = {
+                            @Content(mediaType = "application/json",
+                                    schema = @Schema(implementation = Shop.class))
+                    }
+            ),
+            @ApiResponse(responseCode = "404", description = "Сведения об ошибке",
+                    content = {
+                            @Content(mediaType = "application/json",
+                                    schema = @Schema(implementation = ExceptionDto.class))
+                    }
+            )
+    })
+    @GetMapping("/{shop-id}/products")
+    ResponseEntity<ShopWithProducts> getAllProductsThisShop(@Parameter(description = "Идентификатор магазина") @PathVariable("shop-id") Long shopId, @Parameter(description = "Страница товаров") @RequestParam("page") int page);
 }
 
