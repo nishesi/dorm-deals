@@ -38,11 +38,15 @@ public class SecurityConfig {
         http
                 .authorizeHttpRequests((requests) -> requests
                         .shouldFilterAllDispatcherTypes(false)
-                        .requestMatchers("/", "/home").permitAll()
-                        .requestMatchers("/swagger-ui.html", "/swagger-ui/**", "/v3/**").permitAll()
+                        .requestMatchers("/auth/token").permitAll()
                         .requestMatchers(HttpMethod.POST, "/user").permitAll()
-                        .requestMatchers("/auth/token").anonymous()
-                        .anyRequest().authenticated())
+                        .requestMatchers( HttpMethod.GET, "/user").authenticated()
+                        .requestMatchers(HttpMethod.PUT, "/products", "/shops").hasRole("SELLER")
+                        .requestMatchers(HttpMethod.DELETE, "/products", "/shops").hasRole("SELLER")
+                        .requestMatchers(HttpMethod.POST, "/products", "/shops").hasRole("SELLER")
+//                        .requestMatchers("/", "/home").permitAll()
+//                        .requestMatchers("/swagger-ui.html", "/swagger-ui/**", "/v3/**").permitAll()
+                        )
                 .logout(logout -> logout
                         .logoutUrl("/logout")
                         .addLogoutHandler(tokenLogoutHandler));

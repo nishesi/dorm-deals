@@ -14,6 +14,7 @@ import ru.itis.master.party.dormdeals.services.UserService;
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
+
     private final PasswordEncoder passwordEncoder;
 
     public UserDto register(UserDto userDto) {
@@ -26,6 +27,8 @@ public class UserServiceImpl implements UserService {
                 .firstName(userDto.getFirstName())
                 .lastName(userDto.getLastName())
                 .telephone(userDto.getTelephone())
+                .dormitory(userDto.getDormitory())
+                .state(User.State.ACTIVE)
                 .isSeller(false)
                 .build());
         return UserDto.from(returnedUser);
