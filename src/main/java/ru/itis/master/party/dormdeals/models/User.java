@@ -29,7 +29,7 @@ public class User {
     private Long id;
     @Column(unique = true)
     private String email;
-    private String password;
+    private String hashPassword;
     private String firstName;
     private String lastName;
     private String telephone;
