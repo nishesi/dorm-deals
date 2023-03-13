@@ -14,9 +14,7 @@ import ru.itis.master.party.dormdeals.models.Token;
 import ru.itis.master.party.dormdeals.repositories.TokenRepository;
 
 import java.io.IOException;
-import java.util.Collections;
 import java.util.Map;
-import java.util.NoSuchElementException;
 import java.util.UUID;
 
 @Component
@@ -44,20 +42,20 @@ public class TokenAuthenticationFilter extends UsernamePasswordAuthenticationFil
     ) throws IOException {
         response.setContentType("application/json");
 
-        String generatedToken = UUID.randomUUID().toString();
-
-        Map<String, String> token = Collections.singletonMap("token", generatedToken);
-        objectMapper.writeValue(response.getOutputStream(), token);
-
-        authResult.getAuthorities().stream().findFirst().ifPresentOrElse(
-                (currentAuthority) -> tokenRepository.save(Token.builder()
-                        .token(generatedToken)
-                        .email(authResult.getName())
-                        .role(Role.valueOf(currentAuthority.getAuthority()))
-                        .build()),
-                () -> {
-                    throw new NoSuchElementException("Authority not found");
+        Token token = tokenRepository
+                .findByEmail(authResult.getName())
+                .orElseGet(() -> {
+                    String role = authResult.getAuthorities().stream().findFirst().orElseThrow().getAuthority();
+                    Token newToken = Token.builder()
+                            .token(UUID.randomUUID().toString())
+                            .email(authResult.getName())
+                            .role(Role.valueOf(role))
+                            .build();
+                    tokenRepository.save(newToken);
+                    return newToken;
                 });
+
+        objectMapper.writeValue(response.getOutputStream(), Map.of("token", token.getToken()));
     }
 
     @Override
