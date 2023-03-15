@@ -5,6 +5,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import ru.itis.master.party.dormdeals.dto.UserDto.UserDto;
 import ru.itis.master.party.dormdeals.exceptions.NotFoundException;
+import ru.itis.master.party.dormdeals.models.Role;
 import ru.itis.master.party.dormdeals.models.User;
 import ru.itis.master.party.dormdeals.repositories.UserRepository;
 import ru.itis.master.party.dormdeals.services.UserService;
@@ -29,6 +30,7 @@ public class UserServiceImpl implements UserService {
                 .telephone(userDto.getTelephone())
                 .dormitory(userDto.getDormitory())
                 .state(User.State.ACTIVE)
+                .role(Role.ROLE_USER)
                 .isSeller(false)
                 .build());
         return UserDto.from(returnedUser);

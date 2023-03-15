@@ -6,6 +6,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
@@ -44,18 +45,15 @@ public class TokenAuthorizationFilter extends OncePerRequestFilter {
                 response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
                 return;
             }
-            tokenOptional
-                    .map(token ->
-                            new UserDetailsImpl(User.builder()
-                                    .email(token.getEmail())
-                                    .role(token.getRole())
-                                    .build()))
-                    .map(userDetails ->
-                            new UsernamePasswordAuthenticationToken(
-                                    userDetails,
-                                    null,
-                                    List.of(new SimpleGrantedAuthority(userDetails.getUser().getRole().toString()))))
-                    .ifPresent(authentication -> SecurityContextHolder.getContext().setAuthentication(authentication));
+            Token token = tokenOptional.get();
+            Authentication authentication = new UsernamePasswordAuthenticationToken(
+                    new UserDetailsImpl(User.builder()
+                            .email(token.getEmail())
+                            .role(token.getRole())
+                            .build()),
+                    null,
+                    List.of(new SimpleGrantedAuthority(token.getRole().toString())));
+            SecurityContextHolder.getContext().setAuthentication(authentication);
         }
         filterChain.doFilter(request, response);
     }
