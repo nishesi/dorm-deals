@@ -7,7 +7,6 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import ru.itis.master.party.dormdeals.models.Role;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -34,6 +33,7 @@ public class User {
     private String lastName;
     private String telephone;
     private String dormitory;
+    private String confirmCode;
     @Enumerated(EnumType.STRING)
     private State state;
     @Enumerated(EnumType.STRING)
