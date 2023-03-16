@@ -7,4 +7,5 @@ import ru.itis.master.party.dormdeals.models.Product;
 public interface ProductsRepository extends JpaRepository<Product, Long> {
     Page<Product> findAllByStateOrderById(Product.State state, org.springframework.data.domain.Pageable pageable);
     Page<Product> findAllByShopIdAndStateOrderById(Long shopId, Product.State state, org.springframework.data.domain.Pageable pageable);
+
 }
