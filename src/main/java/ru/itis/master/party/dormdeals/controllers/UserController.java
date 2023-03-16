@@ -7,6 +7,8 @@ import ru.itis.master.party.dormdeals.controllers.api.UserApi;
 import ru.itis.master.party.dormdeals.dto.UserDto.UserDto;
 import ru.itis.master.party.dormdeals.services.UserService;
 
+import java.util.Map;
+
 @RestController
 @RequiredArgsConstructor
 public class UserController implements UserApi {
@@ -19,8 +21,9 @@ public class UserController implements UserApi {
     }
 
     @Override
-    public UserDto addUser(UserDto userDto) {
-        return userService.register(userDto);
+    public ResponseEntity<?> addUser(UserDto userDto) {
+        // TODO переписать документацию метода (правильно записать возврат json с одинм параметром message)
+        return ResponseEntity.accepted().body(Map.of("message",userService.register(userDto)));
     }
 
     @Override

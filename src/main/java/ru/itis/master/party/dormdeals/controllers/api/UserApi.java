@@ -42,14 +42,14 @@ public interface UserApi {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "user",
                     content = {
-                            @Content(mediaType = "application/json", schema = @Schema(implementation = UserDto.class))
+                            @Content(mediaType = "application/json", schema = @Schema(name = "message"))
                     }),
             @ApiResponse(responseCode = "400", description = "user is exist",
                     content = {
                             @Content(mediaType = "application/json", schema = @Schema(implementation = ExceptionDto.class))
                     })})
     @PostMapping
-    UserDto addUser(@RequestBody UserDto userDto);
+    ResponseEntity<?> addUser(@RequestBody UserDto userDto);
 
     @Operation(summary = "обновление информации о пользователе")
     @ApiResponses(value = {
