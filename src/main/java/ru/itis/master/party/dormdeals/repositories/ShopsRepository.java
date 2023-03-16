@@ -7,4 +7,5 @@ import ru.itis.master.party.dormdeals.models.Shop;
 
 public interface ShopsRepository extends CrudRepository<Shop, Long> {
     Page<Shop> findAllByOrderByIdAsc(Pageable pageable);
+    Integer countShopsByOwnerId(Long ownerId);
 }

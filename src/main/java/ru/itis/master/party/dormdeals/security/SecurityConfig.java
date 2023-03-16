@@ -9,9 +9,14 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import ru.itis.master.party.dormdeals.exceptions.NotFoundException;
+import ru.itis.master.party.dormdeals.models.User;
+import ru.itis.master.party.dormdeals.repositories.UserRepository;
 import ru.itis.master.party.dormdeals.security.details.UserDetailsServiceImpl;
 import ru.itis.master.party.dormdeals.security.filters.TokenAuthenticationFilter;
 import ru.itis.master.party.dormdeals.security.filters.TokenAuthorizationFilter;
@@ -24,7 +29,6 @@ public class SecurityConfig {
     private final PasswordEncoder passwordEncoder;
 
     private final UserDetailsServiceImpl userDetailsService;
-
     @Bean
     SecurityFilterChain chain(HttpSecurity http,
                               TokenAuthenticationFilter authenticationFilter,

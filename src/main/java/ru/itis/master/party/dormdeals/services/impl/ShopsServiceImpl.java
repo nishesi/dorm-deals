@@ -1,20 +1,25 @@
 package ru.itis.master.party.dormdeals.services.impl;
 
 import lombok.RequiredArgsConstructor;
+import org.aspectj.lang.annotation.Before;
+import org.checkerframework.checker.initialization.qual.Initialized;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Bean;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.InitBinder;
 import ru.itis.master.party.dormdeals.dto.ProductDto.ProductDto;
 import ru.itis.master.party.dormdeals.dto.ProductDto.ProductsPage;
 import ru.itis.master.party.dormdeals.dto.ShopDto.NewShop;
 import ru.itis.master.party.dormdeals.dto.ShopDto.ShopDto;
 import ru.itis.master.party.dormdeals.dto.ShopDto.ShopsPage;
 import ru.itis.master.party.dormdeals.dto.ShopDto.UpdateShop;
-import ru.itis.master.party.dormdeals.dto.UserDto.UserDto;
 import ru.itis.master.party.dormdeals.exceptions.NotAllowedException;
+import ru.itis.master.party.dormdeals.exceptions.NotCreateSecondShop;
 import ru.itis.master.party.dormdeals.exceptions.NotFoundException;
 import ru.itis.master.party.dormdeals.models.Product;
 import ru.itis.master.party.dormdeals.models.Role;
@@ -23,25 +28,22 @@ import ru.itis.master.party.dormdeals.dto.ShopWithProducts;
 import ru.itis.master.party.dormdeals.models.User;
 import ru.itis.master.party.dormdeals.repositories.ProductsRepository;
 import ru.itis.master.party.dormdeals.repositories.ShopsRepository;
-import ru.itis.master.party.dormdeals.repositories.TokenRepository;
 import ru.itis.master.party.dormdeals.repositories.UserRepository;
 import ru.itis.master.party.dormdeals.services.ShopsService;
 
 import java.util.Objects;
 
 import static ru.itis.master.party.dormdeals.dto.ShopDto.ShopDto.from;
-import static ru.itis.master.party.dormdeals.dto.UserDto.UserDto.from;
 
 @Service
 @RequiredArgsConstructor
+
 public class ShopsServiceImpl implements ShopsService {
     private final ShopsRepository shopsRepository;
-    private final UserRepository userRepository;
     private final ProductsRepository productsRepository;
+    private final UserRepository userRepository;
+    private User thisUser;
 
-    private final Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-    private User thisUser = userRepository.getByEmail(authentication.getName()).orElseThrow(() ->
-            new NotFoundException("Пользователь не найден"));
 
 
     @Value("${default.page-size}")
@@ -65,7 +67,14 @@ public class ShopsServiceImpl implements ShopsService {
 
     @Override
     public ShopDto createShop(NewShop newShop) {
+        initThisUser();
+
+        if (shopsRepository.countShopsByOwnerId(thisUser.getId()) >= 1) {
+            throw new NotCreateSecondShop("Вы не можете иметь больше одного магазина");
+        }
+
         thisUser.setRole(Role.ROLE_SELLER);
+
 //TODO: чтобы создание магазина отдавало дтошку, а не основного юзера
 //        UserDto ownerDto = from(user);
         Shop shop = Shop.builder()
@@ -83,7 +92,6 @@ public class ShopsServiceImpl implements ShopsService {
 
     @Override
     public ShopDto updateShop(Long id, UpdateShop updateShop) {
-
         checkOwnerShop(id);
 
         Shop shopForUpdate = getShopOrThrow(id);
@@ -100,7 +108,6 @@ public class ShopsServiceImpl implements ShopsService {
 
     @Override
     public void deleteShop(Long id) {
-
         checkOwnerShop(id);
 
         shopsRepository.deleteById(id);
@@ -128,8 +135,14 @@ public class ShopsServiceImpl implements ShopsService {
                 .orElseThrow(() -> new NotFoundException("Магазин с идентификатором <" + id + "> не найден"));
     }
     private void checkOwnerShop(Long shopId) {
+        initThisUser();
         if (!Objects.equals(thisUser.getId(), shopId)) {
             throw new NotAllowedException("Вы не являетесь владельцем данного магазина.");
         }
     }
+    private void initThisUser() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        thisUser = userRepository.getByEmail(authentication.getName()).orElseThrow(() -> new NotFoundException("Пользователь не найден"));
+    }
+
 }
