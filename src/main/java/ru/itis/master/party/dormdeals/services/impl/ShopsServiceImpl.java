@@ -14,7 +14,7 @@ import ru.itis.master.party.dormdeals.dto.ShopDto.UpdateShop;
 import ru.itis.master.party.dormdeals.exceptions.NotFoundException;
 import ru.itis.master.party.dormdeals.models.Product;
 import ru.itis.master.party.dormdeals.models.Shop;
-import ru.itis.master.party.dormdeals.models.ShopWithProducts;
+import ru.itis.master.party.dormdeals.dto.ShopWithProducts;
 import ru.itis.master.party.dormdeals.models.User;
 import ru.itis.master.party.dormdeals.repositories.ProductsRepository;
 import ru.itis.master.party.dormdeals.repositories.ShopsRepository;

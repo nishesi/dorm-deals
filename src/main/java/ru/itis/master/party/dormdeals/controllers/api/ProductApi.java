@@ -9,6 +9,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import io.swagger.v3.oas.annotations.tags.Tags;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.itis.master.party.dormdeals.dto.*;
@@ -44,6 +45,7 @@ public interface ProductApi {
                     })
     })
     @GetMapping()
+
     ResponseEntity<ProductsPage> getAllProducts(@Parameter(description = "Номер страницы") @RequestParam("page") int page);
 
 
@@ -54,7 +56,7 @@ public interface ProductApi {
                     @Content(mediaType = "application/json", schema = @Schema(implementation = ProductDto.class)))
     })
     @PostMapping("/{shop-id}")
-    ResponseEntity<ProductDto> addProduct(@Parameter(description = "Данные нового товара") @RequestBody NewProduct newProduct, @Parameter(description = "Идентификатор магазина") @PathVariable("shop-id") Long shopId);
+    ResponseEntity<ProductDto> addProduct(@Parameter(description = "Данные нового товара") @RequestBody @Valid NewProduct newProduct, @Parameter(description = "Идентификатор магазина") @PathVariable("shop-id") Long shopId);
 
 
     @Operation(summary = "Получение товара")

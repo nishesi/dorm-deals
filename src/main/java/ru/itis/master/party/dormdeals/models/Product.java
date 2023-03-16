@@ -21,6 +21,7 @@ public class Product {
 
     public enum State {
         ACTIVE,
+        NOT_AVAILABLE,
         DELETED
     }
 
@@ -32,6 +33,8 @@ public class Product {
     private String description;
     private String category;
     private Integer price;
+
+    //TODO: реализовать проверку на ноль после заказа, если ноль то переводить состояние в "NOT_AVAILABLE"
     private Integer countInStorage;
     private UUID uuidOfPhotos;
     @ManyToOne(fetch = FetchType.LAZY)

@@ -8,20 +8,15 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import io.swagger.v3.oas.annotations.tags.Tags;
-import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.itis.master.party.dormdeals.dto.ExceptionDto;
-import ru.itis.master.party.dormdeals.dto.ProductDto.ProductDto;
-import ru.itis.master.party.dormdeals.dto.ProductDto.ProductsPage;
 import ru.itis.master.party.dormdeals.dto.ShopDto.NewShop;
 import ru.itis.master.party.dormdeals.dto.ShopDto.ShopDto;
 import ru.itis.master.party.dormdeals.dto.ShopDto.ShopsPage;
 import ru.itis.master.party.dormdeals.dto.ShopDto.UpdateShop;
-import ru.itis.master.party.dormdeals.models.Product;
 import ru.itis.master.party.dormdeals.models.Shop;
-import ru.itis.master.party.dormdeals.models.ShopWithProducts;
-import ru.itis.master.party.dormdeals.models.User;
+import ru.itis.master.party.dormdeals.dto.ShopWithProducts;
 
 @Tags(value = {
         @Tag(name = "Shops")
