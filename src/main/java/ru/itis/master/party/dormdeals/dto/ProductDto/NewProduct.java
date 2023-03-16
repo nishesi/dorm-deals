@@ -20,12 +20,12 @@ public class NewProduct {
     @NotBlank(message = "Поле обязательно к заполнению")
     @Size(min=2, max = 50, message = "Слишком длинное или короткое название")
     private String name;
-    @NotBlank(message = "Поле обязательно к заполнению")
-    @Size(min=10, max = 1000, message = "Слишком длинное или короткое описание")
+
+    @Size(min=1, max = 1000, message = "Слишком длинное или короткое описание")
     private String description;
     private String category;
-    @NotBlank(message = "Поле обязательно к заполнению")
-    @Size(min=1, max = 300000, message = "Слишком длинное или короткое название")
+//    @NotBlank(message = "Поле обязательно к заполнению")
+//    @Size(min=1, max = 300000, message = "Цена должна быть в диапазоне от 1 до 300000 рублей")
     private Integer price;
 
     private Integer countInStorage;
