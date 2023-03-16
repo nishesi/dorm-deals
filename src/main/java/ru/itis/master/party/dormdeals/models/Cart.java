@@ -10,8 +10,8 @@ public class Cart {
     private Long id;
 
     //TODO: навесить нужны аннотации, чтобы создать связи
-    private Long idUser;
-    private Long idProduct;
+    private Long userId;
+    private Long productId;
     private Long count;
     private Long sumPricesOfProducts;
 }

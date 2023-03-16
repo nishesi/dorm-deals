@@ -33,7 +33,6 @@ public class ProductServiceImpl implements ProductService {
     private final ProductsRepository productsRepository;
     private final ShopsRepository shopsRepository;
     private final UserRepository userRepository;
-    private User thisUser;
 
     @Value("${default.page-size}")
     private int defaultPageSize;
@@ -51,8 +50,7 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public ProductDto addProduct(NewProduct newProduct) {
-        initThisUser();
-        Shop shop = shopsRepository.findShopByOwnerId(thisUser.getId()).orElseThrow(() -> new NotFoundException("Магазин не найден"));
+        Shop shop = shopsRepository.findShopByOwnerId(initThisUser().getId()).orElseThrow(() -> new NotFoundException("Магазин не найден"));
 
         Product product = Product.builder()
                 .name(newProduct.getName())
@@ -79,7 +77,7 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public ProductDto updateProduct(Long productId, UpdateProduct updatedProduct) {
         Product productForUpdate = getProductOrThrow(productId);
-        checkOwnerShop(productForUpdate.getShop().getOwner().getId());
+        checkOwnerShop(productForUpdate.getShop().getOwner().getId(), initThisUser());
 
         productForUpdate.setName(updatedProduct.getName());
         productForUpdate.setDescription(updatedProduct.getDescription());
@@ -93,10 +91,9 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public void deleteProduct(Long productId) {
-        initThisUser();
         Product productForDelete = getProductOrThrow(productId);
 
-        checkOwnerShop(productForDelete.getShop().getOwner().getId());
+        checkOwnerShop(productForDelete.getShop().getOwner().getId(), initThisUser());
 
         productForDelete.setState(Product.State.DELETED);
         productsRepository.save(productForDelete);
@@ -116,7 +113,7 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public void returnInSell(Long productId) {
         Product productForReturn = getProductOrThrow(productId);
-        checkOwnerShop(productForReturn.getShop().getOwner().getId());
+        checkOwnerShop(productForReturn.getShop().getOwner().getId(), initThisUser());
 
         productForReturn.setState(Product.State.ACTIVE);
         productsRepository.save(productForReturn);
@@ -130,16 +127,14 @@ public class ProductServiceImpl implements ProductService {
 
 
     //TODO: вынести эти два метода в отдельный класс
-    private void checkOwnerShop(Long ownerShopId) {
-        initThisUser();
-
+    private void checkOwnerShop(Long ownerShopId, User thisUser) {
         if (!Objects.equals(thisUser.getId(), ownerShopId)) {
             throw new NotAllowedException("Вы не являетесь владельцем данного магазина.");
         }
     }
-    private void initThisUser() {
+    private User initThisUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        thisUser = userRepository.getByEmail(authentication.getName()).orElseThrow(() -> new NotFoundException("Пользователь не найден"));
+        return userRepository.getByEmail(authentication.getName()).orElseThrow(() -> new NotFoundException("Пользователь не найден"));
     }
 
 }

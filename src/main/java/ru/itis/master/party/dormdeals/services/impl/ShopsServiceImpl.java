@@ -42,7 +42,6 @@ public class ShopsServiceImpl implements ShopsService {
     private final ShopsRepository shopsRepository;
     private final ProductsRepository productsRepository;
     private final UserRepository userRepository;
-    private User thisUser;
 
 
 
@@ -67,13 +66,11 @@ public class ShopsServiceImpl implements ShopsService {
 
     @Override
     public ShopDto createShop(NewShop newShop) {
-        initThisUser();
+        User thisUser = initThisUser();
 
         if (shopsRepository.countShopsByOwnerId(thisUser.getId()) >= 1) {
             throw new NotCreateSecondShop("Вы не можете иметь больше одного магазина");
         }
-
-        thisUser.setRole(Role.ROLE_SELLER);
 
 //TODO: чтобы создание магазина отдавало дтошку, а не основного юзера
 //        UserDto ownerDto = from(user);
@@ -86,13 +83,12 @@ public class ShopsServiceImpl implements ShopsService {
                 .build();
 
         shopsRepository.save(shop);
-
         return from(shop);
     }
 
     @Override
     public ShopDto updateShop(Long id, UpdateShop updateShop) {
-        checkOwnerShop(id);
+        checkOwnerShop(id, initThisUser());
 
         Shop shopForUpdate = getShopOrThrow(id);
 
@@ -108,7 +104,7 @@ public class ShopsServiceImpl implements ShopsService {
 
     @Override
     public void deleteShop(Long id) {
-        checkOwnerShop(id);
+        checkOwnerShop(id, initThisUser());
 
         shopsRepository.deleteById(id);
     }
@@ -134,15 +130,14 @@ public class ShopsServiceImpl implements ShopsService {
         return shopsRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Магазин с идентификатором <" + id + "> не найден"));
     }
-    private void checkOwnerShop(Long shopId) {
-        initThisUser();
+    private void checkOwnerShop(Long shopId, User thisUser) {
         if (!Objects.equals(thisUser.getId(), shopId)) {
             throw new NotAllowedException("Вы не являетесь владельцем данного магазина.");
         }
     }
-    private void initThisUser() {
+    private User initThisUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        thisUser = userRepository.getByEmail(authentication.getName()).orElseThrow(() -> new NotFoundException("Пользователь не найден"));
+        return userRepository.getByEmail(authentication.getName()).orElseThrow(() -> new NotFoundException("Пользователь не найден"));
     }
 
 }
