@@ -1,5 +1,6 @@
 package ru.itis.master.party.dormdeals.services.impl;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
@@ -11,6 +12,7 @@ import ru.itis.master.party.dormdeals.dto.ShopDto.NewShop;
 import ru.itis.master.party.dormdeals.dto.ShopDto.ShopDto;
 import ru.itis.master.party.dormdeals.dto.ShopDto.ShopsPage;
 import ru.itis.master.party.dormdeals.dto.ShopDto.UpdateShop;
+import ru.itis.master.party.dormdeals.dto.UserDto.UserDto;
 import ru.itis.master.party.dormdeals.exceptions.NotCreateSecondShop;
 import ru.itis.master.party.dormdeals.exceptions.NotFoundException;
 import ru.itis.master.party.dormdeals.models.Product;
@@ -24,6 +26,7 @@ import ru.itis.master.party.dormdeals.services.ShopsService;
 import ru.itis.master.party.dormdeals.utils.OwnerChecker;
 
 import static ru.itis.master.party.dormdeals.dto.ShopDto.ShopDto.from;
+import static ru.itis.master.party.dormdeals.dto.UserDto.UserDto.from;
 
 @Service
 @RequiredArgsConstructor
@@ -64,13 +67,19 @@ public class ShopsServiceImpl implements ShopsService {
         }
 
 //TODO: чтобы создание магазина отдавало дтошку, а не основного юзера
-//        UserDto ownerDto = from(user);
+//        UserDto ownerDto = from(thisUser);
+
         Shop shop = Shop.builder()
                 .name(newShop.getName())
                 .description(newShop.getDescription())
                 .rating(newShop.getRating())
                 .placeSells(newShop.getPlaceSells())
-                .owner(thisUser)
+                .owner(User.builder()
+                        .id(thisUser.getId())
+                        .firstName(thisUser.getFirstName())
+                        .lastName(thisUser.getLastName())
+                        .dormitory(thisUser.getDormitory())
+                        .build())
                 .build();
 
         shopsRepository.save(shop);
@@ -94,8 +103,10 @@ public class ShopsServiceImpl implements ShopsService {
     }
 
     @Override
+    @Transactional
     public void deleteShop(Long id) {
         ownerChecker.checkOwnerShop(getShopOrThrow(id).getOwner().getId(), ownerChecker.initThisUser(userRepository));
+        productsRepository.deleteAllByShopId(id);
         shopsRepository.deleteById(id);
     }
 
