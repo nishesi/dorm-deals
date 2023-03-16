@@ -6,24 +6,19 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import ru.itis.master.party.dormdeals.dto.ProductDto.NewProduct;
 import ru.itis.master.party.dormdeals.dto.ProductDto.ProductDto;
 import ru.itis.master.party.dormdeals.dto.ProductDto.ProductsPage;
 import ru.itis.master.party.dormdeals.dto.ProductDto.UpdateProduct;
-import ru.itis.master.party.dormdeals.exceptions.NotAllowedException;
 import ru.itis.master.party.dormdeals.exceptions.NotFoundException;
 import ru.itis.master.party.dormdeals.models.Product;
 import ru.itis.master.party.dormdeals.models.Shop;
-import ru.itis.master.party.dormdeals.models.User;
 import ru.itis.master.party.dormdeals.repositories.ProductsRepository;
 import ru.itis.master.party.dormdeals.repositories.ShopsRepository;
 import ru.itis.master.party.dormdeals.repositories.UserRepository;
 import ru.itis.master.party.dormdeals.services.ProductService;
-
-import java.util.Objects;
+import ru.itis.master.party.dormdeals.utils.OwnerChecker;
 
 import static ru.itis.master.party.dormdeals.dto.ProductDto.ProductDto.from;
 
@@ -33,7 +28,7 @@ public class ProductServiceImpl implements ProductService {
     private final ProductsRepository productsRepository;
     private final ShopsRepository shopsRepository;
     private final UserRepository userRepository;
-    private User thisUser;
+    private final OwnerChecker ownerChecker;
 
     @Value("${default.page-size}")
     private int defaultPageSize;
@@ -51,8 +46,8 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public ProductDto addProduct(NewProduct newProduct) {
-        initThisUser();
-        Shop shop = shopsRepository.findShopByOwnerId(thisUser.getId()).orElseThrow(() -> new NotFoundException("Магазин не найден"));
+        Shop shop = shopsRepository.findShopByOwnerId(ownerChecker.initThisUser(userRepository).getId()).orElseThrow(
+                () -> new NotFoundException("Магазин не найден"));
 
         Product product = Product.builder()
                 .name(newProduct.getName())
@@ -79,7 +74,7 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public ProductDto updateProduct(Long productId, UpdateProduct updatedProduct) {
         Product productForUpdate = getProductOrThrow(productId);
-        checkOwnerShop(productForUpdate.getShop().getOwner().getId());
+        ownerChecker.checkOwnerShop(productForUpdate.getShop().getOwner().getId(), ownerChecker.initThisUser(userRepository));
 
         productForUpdate.setName(updatedProduct.getName());
         productForUpdate.setDescription(updatedProduct.getDescription());
@@ -93,10 +88,10 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public void deleteProduct(Long productId) {
-        initThisUser();
         Product productForDelete = getProductOrThrow(productId);
 
-        checkOwnerShop(productForDelete.getShop().getOwner().getId());
+        ownerChecker.checkOwnerShop(productForDelete.getShop().getOwner().getId(), ownerChecker.initThisUser(userRepository));
+
 
         productForDelete.setState(Product.State.DELETED);
         productsRepository.save(productForDelete);
@@ -116,7 +111,8 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public void returnInSell(Long productId) {
         Product productForReturn = getProductOrThrow(productId);
-        checkOwnerShop(productForReturn.getShop().getOwner().getId());
+
+        ownerChecker.checkOwnerShop(productForReturn.getShop().getOwner().getId(), ownerChecker.initThisUser(userRepository));
 
         productForReturn.setState(Product.State.ACTIVE);
         productsRepository.save(productForReturn);
@@ -126,20 +122,6 @@ public class ProductServiceImpl implements ProductService {
     private Product getProductOrThrow(Long productId) {
         return productsRepository.findById(productId)
                 .orElseThrow(() -> new NotFoundException("Товар с идентификатором <" + productId + "> не найден"));
-    }
-
-
-    //TODO: вынести эти два метода в отдельный класс
-    private void checkOwnerShop(Long ownerShopId) {
-        initThisUser();
-
-        if (!Objects.equals(thisUser.getId(), ownerShopId)) {
-            throw new NotAllowedException("Вы не являетесь владельцем данного магазина.");
-        }
-    }
-    private void initThisUser() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        thisUser = userRepository.getByEmail(authentication.getName()).orElseThrow(() -> new NotFoundException("Пользователь не найден"));
     }
 
 }
