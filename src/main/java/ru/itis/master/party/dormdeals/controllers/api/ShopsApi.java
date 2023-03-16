@@ -45,8 +45,7 @@ public interface ShopsApi {
             )
     })
     @PostMapping
-    ResponseEntity<ShopDto> createShop(@RequestBody NewShop newShop, @Parameter(description = "Идентификатор владельца магазина")
-    @RequestParam("ownerId") Long ownerId);
+    ResponseEntity<ShopDto> createShop(@RequestBody NewShop newShop);
 
     @Operation(summary = "Получение магазина")
     @ApiResponses(value = {

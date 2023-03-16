@@ -30,9 +30,9 @@ public class ProductController implements ProductApi {
     }
 
     @Override
-    public ResponseEntity<ProductDto> addProduct(NewProduct newProduct, Long shopId) {
+    public ResponseEntity<ProductDto> addProduct(NewProduct newProduct) {
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(productService.addProduct(newProduct, shopId));
+                .body(productService.addProduct(newProduct));
     }
 
     @Override

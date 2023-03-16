@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import ru.itis.master.party.dormdeals.dto.UserDto.UserDto;
 
 
 @Entity

@@ -24,9 +24,9 @@ public class ShopsController implements ShopsApi {
     }
 
     @Override
-    public ResponseEntity<ShopDto> createShop(NewShop newShop, Long ownerId) {
+    public ResponseEntity<ShopDto> createShop(NewShop newShop) {
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(shopsService.createShop(newShop, ownerId));
+                .body(shopsService.createShop(newShop));
     }
 
     @Override

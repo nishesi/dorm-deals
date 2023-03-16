@@ -55,8 +55,8 @@ public interface ProductApi {
                     content =
                     @Content(mediaType = "application/json", schema = @Schema(implementation = ProductDto.class)))
     })
-    @PostMapping("/{shop-id}")
-    ResponseEntity<ProductDto> addProduct(@Parameter(description = "Данные нового товара") @RequestBody @Valid NewProduct newProduct, @Parameter(description = "Идентификатор магазина") @PathVariable("shop-id") Long shopId);
+    @PostMapping
+    ResponseEntity<ProductDto> addProduct(@Parameter(description = "Данные нового товара") @RequestBody @Valid NewProduct newProduct);
 
 
     @Operation(summary = "Получение товара")

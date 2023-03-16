@@ -31,7 +31,6 @@ public class UserServiceImpl implements UserService {
                 .dormitory(userDto.getDormitory())
                 .state(User.State.ACTIVE)
                 .role(Role.ROLE_USER)
-                .isSeller(false)
                 .build());
         return UserDto.from(returnedUser);
     }

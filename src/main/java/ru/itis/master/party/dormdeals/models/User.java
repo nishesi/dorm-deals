@@ -34,7 +34,6 @@ public class User {
     private String lastName;
     private String telephone;
     private String dormitory;
-    private Boolean isSeller;
     @Enumerated(EnumType.STRING)
     private State state;
     @Enumerated(EnumType.STRING)
