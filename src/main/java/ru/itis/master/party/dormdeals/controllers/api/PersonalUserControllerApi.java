@@ -10,9 +10,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.itis.master.party.dormdeals.dto.ExceptionDto;
-//import ru.itis.master.party.dormdeals.dto.FavouritesDto;
 import ru.itis.master.party.dormdeals.dto.ProductDto.ProductDto;
-import ru.itis.master.party.dormdeals.dto.ProductDto.ProductsPage;
 
 @RequestMapping("/my")
 public interface PersonalUserControllerApi {
@@ -29,12 +27,12 @@ public interface PersonalUserControllerApi {
     @PutMapping("/favourites/{product-id}")
     ResponseEntity<?> addProduct(@Parameter(name = "Идентификатор товара") @PathVariable("product-id") Long productId);
 
-//    @ApiResponses(value = {
-//            @ApiResponse(responseCode = "200", description = "Избранное",
-//                    content = {
-//                            @Content(mediaType = "application/json", schema = @Schema(implementation = FavouritesDto.class))
-//                    })
-//    })
-//    @GetMapping("/favourites")
-//    ResponseEntity<FavouritesDto> getFavourites();
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Избранное",
+                    content = {
+                            @Content(mediaType = "application/json", schema = @Schema(implementation = ProductDto.class))
+                    })
+    })
+    @GetMapping("/favourites")
+    ResponseEntity<ProductDto> getFavourites();
 }

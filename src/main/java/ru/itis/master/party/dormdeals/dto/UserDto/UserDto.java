@@ -17,7 +17,7 @@ public class UserDto {
     @Schema(example = "email@gmail.com")
     @Email
     private String email;
-    @Schema( example = "1234")
+    @Schema(example = "1234")
     private String password;
     @Schema(example = "Bob")
     private String firstName;
