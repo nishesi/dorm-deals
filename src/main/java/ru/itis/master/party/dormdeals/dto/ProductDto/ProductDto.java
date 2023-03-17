@@ -1,9 +1,6 @@
 package ru.itis.master.party.dormdeals.dto.ProductDto;
 
-
 import io.swagger.v3.oas.annotations.media.Schema;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -32,9 +29,9 @@ public class ProductDto {
     @Schema(description = "категория товара", example = "продукты/напитки")
     private String category;
     @Schema(description = "цена товара", example = "100")
-    private Integer price;
+    private float price;
     @Schema(description = "количество на складе", example = "13")
-    private Integer countInStorage;
+    private short countInStorage;
     private UUID uuidOfPhotos;
 
     public static ProductDto from(Product product) {

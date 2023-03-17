@@ -16,7 +16,7 @@ import lombok.NoArgsConstructor;
 public class UpdateProduct {
     private String name;
     private String description;
-    private Integer price;
-    private Integer countInStorage;
+    private Float price;
+    private Short countInStorage;
     //    private UUID uuid_photos;
 }

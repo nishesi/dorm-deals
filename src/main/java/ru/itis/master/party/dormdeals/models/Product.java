@@ -1,14 +1,10 @@
 package ru.itis.master.party.dormdeals.models;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Pattern;
-import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.checkerframework.checker.regex.qual.Regex;
 
 import java.util.UUID;
 
@@ -28,14 +24,19 @@ public class Product {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @Column(length = 100, nullable = false)
     private String name;
 
+    @Column(length = 1000)
     private String description;
     private String category;
-    private Integer price;
+    @Column(columnDefinition = "numeric(7, 2)", nullable = false)
+    private float price;
 
     //TODO: реализовать проверку на ноль после заказа, если ноль то переводить состояние в "NOT_AVAILABLE"
-    private Integer countInStorage;
+    @Column(columnDefinition = "smallint check (count_in_storage >= 0)", nullable = false)
+    private short countInStorage;
     private UUID uuidOfPhotos;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "shop_id")

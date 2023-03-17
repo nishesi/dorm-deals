@@ -24,7 +24,7 @@ public class NewProduct {
     @Size(min=1, max = 1000, message = "Слишком длинное или короткое описание")
     private String description;
     private String category;
-    private Integer price;
+    private Float price;
 
     private Integer countInStorage;
     private UUID uuidOfPhotos;
