@@ -65,7 +65,8 @@ public class SecurityConfig {
                 )
                 .logout(logout -> logout
                         .logoutUrl("/logout")
-                        .addLogoutHandler(tokenLogoutHandler));
+                        .addLogoutHandler(tokenLogoutHandler))
+                .headers().xssProtection().and().contentSecurityPolicy("script-src 'self'");
 
         return http.build();
     }
