@@ -10,7 +10,7 @@ import org.checkerframework.common.aliasing.qual.Unique;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-//@Table(uniqueConstraints = @UniqueConstraint(columnNames = {"user_id", "product_id"}))
+@Table(uniqueConstraints = @UniqueConstraint(columnNames = {"user_id", "product_id"}))
 public class Favourites {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
