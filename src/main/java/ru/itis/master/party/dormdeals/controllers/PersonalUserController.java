@@ -10,6 +10,8 @@ import ru.itis.master.party.dormdeals.controllers.api.PersonalUserControllerApi;
 import ru.itis.master.party.dormdeals.dto.ProductDto.ProductDto;
 import ru.itis.master.party.dormdeals.services.FavouriteService;
 
+import java.util.List;
+
 
 @RestController
 @RequiredArgsConstructor
@@ -19,11 +21,17 @@ public class PersonalUserController implements PersonalUserControllerApi {
     @Override
     public ResponseEntity<?> addProduct(Long productId) {
         favouriteService.addFavourite(productId);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.accepted().build();
     }
 
     @Override
-    public ResponseEntity<ProductDto> getFavourites() {
+    public ResponseEntity<List<ProductDto>> getFavourites() {
         return ResponseEntity.ok(favouriteService.getFavourites());
+    }
+
+    @Override
+    public ResponseEntity<?> deleteProduct(Long productId) {
+        favouriteService.deleteFavourite(productId);
+        return ResponseEntity.accepted().build();
     }
 }

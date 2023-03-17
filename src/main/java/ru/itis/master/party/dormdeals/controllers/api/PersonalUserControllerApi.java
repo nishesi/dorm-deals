@@ -12,6 +12,8 @@ import org.springframework.web.bind.annotation.*;
 import ru.itis.master.party.dormdeals.dto.ExceptionDto;
 import ru.itis.master.party.dormdeals.dto.ProductDto.ProductDto;
 
+import java.util.List;
+
 @RequestMapping("/my")
 public interface PersonalUserControllerApi {
     @Operation(summary = "Добавление товара в избранное")
@@ -34,5 +36,19 @@ public interface PersonalUserControllerApi {
                     })
     })
     @GetMapping("/favourites")
-    ResponseEntity<ProductDto> getFavourites();
+    ResponseEntity<List<ProductDto>> getFavourites();
+
+    @Operation(summary = "Удаление товара из избранное")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "202", description = "Товар удален из избранного"),
+            @ApiResponse(responseCode = "404", description = "Сведения об ошибке",
+                    content = {
+                            @Content(mediaType = "application/json",
+                                    schema = @Schema(implementation = ExceptionDto.class))
+                    }
+            )
+    })
+
+    @DeleteMapping("/favourites/{product-id}")
+    ResponseEntity<?> deleteProduct(@Parameter(name = "Идентификатор товара") @PathVariable("product-id") Long productId);
 }

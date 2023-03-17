@@ -1,11 +1,14 @@
 package ru.itis.master.party.dormdeals.aspects;
 
+import jakarta.persistence.ElementCollection;
 import org.aspectj.weaver.ast.Not;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import ru.itis.master.party.dormdeals.dto.ExceptionDto;
+import ru.itis.master.party.dormdeals.exceptions.MostAddedProductsInFavouriteException;
 import ru.itis.master.party.dormdeals.exceptions.NotAllowedException;
 import ru.itis.master.party.dormdeals.exceptions.NotCreateSecondShop;
 import ru.itis.master.party.dormdeals.exceptions.NotFoundException;
@@ -40,8 +43,29 @@ public class RestExceptionHandler {
         );
     }
 
+
     @ExceptionHandler(NotCreateSecondShop.class)
     public ResponseEntity<ExceptionDto> handle(NotCreateSecondShop ex) {
+        return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(
+                ExceptionDto.builder()
+                        .message(ex.getMessage())
+                        .statusCode(HttpStatus.NOT_ACCEPTABLE.value())
+                        .build()
+        );
+    }
+
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public ResponseEntity<ExceptionDto> handle(DataIntegrityViolationException ex) {
+        return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(
+                ExceptionDto.builder()
+                        .message(ex.getMessage())
+                        .statusCode(HttpStatus.NOT_ACCEPTABLE.value())
+                        .build()
+        );
+    }
+
+    @ExceptionHandler(MostAddedProductsInFavouriteException.class)
+    public ResponseEntity<ExceptionDto> handle(MostAddedProductsInFavouriteException ex) {
         return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(
                 ExceptionDto.builder()
                         .message(ex.getMessage())
