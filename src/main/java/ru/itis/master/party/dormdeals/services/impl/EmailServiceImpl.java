@@ -12,16 +12,15 @@ import ru.itis.master.party.dormdeals.services.EmailService;
 public class EmailServiceImpl implements EmailService {
     private final UserRepository userRepository;
     @Override
-    public void confirmAccount(String email, String code) {
-        User user = userRepository.getByEmail(email).orElseThrow();
+    public void confirmAccount(String hashForConfirm) {
+        User user = userRepository.getByHashForConfirm(hashForConfirm).orElseThrow();
 
         if (user.getState() != User.State.NOT_CONFIRMED)
-            throw new NotAllowedException("account " + email + " can't be confirmed");
-        if (!user.getConfirmCode().equals(code))
-            throw new NotAllowedException("code " + code + " not valid");
+            throw new NotAllowedException("account " + user.getEmail() + " can't be confirmed");
+        if (!user.getHashForConfirm().equals(hashForConfirm))
+            throw new NotAllowedException("code " + hashForConfirm + " not valid");
 
         user.setState(User.State.ACTIVE);
-        user.setConfirmCode(null);
 
         userRepository.save(user);
     }

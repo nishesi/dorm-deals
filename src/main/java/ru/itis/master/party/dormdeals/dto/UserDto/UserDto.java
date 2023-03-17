@@ -1,6 +1,7 @@
 package ru.itis.master.party.dormdeals.dto.UserDto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.Email;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -14,6 +15,7 @@ import ru.itis.master.party.dormdeals.models.User;
 @Schema(description = "user")
 public class UserDto {
     @Schema(example = "email@gmail.com")
+    @Email
     private String email;
     @Schema( example = "1234")
     private String password;

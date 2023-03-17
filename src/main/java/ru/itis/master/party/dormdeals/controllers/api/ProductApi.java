@@ -45,7 +45,6 @@ public interface ProductApi {
                     })
     })
     @GetMapping()
-
     ResponseEntity<ProductsPage> getAllProducts(@Parameter(description = "Номер страницы") @RequestParam("page") int page);
 
 

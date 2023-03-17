@@ -2,6 +2,7 @@ package ru.itis.master.party.dormdeals.services.impl;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.codec.digest.DigestUtils;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import ru.itis.master.party.dormdeals.dto.UserDto.UserDto;
@@ -38,13 +39,12 @@ public class UserServiceImpl implements UserService {
                 .telephone(userDto.getTelephone())
                 .dormitory(userDto.getDormitory())
                 .state(User.State.NOT_CONFIRMED)
-                .confirmCode(UUID.randomUUID().toString())
+                .hashForConfirm(DigestUtils.sha256Hex(userDto.getEmail() + UUID.randomUUID()))
                 .role(Role.ROLE_USER)
                 .build());
 
-        // TODO  генерация ссылки
-        String confirmationUrl = "http://localhost/app/email/confirm_account/" +
-                returnedUser.getEmail() + "/" + returnedUser.getConfirmCode();
+        String confirmationUrl = "http://localhost/email/confirm?accept=" +
+                returnedUser.getHashForConfirm();
 
         emailUtil.sendMail(userDto.getEmail(),
                 "confirm",
