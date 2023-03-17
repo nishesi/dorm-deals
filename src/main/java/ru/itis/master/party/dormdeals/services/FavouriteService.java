@@ -6,6 +6,7 @@ import java.util.List;
 
 public interface FavouriteService {
     void addFavourite(Long productId);
-    ProductDto getFavourites();
+    List<ProductDto> getFavourites();
 
+    void deleteFavourite(Long productId);
 }

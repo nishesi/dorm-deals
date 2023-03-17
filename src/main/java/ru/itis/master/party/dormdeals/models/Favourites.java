@@ -16,10 +16,10 @@ public class Favourites {
     //TODO: навесить нужны аннотации, чтобы создать связи
     @ManyToOne
     @JoinColumn(name = "user_id")
-    private User userId;
+    private User user;
     @ManyToOne
     @JoinColumn(name = "product_id")
-    private Product productId;
+    private Product product;
     private Integer count;
 
 }
