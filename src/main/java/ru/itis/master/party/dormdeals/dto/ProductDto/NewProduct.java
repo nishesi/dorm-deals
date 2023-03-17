@@ -26,6 +26,6 @@ public class NewProduct {
     private String category;
     private Float price;
 
-    private Integer countInStorage;
+    private Short countInStorage;
     private UUID uuidOfPhotos;
 }

@@ -38,7 +38,7 @@ public class User {
     private String telephone;
     private String dormitory;
     @Column(columnDefinition = "char(64)")
-    private String confirmCode;
+    private String hashForConfirm;
     @Enumerated(EnumType.STRING)
     private State state;
     @Enumerated(EnumType.STRING)
