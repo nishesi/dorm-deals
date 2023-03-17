@@ -9,4 +9,5 @@ import java.util.List;
 public interface FavouriteRepository extends JpaRepository<Favourites, Long> {
     List<Favourites> findByUserId(Long id);
     void deleteByUserIdAndProductId(Long userId, Long productId);
+    Integer countFavouritesByUserIdAndProductId(Long userId, Long productId);
 }

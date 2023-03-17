@@ -4,6 +4,7 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.itis.master.party.dormdeals.dto.ProductDto.ProductDto;
+import ru.itis.master.party.dormdeals.exceptions.MostAddedProductsInFavouriteException;
 import ru.itis.master.party.dormdeals.models.Favourites;
 import ru.itis.master.party.dormdeals.models.Product;
 import ru.itis.master.party.dormdeals.models.User;
@@ -27,18 +28,23 @@ public class FavouriteServiceImpl implements FavouriteService {
 
     @Override
     public void addFavourite(Long productId) {
+        User user = ownerChecker.initThisUser(userRepository);
+
+        if (favouriteRepository.countFavouritesByUserIdAndProductId(user.getId(), productId) >= 25) {
+            throw new MostAddedProductsInFavouriteException("Максимум 25 товаров в избранном");
+        }
 
         favouriteRepository.save(Favourites.builder()
-                .user(ownerChecker.initThisUser(userRepository))
+                .user(user)
                 .product(productsRepository.findById(productId).orElseThrow())
-                .count(1)
                 .build());
     }
 
     @Override
     public List<ProductDto> getFavourites() {
         User user = ownerChecker.initThisUser(userRepository);
-        List<Product> products = favouriteRepository.findByUserId(user.getId()).stream().map(Favourites::getProduct).collect(Collectors.toList());
+        List<Product> products = favouriteRepository.findByUserId(user.getId()).stream()
+                .map(Favourites::getProduct).collect(Collectors.toList());
         return from(products);
     }
 
