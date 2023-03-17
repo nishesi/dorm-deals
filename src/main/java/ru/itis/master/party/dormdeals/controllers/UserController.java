@@ -22,7 +22,7 @@ public class UserController implements UserApi {
 
     @Override
     public ResponseEntity<?> addUser(UserDto userDto) {
-        // TODO переписать документацию метода (правильно записать возврат json с одинм параметром message)
+        //TODO переписать документацию метода (правильно записать возврат json с одинм параметром message)
         return ResponseEntity.accepted().body(Map.of("message",userService.register(userDto)));
     }
 

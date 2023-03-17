@@ -7,6 +7,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import io.swagger.v3.oas.annotations.tags.Tags;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -48,7 +49,7 @@ public interface UserApi {
                             @Content(mediaType = "application/json", schema = @Schema(implementation = ExceptionDto.class))
                     })})
     @PostMapping
-    ResponseEntity<?> addUser(@RequestBody UserDto userDto);
+    ResponseEntity<?> addUser(@RequestBody @Valid UserDto userDto);
 
     @Operation(summary = "обновление информации о пользователе")
     @ApiResponses(value = {
