@@ -33,7 +33,7 @@ public class User {
     private String lastName;
     private String telephone;
     private String dormitory;
-    private String confirmCode;
+    private String hashForConfirm;
     @Enumerated(EnumType.STRING)
     private State state;
     @Enumerated(EnumType.STRING)

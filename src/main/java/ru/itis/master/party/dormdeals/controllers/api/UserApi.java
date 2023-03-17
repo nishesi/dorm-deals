@@ -24,7 +24,6 @@ import ru.itis.master.party.dormdeals.dto.UserDto.UserDto;
 @RequestMapping("/user")
 @Schema(description = "Работа с пользователем")
 public interface UserApi {
-
     @Operation(summary = "Получение информации о пользователе")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "user",

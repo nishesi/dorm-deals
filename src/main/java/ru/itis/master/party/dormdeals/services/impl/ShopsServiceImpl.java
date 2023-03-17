@@ -12,7 +12,6 @@ import ru.itis.master.party.dormdeals.dto.ShopDto.NewShop;
 import ru.itis.master.party.dormdeals.dto.ShopDto.ShopDto;
 import ru.itis.master.party.dormdeals.dto.ShopDto.ShopsPage;
 import ru.itis.master.party.dormdeals.dto.ShopDto.UpdateShop;
-import ru.itis.master.party.dormdeals.dto.UserDto.UserDto;
 import ru.itis.master.party.dormdeals.exceptions.NotCreateSecondShop;
 import ru.itis.master.party.dormdeals.exceptions.NotFoundException;
 import ru.itis.master.party.dormdeals.models.Product;
@@ -26,7 +25,6 @@ import ru.itis.master.party.dormdeals.services.ShopsService;
 import ru.itis.master.party.dormdeals.utils.OwnerChecker;
 
 import static ru.itis.master.party.dormdeals.dto.ShopDto.ShopDto.from;
-import static ru.itis.master.party.dormdeals.dto.UserDto.UserDto.from;
 
 @Service
 @RequiredArgsConstructor
@@ -65,9 +63,6 @@ public class ShopsServiceImpl implements ShopsService {
         if (shopsRepository.countShopsByOwnerId(thisUser.getId()) >= 1) {
             throw new NotCreateSecondShop("Вы не можете иметь больше одного магазина");
         }
-
-//TODO: чтобы создание магазина отдавало дтошку, а не основного юзера
-//        UserDto ownerDto = from(thisUser);
 
         Shop shop = Shop.builder()
                 .name(newShop.getName())

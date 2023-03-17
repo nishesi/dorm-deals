@@ -9,9 +9,14 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import ru.itis.master.party.dormdeals.exceptions.NotFoundException;
+import ru.itis.master.party.dormdeals.models.User;
+import ru.itis.master.party.dormdeals.repositories.UserRepository;
 import ru.itis.master.party.dormdeals.security.details.UserDetailsServiceImpl;
 import ru.itis.master.party.dormdeals.security.filters.TokenAuthenticationFilter;
 import ru.itis.master.party.dormdeals.security.filters.TokenAuthorizationFilter;
@@ -40,8 +45,9 @@ public class SecurityConfig {
 
                         // User
 
-                        .requestMatchers("/auth/token", "/email/confirm_account/**").permitAll()
+                        .requestMatchers("/auth/token", "/email/confirm/**").permitAll()
                         .requestMatchers(HttpMethod.POST, "/user").permitAll()
+                        .requestMatchers("/my/favourites/**").hasAnyRole("USER", "SELLER")
                         .requestMatchers("/user/**").hasRole("USER")
 
                         // business logic

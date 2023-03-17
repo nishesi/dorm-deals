@@ -1,22 +1,26 @@
 package ru.itis.master.party.dormdeals.controllers;
 
+import io.swagger.v3.oas.annotations.Parameter;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import ru.itis.master.party.dormdeals.services.EmailService;
+
+import java.net.URI;
 
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/email")
 public class EmailController {
     private final EmailService emailService;
-    @GetMapping("/confirm_account/{email}/{code}")
-    public ResponseEntity<?> confirm(@PathVariable("code") String code,
-                                     @PathVariable("email") String email) {
-        emailService.confirmAccount(email, code);
-        return ResponseEntity.accepted().build();
+    @GetMapping("/confirm")
+    public ResponseEntity<?> confirm(@RequestParam("accept") String hashForConfirm) {
+        emailService.confirmAccount(hashForConfirm);
+        URI location = URI.create("/");
+        HttpHeaders headers = new HttpHeaders();
+        headers.setLocation(location);
+        return new ResponseEntity<>(headers, HttpStatus.FOUND);
     }
 }
