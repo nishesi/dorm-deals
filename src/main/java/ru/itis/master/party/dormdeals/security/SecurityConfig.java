@@ -47,6 +47,7 @@ public class SecurityConfig {
 
                         .requestMatchers("/auth/token", "/email/confirm/**").permitAll()
                         .requestMatchers(HttpMethod.POST, "/user").permitAll()
+                        .requestMatchers("/my/favourites/**").hasAnyRole("USER", "SELLER")
                         .requestMatchers("/user/**").hasRole("USER")
 
                         // business logic

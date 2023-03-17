@@ -2,8 +2,13 @@ package ru.itis.master.party.dormdeals.models;
 
 
 import jakarta.persistence.*;
+import lombok.*;
 
 @Entity
+@Builder
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class Favourites {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
