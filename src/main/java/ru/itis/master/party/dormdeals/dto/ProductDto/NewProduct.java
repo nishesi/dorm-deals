@@ -26,8 +26,8 @@ public class NewProduct {
     private String category;
 //    @NotBlank(message = "Поле обязательно к заполнению")
 //    @Size(min=1, max = 300000, message = "Цена должна быть в диапазоне от 1 до 300000 рублей")
-    private Integer price;
+    private float price;
 
-    private Integer countInStorage;
+    private short countInStorage;
     private UUID uuidOfPhotos;
 }
