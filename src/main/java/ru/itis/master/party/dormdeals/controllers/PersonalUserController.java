@@ -6,6 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import ru.itis.master.party.dormdeals.controllers.api.PersonalUserControllerApi;
+//import ru.itis.master.party.dormdeals.dto.FavouritesDto;
 import ru.itis.master.party.dormdeals.services.FavouriteService;
 
 
@@ -19,4 +20,9 @@ public class PersonalUserController implements PersonalUserControllerApi {
         favouriteService.addFavourite(productId);
         return ResponseEntity.ok().build();
     }
+
+//    @Override
+//    public ResponseEntity<FavouritesDto> getFavourites() {
+//        return ResponseEntity.ok(favouriteService.getFavourites());
+//    }
 }

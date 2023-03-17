@@ -1,4 +1,4 @@
-package ru.itis.master.party.dormdeals.util;
+package ru.itis.master.party.dormdeals.utils;
 
 import freemarker.template.Configuration;
 import freemarker.template.Template;

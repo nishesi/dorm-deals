@@ -11,7 +11,7 @@ import ru.itis.master.party.dormdeals.models.Role;
 import ru.itis.master.party.dormdeals.models.User;
 import ru.itis.master.party.dormdeals.repositories.UserRepository;
 import ru.itis.master.party.dormdeals.services.UserService;
-import ru.itis.master.party.dormdeals.util.EmailUtil;
+import ru.itis.master.party.dormdeals.utils.EmailUtil;
 
 import java.util.Map;
 import java.util.UUID;
