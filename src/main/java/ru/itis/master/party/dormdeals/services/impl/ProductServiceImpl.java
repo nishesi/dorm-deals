@@ -19,7 +19,7 @@ import ru.itis.master.party.dormdeals.repositories.ShopsRepository;
 import ru.itis.master.party.dormdeals.repositories.UserRepository;
 import ru.itis.master.party.dormdeals.services.ProductService;
 import ru.itis.master.party.dormdeals.utils.OwnerChecker;
-import ru.itis.master.party.dormdeals.utils.getOrThrow.GetOrThrow;
+import ru.itis.master.party.dormdeals.utils.GetOrThrow;
 
 import static ru.itis.master.party.dormdeals.dto.ProductDto.ProductDto.from;
 

@@ -66,4 +66,7 @@ public interface PersonalUserControllerApi {
     @PutMapping("/cart/{product-id}")
     ResponseEntity<?> addCartProduct(@Parameter(name = "Индентификатор товара") @PathVariable("product-id") Long productId);
 
+
+//    @GetMapping("/cart")
+//    ResponseEntity<?> getCart();
 }

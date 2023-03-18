@@ -1,6 +1,5 @@
-package ru.itis.master.party.dormdeals.utils.getOrThrow;
+package ru.itis.master.party.dormdeals.utils;
 
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import ru.itis.master.party.dormdeals.exceptions.NotFoundException;
 import ru.itis.master.party.dormdeals.models.Product;

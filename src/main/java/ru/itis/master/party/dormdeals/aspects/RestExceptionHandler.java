@@ -8,10 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import ru.itis.master.party.dormdeals.dto.ExceptionDto;
-import ru.itis.master.party.dormdeals.exceptions.MostAddedProductsInFavouriteException;
-import ru.itis.master.party.dormdeals.exceptions.NotAllowedException;
-import ru.itis.master.party.dormdeals.exceptions.NotCreateSecondShop;
-import ru.itis.master.party.dormdeals.exceptions.NotFoundException;
+import ru.itis.master.party.dormdeals.exceptions.*;
 
 @RestControllerAdvice
 public class RestExceptionHandler {
@@ -66,6 +63,16 @@ public class RestExceptionHandler {
 
     @ExceptionHandler(MostAddedProductsInFavouriteException.class)
     public ResponseEntity<ExceptionDto> handle(MostAddedProductsInFavouriteException ex) {
+        return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(
+                ExceptionDto.builder()
+                        .message(ex.getMessage())
+                        .statusCode(HttpStatus.NOT_ACCEPTABLE.value())
+                        .build()
+        );
+    }
+
+    @ExceptionHandler(NotEnoughProductException.class)
+    public ResponseEntity<ExceptionDto> handle(NotEnoughProductException ex) {
         return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(
                 ExceptionDto.builder()
                         .message(ex.getMessage())

@@ -13,7 +13,6 @@ import ru.itis.master.party.dormdeals.dto.ShopDto.ShopDto;
 import ru.itis.master.party.dormdeals.dto.ShopDto.ShopsPage;
 import ru.itis.master.party.dormdeals.dto.ShopDto.UpdateShop;
 import ru.itis.master.party.dormdeals.exceptions.NotCreateSecondShop;
-import ru.itis.master.party.dormdeals.exceptions.NotFoundException;
 import ru.itis.master.party.dormdeals.models.Product;
 import ru.itis.master.party.dormdeals.models.Shop;
 import ru.itis.master.party.dormdeals.dto.ShopWithProducts;
@@ -23,7 +22,7 @@ import ru.itis.master.party.dormdeals.repositories.ShopsRepository;
 import ru.itis.master.party.dormdeals.repositories.UserRepository;
 import ru.itis.master.party.dormdeals.services.ShopsService;
 import ru.itis.master.party.dormdeals.utils.OwnerChecker;
-import ru.itis.master.party.dormdeals.utils.getOrThrow.GetOrThrow;
+import ru.itis.master.party.dormdeals.utils.GetOrThrow;
 
 import static ru.itis.master.party.dormdeals.dto.ShopDto.ShopDto.from;
 
