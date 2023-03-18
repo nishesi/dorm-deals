@@ -70,8 +70,15 @@ public class PersonalUserController implements PersonalUserControllerApi {
         return ResponseEntity.accepted().build();
     }
 
+    @Override
+    public ResponseEntity<?> setCountProductInCart(Long productId, Integer count) {
+        cartService.setCountProduct(productId, count);
+        return ResponseEntity.accepted().build();
+    }
+
     private Boolean checkAuthentication() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         return authentication != null && authentication.isAuthenticated();
     }
+
 }

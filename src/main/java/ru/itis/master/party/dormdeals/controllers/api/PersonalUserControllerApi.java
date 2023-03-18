@@ -93,4 +93,19 @@ public interface PersonalUserControllerApi {
     })
     @DeleteMapping("/cart/{product-id}")
     ResponseEntity<?> deleteCartProduct(@Parameter(name = "Индентификатор товара") @PathVariable("product-id") Long productId);
+
+
+    @Operation(summary = "Обновление количества товара в корзине")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "202", description = "Количество обновлено"),
+            @ApiResponse(responseCode = "404", description = "Сведения об ошибке",
+                    content = {
+                            @Content(mediaType = "application/json",
+                                    schema = @Schema(implementation = ExceptionDto.class))
+                    }
+            )
+    })
+    @PutMapping("/cart/{product-id}/{count}")
+    ResponseEntity<?> setCountProductInCart(@Parameter(name = "Индентификатор товара") @PathVariable("product-id") Long productId,
+                                            @Parameter(description = "Количество товара в корзине") @PathVariable("count") Integer count);
 }

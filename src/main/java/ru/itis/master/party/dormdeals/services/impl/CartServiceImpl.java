@@ -105,4 +105,22 @@ public class CartServiceImpl implements CartService {
         User user = ownerChecker.initThisUser(userRepository);
         cartRepository.deleteByUserIdAndProductId(user.getId(), productId);
     }
+
+    @Transactional
+    @Override
+    public void setCountProduct(Long productId, Integer count) {
+        User user = ownerChecker.initThisUser(userRepository);
+        Cart cart = cartRepository.findByUserIdAndProductId(user.getId(), productId);
+        Product product = getOrThrow.getProductOrThrow(productId, productsRepository);
+
+        if (count > product.getCountInStorage()) {
+            throw new NotEnoughProductException("На складе осталось только " + product.getCountInStorage() + " позиций");
+        }
+        else if (count == 0) {
+            deleteCart(productId);
+        } else {
+            cart.setCount(count);
+            cartRepository.save(cart);
+        }
+    }
 }

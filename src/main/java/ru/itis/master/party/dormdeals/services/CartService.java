@@ -8,4 +8,6 @@ public interface CartService {
     CartDto getCart();
 
     void deleteCart(Long productId);
+
+    void setCountProduct(Long productId, Integer count);
 }
