@@ -1,8 +1,11 @@
 package ru.itis.master.party.dormdeals.services.impl;
 
 
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.itis.master.party.dormdeals.dto.CartDto;
 import ru.itis.master.party.dormdeals.dto.ProductDto.ProductDtoCart;
@@ -17,8 +20,7 @@ import ru.itis.master.party.dormdeals.services.CartService;
 import ru.itis.master.party.dormdeals.utils.GetOrThrow;
 import ru.itis.master.party.dormdeals.utils.OwnerChecker;
 
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static ru.itis.master.party.dormdeals.dto.ProductDto.ProductDtoCart.from;
@@ -32,11 +34,15 @@ public class CartServiceImpl implements CartService {
     private final CartRepository cartRepository;
     private final ProductsRepository productsRepository;
 
+    @Autowired
+    private HttpServletRequest request;
+
     @Override
     public void addCart(Long productId) {
         User user = ownerChecker.initThisUser(userRepository);
         Product product = getOrThrow.getProductOrThrow(productId, productsRepository);
         Cart cart = cartRepository.findByUserIdAndProductId(user.getId(), productId);
+
 
         if (product.getState().equals(Product.State.ACTIVE)) {
             if (cart != null && product.getCountInStorage() == cart.getCount()) {
@@ -59,6 +65,20 @@ public class CartServiceImpl implements CartService {
 
     @Override
     public CartDto getCart() {
+        Cookie[] cookies = request.getCookies();
+        List<Long> productIdFromCookie = new ArrayList<>();
+
+        if (cookies != null) {
+            for (Cookie cookie : cookies) {
+                if (cookie.getName().equals("cart")) {
+                    productIdFromCookie = Arrays.stream(cookie.getValue().split("&")).map(Long::parseLong).collect(Collectors.toList());
+                }
+            }
+            productIdFromCookie.forEach(this::addCart);
+        }
+
+
+
         User user = ownerChecker.initThisUser(userRepository);
         List<Cart> cart = cartRepository.findByUserId(user.getId());
         List<ProductDtoCart> productDto = from(cart);

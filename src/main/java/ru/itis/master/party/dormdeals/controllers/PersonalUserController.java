@@ -5,6 +5,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import ru.itis.master.party.dormdeals.controllers.api.PersonalUserControllerApi;
@@ -14,6 +16,7 @@ import ru.itis.master.party.dormdeals.dto.ProductDto.ProductDto;
 import ru.itis.master.party.dormdeals.services.CartService;
 import ru.itis.master.party.dormdeals.services.FavouriteService;
 
+import java.security.Principal;
 import java.util.List;
 
 
@@ -42,18 +45,33 @@ public class PersonalUserController implements PersonalUserControllerApi {
 
     @Override
     public ResponseEntity<?> addCartProduct(Long productId) {
-        cartService.addCart(productId);
-        return ResponseEntity.status(HttpStatus.CREATED).build();
+        if (checkAuthentication()) {
+            cartService.addCart(productId);
+            return ResponseEntity.status(HttpStatus.CREATED).build();
+            //TODO сделать что то с добавление товара в корзину для неавторизованного юзера
+        } else {
+            return ResponseEntity.ok().build();
+        }
     }
 
     @Override
     public ResponseEntity<CartDto> getCart() {
-        return ResponseEntity.ok(cartService.getCart());
+        if (checkAuthentication()) {
+            return ResponseEntity.ok(cartService.getCart());
+        //TODO сделать что то с получение корзины для неавторизованного юзера
+        } else {
+            return ResponseEntity.ok().build();
+        }
     }
 
     @Override
     public ResponseEntity<?> deleteCartProduct(Long productId) {
         cartService.deleteCart(productId);
         return ResponseEntity.accepted().build();
+    }
+
+    private Boolean checkAuthentication() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        return authentication != null && authentication.isAuthenticated();
     }
 }
