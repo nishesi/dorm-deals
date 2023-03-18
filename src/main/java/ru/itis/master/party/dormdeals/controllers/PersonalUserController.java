@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import ru.itis.master.party.dormdeals.controllers.api.PersonalUserControllerApi;
 //import ru.itis.master.party.dormdeals.dto.FavouritesDto;
+import ru.itis.master.party.dormdeals.dto.CartDto;
 import ru.itis.master.party.dormdeals.dto.ProductDto.ProductDto;
 import ru.itis.master.party.dormdeals.services.CartService;
 import ru.itis.master.party.dormdeals.services.FavouriteService;
@@ -43,5 +44,10 @@ public class PersonalUserController implements PersonalUserControllerApi {
     public ResponseEntity<?> addCartProduct(Long productId) {
         cartService.addCart(productId);
         return ResponseEntity.status(HttpStatus.CREATED).build();
+    }
+
+    @Override
+    public ResponseEntity<CartDto> getCart() {
+        return ResponseEntity.ok(cartService.getCart());
     }
 }

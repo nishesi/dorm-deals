@@ -9,6 +9,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import ru.itis.master.party.dormdeals.dto.CartDto;
 import ru.itis.master.party.dormdeals.dto.ExceptionDto;
 import ru.itis.master.party.dormdeals.dto.ProductDto.ProductDto;
 
@@ -67,6 +68,9 @@ public interface PersonalUserControllerApi {
     ResponseEntity<?> addCartProduct(@Parameter(name = "Индентификатор товара") @PathVariable("product-id") Long productId);
 
 
-//    @GetMapping("/cart")
-//    ResponseEntity<?> getCart();
+    @GetMapping("/cart")
+    ResponseEntity<CartDto> getCart();
+
+//    @PutMapping("/cart/{product-id}/inactive")
+//    ResponseEntity<?> inactiveProduct(@Parameter(name = "Индентификатор товара") @PathVariable("product-id") Long productId);
 }
