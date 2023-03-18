@@ -4,11 +4,15 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.itis.master.party.dormdeals.dto.OrderDto.NewOrder;
 import ru.itis.master.party.dormdeals.dto.OrderDto.OrderDto;
+import ru.itis.master.party.dormdeals.dto.OrderDto.OrderWithProducts;
 import ru.itis.master.party.dormdeals.dto.ProductDto.ProductDtoCart;
 import ru.itis.master.party.dormdeals.models.Order;
 import ru.itis.master.party.dormdeals.models.OrderProduct;
 import ru.itis.master.party.dormdeals.models.Product;
-import ru.itis.master.party.dormdeals.repositories.*;
+import ru.itis.master.party.dormdeals.repositories.OrderProductsRepository;
+import ru.itis.master.party.dormdeals.repositories.OrdersRepository;
+import ru.itis.master.party.dormdeals.repositories.ProductsRepository;
+import ru.itis.master.party.dormdeals.repositories.UserRepository;
 import ru.itis.master.party.dormdeals.services.OrdersService;
 import ru.itis.master.party.dormdeals.utils.GetOrThrow;
 import ru.itis.master.party.dormdeals.utils.OwnerChecker;
@@ -107,6 +111,18 @@ public class OrdersServiceImpl implements OrdersService {
         }
 
         return (List<OrderDto>) orderMap.values();
+    }
+
+    @Override
+    public OrderWithProducts getAllProductsThisOrder(Long orderId) {
+        Order order = getOrThrow.getOrderOrThrow(orderId, ordersRepository);
+
+        List<OrderProduct> orderProductList = orderProductsRepository.findAllByOrderId(orderId);
+
+        return OrderWithProducts.builder()
+                .order(order)
+                .orderProducts(orderProductList)
+                .build();
     }
 
     private void updateOrderPrice(Long id, float price) {

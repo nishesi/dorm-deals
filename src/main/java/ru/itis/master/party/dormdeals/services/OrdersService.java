@@ -2,6 +2,7 @@ package ru.itis.master.party.dormdeals.services;
 
 import ru.itis.master.party.dormdeals.dto.OrderDto.NewOrder;
 import ru.itis.master.party.dormdeals.dto.OrderDto.OrderDto;
+import ru.itis.master.party.dormdeals.dto.OrderDto.OrderWithProducts;
 import ru.itis.master.party.dormdeals.dto.ProductDto.ProductDtoCart;
 import ru.itis.master.party.dormdeals.models.Order;
 
@@ -17,4 +18,6 @@ public interface OrdersService {
     void deleteOrder(Long id);
 
     List<OrderDto> createOrder(List<ProductDtoCart> productDtoCartList);
+
+    OrderWithProducts getAllProductsThisOrder(Long orderId);
 }
