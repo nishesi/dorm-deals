@@ -49,6 +49,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/user").permitAll()
                         .requestMatchers("/my/favourites/**").hasAnyRole("USER", "SELLER")
                         .requestMatchers("/user/**").hasRole("USER")
+                        .requestMatchers("/my/cart/**").permitAll()
 
                         // business logic
 
