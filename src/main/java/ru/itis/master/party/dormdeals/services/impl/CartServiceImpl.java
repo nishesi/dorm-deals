@@ -42,8 +42,7 @@ public class CartServiceImpl implements CartService {
     public void addCart(Long productId) {
         User user = ownerChecker.initThisUser(userRepository);
         Product product = getOrThrow.getProductOrThrow(productId, productsRepository);
-        Cart cart = cartRepository.findByUserIdAndProductId(user.getId(), productId);
-
+        Cart cart = getOrThrow.getCartOrThrow(user.getId(), productId, cartRepository);
 
         if (product.getState().equals(Product.State.ACTIVE)) {
             if (cart != null && product.getCountInStorage() == cart.getCount()) {
@@ -78,8 +77,6 @@ public class CartServiceImpl implements CartService {
             productIdFromCookie.forEach(this::addCart);
         }
 
-
-
         User user = ownerChecker.initThisUser(userRepository);
         List<Cart> cart = cartRepository.findByUserId(user.getId());
         List<ProductDtoCart> productDto = from(cart);
@@ -111,7 +108,7 @@ public class CartServiceImpl implements CartService {
     @Override
     public void setCountProduct(Long productId, Integer count) {
         User user = ownerChecker.initThisUser(userRepository);
-        Cart cart = cartRepository.findByUserIdAndProductId(user.getId(), productId);
+        Cart cart = getOrThrow.getCartOrThrow(user.getId(), productId, cartRepository);
         Product product = getOrThrow.getProductOrThrow(productId, productsRepository);
 
         if (count > product.getCountInStorage()) {
@@ -124,4 +121,5 @@ public class CartServiceImpl implements CartService {
             cartRepository.save(cart);
         }
     }
+
 }

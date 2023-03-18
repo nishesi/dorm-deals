@@ -1,7 +1,5 @@
 package ru.itis.master.party.dormdeals.aspects;
 
-import jakarta.persistence.ElementCollection;
-import org.aspectj.weaver.ast.Not;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
