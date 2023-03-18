@@ -1,6 +1,8 @@
 package ru.itis.master.party.dormdeals.services.impl;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.codec.digest.DigestUtils;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import ru.itis.master.party.dormdeals.dto.UserDto.UserDto;
@@ -9,6 +11,10 @@ import ru.itis.master.party.dormdeals.models.Role;
 import ru.itis.master.party.dormdeals.models.User;
 import ru.itis.master.party.dormdeals.repositories.UserRepository;
 import ru.itis.master.party.dormdeals.services.UserService;
+import ru.itis.master.party.dormdeals.utils.EmailUtil;
+
+import java.util.Map;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -18,7 +24,10 @@ public class UserServiceImpl implements UserService {
 
     private final PasswordEncoder passwordEncoder;
 
-    public UserDto register(UserDto userDto) {
+    private final EmailUtil emailUtil;
+
+    @Transactional
+    public String register(UserDto userDto) {
         if (userRepository.existsUserByEmail(userDto.getEmail()))
             throw new IllegalArgumentException("User with email = <" + userDto.getEmail() + "> is exist");
 
@@ -29,10 +38,20 @@ public class UserServiceImpl implements UserService {
                 .lastName(userDto.getLastName())
                 .telephone(userDto.getTelephone())
                 .dormitory(userDto.getDormitory())
-                .state(User.State.ACTIVE)
+                .state(User.State.NOT_CONFIRMED)
+                .hashForConfirm(DigestUtils.sha256Hex(userDto.getEmail() + UUID.randomUUID()))
                 .role(Role.ROLE_USER)
                 .build());
-        return UserDto.from(returnedUser);
+
+        String confirmationUrl = "http://localhost/email/confirm?accept=" +
+                returnedUser.getHashForConfirm();
+
+        emailUtil.sendMail(userDto.getEmail(),
+                "confirm",
+                "confirmation-mail.ftlh",
+                Map.of("confirmationUrl", confirmationUrl));
+
+        return "Please, check your email to confirm account.";
     }
 
     public UserDto getUser(String email) {

@@ -8,7 +8,7 @@ import ru.itis.master.party.dormdeals.dto.ShopDto.ShopsPage;
 import ru.itis.master.party.dormdeals.dto.ShopWithProducts;
 
 public interface ShopsService {
-    ShopDto getShop(long id);
+    ShopDto getShop(Long id);
 
     ShopsPage getAllShops(int page);
 

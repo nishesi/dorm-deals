@@ -19,6 +19,7 @@ import ru.itis.master.party.dormdeals.repositories.ShopsRepository;
 import ru.itis.master.party.dormdeals.repositories.UserRepository;
 import ru.itis.master.party.dormdeals.services.ProductService;
 import ru.itis.master.party.dormdeals.utils.OwnerChecker;
+import ru.itis.master.party.dormdeals.utils.GetOrThrow;
 
 import static ru.itis.master.party.dormdeals.dto.ProductDto.ProductDto.from;
 
@@ -29,6 +30,7 @@ public class ProductServiceImpl implements ProductService {
     private final ShopsRepository shopsRepository;
     private final UserRepository userRepository;
     private final OwnerChecker ownerChecker;
+    private final GetOrThrow getOrThrow;
 
     @Value("${default.page-size}")
     private int defaultPageSize;
@@ -67,13 +69,13 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public ProductDto getProduct(Long productId) {
-        Product product = getProductOrThrow(productId);
+        Product product = getOrThrow.getProductOrThrow(productId, productsRepository);
         return from(product);
     }
 
     @Override
     public ProductDto updateProduct(Long productId, UpdateProduct updatedProduct) {
-        Product productForUpdate = getProductOrThrow(productId);
+        Product productForUpdate = getOrThrow.getProductOrThrow(productId, productsRepository);
         ownerChecker.checkOwnerShop(productForUpdate.getShop().getOwner().getId(), ownerChecker.initThisUser(userRepository));
 
         productForUpdate.setName(updatedProduct.getName());
@@ -88,7 +90,7 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public void deleteProduct(Long productId) {
-        Product productForDelete = getProductOrThrow(productId);
+        Product productForDelete = getOrThrow.getProductOrThrow(productId, productsRepository);
 
         ownerChecker.checkOwnerShop(productForDelete.getShop().getOwner().getId(), ownerChecker.initThisUser(userRepository));
 
@@ -110,18 +112,12 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public void returnInSell(Long productId) {
-        Product productForReturn = getProductOrThrow(productId);
+        Product productForReturn = getOrThrow.getProductOrThrow(productId, productsRepository);
 
         ownerChecker.checkOwnerShop(productForReturn.getShop().getOwner().getId(), ownerChecker.initThisUser(userRepository));
 
         productForReturn.setState(Product.State.ACTIVE);
         productsRepository.save(productForReturn);
-    }
-
-
-    private Product getProductOrThrow(Long productId) {
-        return productsRepository.findById(productId)
-                .orElseThrow(() -> new NotFoundException("Товар с идентификатором <" + productId + "> не найден"));
     }
 
 }

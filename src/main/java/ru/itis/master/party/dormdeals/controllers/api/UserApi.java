@@ -7,10 +7,10 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import io.swagger.v3.oas.annotations.tags.Tags;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -18,12 +18,26 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import ru.itis.master.party.dormdeals.dto.ExceptionDto;
 import ru.itis.master.party.dormdeals.dto.UserDto.UserDto;
 
+import java.security.Principal;
+
 @Tags(value = {
         @Tag(name = "Users")
 })
 @RequestMapping("/user")
 @Schema(description = "Работа с пользователем")
 public interface UserApi {
+    @Operation(summary = "регистрация пользователя")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "user",
+                    content = {
+                            @Content(mediaType = "application/json", schema = @Schema(name = "message"))
+                    }),
+            @ApiResponse(responseCode = "400", description = "user is exist",
+                    content = {
+                            @Content(mediaType = "application/json", schema = @Schema(implementation = ExceptionDto.class))
+                    })})
+    @PostMapping
+    ResponseEntity<?> addUser(@RequestBody @Valid UserDto userDto);
 
     @Operation(summary = "Получение информации о пользователе")
     @ApiResponses(value = {
@@ -35,21 +49,8 @@ public interface UserApi {
                     content = {
                             @Content(mediaType = "application/json", schema = @Schema(implementation = ExceptionDto.class))
                     })})
-    @GetMapping("/{email}")
-    UserDto getUser(@PathVariable String email);
-
-    @Operation(summary = "регистрация пользователя")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "user",
-                    content = {
-                            @Content(mediaType = "application/json", schema = @Schema(implementation = UserDto.class))
-                    }),
-            @ApiResponse(responseCode = "400", description = "user is exist",
-                    content = {
-                            @Content(mediaType = "application/json", schema = @Schema(implementation = ExceptionDto.class))
-                    })})
-    @PostMapping
-    UserDto addUser(@RequestBody UserDto userDto);
+    @GetMapping
+    UserDto getUser(Principal principal);
 
     @Operation(summary = "обновление информации о пользователе")
     @ApiResponses(value = {
@@ -62,7 +63,7 @@ public interface UserApi {
                             @Content(mediaType = "application/json", schema = @Schema(implementation = ExceptionDto.class))
                     })})
     @PutMapping
-    UserDto updateUser(@RequestBody UserDto userDto);
+    UserDto updateUser(@RequestBody UserDto userDto, Principal principal);
 
     @Operation(summary = "удаление пользователя")
     @ApiResponses(value = {
@@ -72,5 +73,5 @@ public interface UserApi {
                             @Content(mediaType = "application/json", schema = @Schema(implementation = ExceptionDto.class))
                     })})
     @DeleteMapping
-    ResponseEntity<?> deleteUser(String email);
+    ResponseEntity<?> deleteUser(Principal principal);
 }

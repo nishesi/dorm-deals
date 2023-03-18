@@ -1,5 +1,6 @@
 package ru.itis.master.party.dormdeals.services.impl;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
@@ -12,7 +13,6 @@ import ru.itis.master.party.dormdeals.dto.ShopDto.ShopDto;
 import ru.itis.master.party.dormdeals.dto.ShopDto.ShopsPage;
 import ru.itis.master.party.dormdeals.dto.ShopDto.UpdateShop;
 import ru.itis.master.party.dormdeals.exceptions.NotCreateSecondShop;
-import ru.itis.master.party.dormdeals.exceptions.NotFoundException;
 import ru.itis.master.party.dormdeals.models.Product;
 import ru.itis.master.party.dormdeals.models.Shop;
 import ru.itis.master.party.dormdeals.dto.ShopWithProducts;
@@ -22,6 +22,7 @@ import ru.itis.master.party.dormdeals.repositories.ShopsRepository;
 import ru.itis.master.party.dormdeals.repositories.UserRepository;
 import ru.itis.master.party.dormdeals.services.ShopsService;
 import ru.itis.master.party.dormdeals.utils.OwnerChecker;
+import ru.itis.master.party.dormdeals.utils.GetOrThrow;
 
 import static ru.itis.master.party.dormdeals.dto.ShopDto.ShopDto.from;
 
@@ -33,6 +34,7 @@ public class ShopsServiceImpl implements ShopsService {
     private final ProductsRepository productsRepository;
     private final UserRepository userRepository;
     private final OwnerChecker ownerChecker;
+    private final GetOrThrow getOrThrow;
 
 
 
@@ -40,8 +42,8 @@ public class ShopsServiceImpl implements ShopsService {
     private int defaultPageSize;
 
     @Override
-    public ShopDto getShop(long id) {
-        return from(getShopOrThrow(id));
+    public ShopDto getShop(Long shopId) {
+        return from(getOrThrow.getShopOrThrow(shopId, shopsRepository));
     }
 
     @Override
@@ -63,14 +65,17 @@ public class ShopsServiceImpl implements ShopsService {
             throw new NotCreateSecondShop("Вы не можете иметь больше одного магазина");
         }
 
-//TODO: чтобы создание магазина отдавало дтошку, а не основного юзера
-//        UserDto ownerDto = from(user);
         Shop shop = Shop.builder()
                 .name(newShop.getName())
                 .description(newShop.getDescription())
                 .rating(newShop.getRating())
                 .placeSells(newShop.getPlaceSells())
-                .owner(thisUser)
+                .owner(User.builder()
+                        .id(thisUser.getId())
+                        .firstName(thisUser.getFirstName())
+                        .lastName(thisUser.getLastName())
+                        .dormitory(thisUser.getDormitory())
+                        .build())
                 .build();
 
         shopsRepository.save(shop);
@@ -78,8 +83,8 @@ public class ShopsServiceImpl implements ShopsService {
     }
 
     @Override
-    public ShopDto updateShop(Long id, UpdateShop updateShop) {
-        Shop shopForUpdate = getShopOrThrow(id);
+    public ShopDto updateShop(Long shopId, UpdateShop updateShop) {
+        Shop shopForUpdate = getOrThrow.getShopOrThrow(shopId, shopsRepository);
 
         ownerChecker.checkOwnerShop(shopForUpdate.getOwner().getId(), ownerChecker.initThisUser(userRepository));
 
@@ -94,14 +99,16 @@ public class ShopsServiceImpl implements ShopsService {
     }
 
     @Override
-    public void deleteShop(Long id) {
-        ownerChecker.checkOwnerShop(getShopOrThrow(id).getOwner().getId(), ownerChecker.initThisUser(userRepository));
-        shopsRepository.deleteById(id);
+    @Transactional
+    public void deleteShop(Long shopId) {
+        ownerChecker.checkOwnerShop(getOrThrow.getShopOrThrow(shopId, shopsRepository).getOwner().getId(), ownerChecker.initThisUser(userRepository));
+        productsRepository.deleteAllByShopId(shopId);
+        shopsRepository.deleteById(shopId);
     }
 
     @Override
     public ShopWithProducts getAllProductsThisShop(Long shopId, int page) {
-        Shop thisShop = getShopOrThrow(shopId);
+        Shop thisShop = getOrThrow.getShopOrThrow(shopId, shopsRepository);
         PageRequest pageRequest = PageRequest.of(page, defaultPageSize);
         Page<Product> productsPageTemp = productsRepository
                 .findAllByShopIdAndStateOrderById(shopId, Product.State.ACTIVE, pageRequest);
@@ -114,10 +121,5 @@ public class ShopsServiceImpl implements ShopsService {
                 .shop(thisShop)
                 .productsPage(productsPage)
                 .build();
-    }
-
-    private Shop getShopOrThrow(long id) {
-        return shopsRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException("Магазин с идентификатором <" + id + "> не найден"));
     }
 }

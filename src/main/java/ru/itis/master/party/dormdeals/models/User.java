@@ -7,7 +7,6 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import ru.itis.master.party.dormdeals.models.Role;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -27,13 +26,19 @@ public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Column(unique = true)
+    @Column(unique = true, nullable = false)
     private String email;
+    @Column(columnDefinition = "char(60)", nullable = false)
     private String hashPassword;
+    @Column(length = 50, nullable = false)
     private String firstName;
+    @Column(length = 50)
     private String lastName;
+    @Column(length = 15)
     private String telephone;
     private String dormitory;
+    @Column(columnDefinition = "char(64)")
+    private String hashForConfirm;
     @Enumerated(EnumType.STRING)
     private State state;
     @Enumerated(EnumType.STRING)

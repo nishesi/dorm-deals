@@ -45,9 +45,11 @@ public class SecurityConfig {
 
                         // User
 
-                        .requestMatchers("/auth/token").permitAll()
+                        .requestMatchers("/auth/token", "/email/confirm/**").permitAll()
                         .requestMatchers(HttpMethod.POST, "/user").permitAll()
+                        .requestMatchers("/my/favourites/**").hasAnyRole("USER", "SELLER")
                         .requestMatchers("/user/**").hasRole("USER")
+                        .requestMatchers("/my/cart/**").permitAll()
 
                         // business logic
 
@@ -64,7 +66,8 @@ public class SecurityConfig {
                 )
                 .logout(logout -> logout
                         .logoutUrl("/logout")
-                        .addLogoutHandler(tokenLogoutHandler));
+                        .addLogoutHandler(tokenLogoutHandler))
+                .headers().xssProtection().and().contentSecurityPolicy("script-src 'self'");
 
         return http.build();
     }
