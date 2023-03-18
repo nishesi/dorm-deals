@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import ru.itis.master.party.dormdeals.dto.ExceptionDto;
+import ru.itis.master.party.dormdeals.dto.UserDto.NewUserDto;
 import ru.itis.master.party.dormdeals.dto.UserDto.UserDto;
 
 import java.security.Principal;
@@ -37,7 +38,7 @@ public interface UserApi {
                             @Content(mediaType = "application/json", schema = @Schema(implementation = ExceptionDto.class))
                     })})
     @PostMapping
-    ResponseEntity<?> addUser(@RequestBody @Valid UserDto userDto);
+    ResponseEntity<?> addUser(@RequestBody @Valid NewUserDto userDto);
 
     @Operation(summary = "Получение информации о пользователе")
     @ApiResponses(value = {
@@ -63,7 +64,7 @@ public interface UserApi {
                             @Content(mediaType = "application/json", schema = @Schema(implementation = ExceptionDto.class))
                     })})
     @PutMapping
-    UserDto updateUser(@RequestBody UserDto userDto, Principal principal);
+    UserDto updateUser(@RequestBody NewUserDto userDto, Principal principal);
 
     @Operation(summary = "удаление пользователя")
     @ApiResponses(value = {

@@ -38,7 +38,7 @@ public class Product {
     @Column(columnDefinition = "smallint check (count_in_storage >= 0)", nullable = false)
     private short countInStorage;
 
-    @OneToMany
+    @OneToMany(mappedBy = "product")
     private List<ProductImage> images;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "shop_id")

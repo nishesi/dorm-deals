@@ -19,7 +19,7 @@ public class NewUserDto {
     @Schema(example = "email@gmail.com")
     @Email
     private String email;
-    @Schema( example = "1234")
+    @Schema( example = "12345678")
     @Length(min = 8, max = 50)
     private String password;
     @Schema(example = "Bob")
