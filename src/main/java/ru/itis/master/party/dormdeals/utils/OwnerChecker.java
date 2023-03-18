@@ -1,6 +1,5 @@
 package ru.itis.master.party.dormdeals.utils;
 
-import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
@@ -22,5 +21,11 @@ public class OwnerChecker {
     public User initThisUser(UserRepository userRepository) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         return userRepository.getByEmail(authentication.getName()).orElseThrow(() -> new NotFoundException("Пользователь не найден"));
+    }
+
+    public void checkOwnerOrder(Long ownerOrderId, User thisUser) {
+        if (!Objects.equals(thisUser.getId(), ownerOrderId)) {
+            throw new NotAllowedException("Вы не являетесь создателем данного заказа.");
+        }
     }
 }
