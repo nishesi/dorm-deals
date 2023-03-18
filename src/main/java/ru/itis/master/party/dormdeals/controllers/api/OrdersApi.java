@@ -32,7 +32,8 @@ public interface OrdersApi {
             )
     })
     @PostMapping
-    ResponseEntity<OrderDto> createOrder(@RequestBody List<ProductDtoCart> productDtoCartList);
+    ResponseEntity<List<OrderDto>> createOrder(@Parameter(description = "Список товаров с корзины")
+                                               @RequestBody List<ProductDtoCart> productDtoCartList);
 
     @Operation(summary = "Получение заказа")
     @ApiResponses(value = {
