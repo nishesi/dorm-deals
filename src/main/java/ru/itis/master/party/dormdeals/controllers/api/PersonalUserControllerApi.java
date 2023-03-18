@@ -27,7 +27,7 @@ public interface PersonalUserControllerApi {
             )
     })
     @PutMapping("/favourites/{product-id}")
-    ResponseEntity<?> addProduct(@Parameter(name = "Идентификатор товара") @PathVariable("product-id") Long productId);
+    ResponseEntity<?> addFavouriteProduct(@Parameter(name = "Идентификатор товара") @PathVariable("product-id") Long productId);
 
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Избранное",
@@ -50,5 +50,20 @@ public interface PersonalUserControllerApi {
     })
 
     @DeleteMapping("/favourites/{product-id}")
-    ResponseEntity<?> deleteProduct(@Parameter(name = "Идентификатор товара") @PathVariable("product-id") Long productId);
+    ResponseEntity<?> deleteFavouriteProduct(@Parameter(name = "Идентификатор товара") @PathVariable("product-id") Long productId);
+
+
+    @Operation(summary = "Добавление товара в корзину")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "202", description = "Товар добавлен в корзину"),
+            @ApiResponse(responseCode = "404", description = "Сведения об ошибке",
+                    content = {
+                            @Content(mediaType = "application/json",
+                                    schema = @Schema(implementation = ExceptionDto.class))
+                    }
+            )
+    })
+    @PutMapping("/cart/{product-id}")
+    ResponseEntity<?> addCartProduct(@Parameter(name = "Индентификатор товара") @PathVariable("product-id") Long productId);
+
 }

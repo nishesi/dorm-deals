@@ -23,6 +23,7 @@ import ru.itis.master.party.dormdeals.repositories.ShopsRepository;
 import ru.itis.master.party.dormdeals.repositories.UserRepository;
 import ru.itis.master.party.dormdeals.services.ShopsService;
 import ru.itis.master.party.dormdeals.utils.OwnerChecker;
+import ru.itis.master.party.dormdeals.utils.getOrThrow.GetOrThrow;
 
 import static ru.itis.master.party.dormdeals.dto.ShopDto.ShopDto.from;
 
@@ -34,6 +35,7 @@ public class ShopsServiceImpl implements ShopsService {
     private final ProductsRepository productsRepository;
     private final UserRepository userRepository;
     private final OwnerChecker ownerChecker;
+    private final GetOrThrow getOrThrow;
 
 
 
@@ -41,8 +43,8 @@ public class ShopsServiceImpl implements ShopsService {
     private int defaultPageSize;
 
     @Override
-    public ShopDto getShop(long id) {
-        return from(getShopOrThrow(id));
+    public ShopDto getShop(Long shopId) {
+        return from(getOrThrow.getShopOrThrow(shopId, shopsRepository));
     }
 
     @Override
@@ -82,8 +84,8 @@ public class ShopsServiceImpl implements ShopsService {
     }
 
     @Override
-    public ShopDto updateShop(Long id, UpdateShop updateShop) {
-        Shop shopForUpdate = getShopOrThrow(id);
+    public ShopDto updateShop(Long shopId, UpdateShop updateShop) {
+        Shop shopForUpdate = getOrThrow.getShopOrThrow(shopId, shopsRepository);
 
         ownerChecker.checkOwnerShop(shopForUpdate.getOwner().getId(), ownerChecker.initThisUser(userRepository));
 
@@ -99,15 +101,15 @@ public class ShopsServiceImpl implements ShopsService {
 
     @Override
     @Transactional
-    public void deleteShop(Long id) {
-        ownerChecker.checkOwnerShop(getShopOrThrow(id).getOwner().getId(), ownerChecker.initThisUser(userRepository));
-        productsRepository.deleteAllByShopId(id);
-        shopsRepository.deleteById(id);
+    public void deleteShop(Long shopId) {
+        ownerChecker.checkOwnerShop(getOrThrow.getShopOrThrow(shopId, shopsRepository).getOwner().getId(), ownerChecker.initThisUser(userRepository));
+        productsRepository.deleteAllByShopId(shopId);
+        shopsRepository.deleteById(shopId);
     }
 
     @Override
     public ShopWithProducts getAllProductsThisShop(Long shopId, int page) {
-        Shop thisShop = getShopOrThrow(shopId);
+        Shop thisShop = getOrThrow.getShopOrThrow(shopId, shopsRepository);
         PageRequest pageRequest = PageRequest.of(page, defaultPageSize);
         Page<Product> productsPageTemp = productsRepository
                 .findAllByShopIdAndStateOrderById(shopId, Product.State.ACTIVE, pageRequest);
@@ -120,10 +122,5 @@ public class ShopsServiceImpl implements ShopsService {
                 .shop(thisShop)
                 .productsPage(productsPage)
                 .build();
-    }
-
-    private Shop getShopOrThrow(long id) {
-        return shopsRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException("Магазин с идентификатором <" + id + "> не найден"));
     }
 }
