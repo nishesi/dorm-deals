@@ -1,5 +1,6 @@
 package ru.itis.master.party.dormdeals.services.impl;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.itis.master.party.dormdeals.dto.OrderDto.NewOrder;
@@ -60,8 +61,12 @@ public class OrdersServiceImpl implements OrdersService {
         return from(ordersRepository.save(order));
     }
 
+    @Transactional
     @Override
     public void deleteOrder(Long id) {
+        ownerChecker.checkOwnerOrder(getOrThrow.getOrderOrThrow(id, ordersRepository)
+                .getUser().getId(), ownerChecker.initThisUser(userRepository));
+        orderProductsRepository.deleteAllByOrderId(id);
         ordersRepository.deleteById(id);
     }
 
