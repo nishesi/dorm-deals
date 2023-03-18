@@ -7,6 +7,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import ru.itis.master.party.dormdeals.dto.UserDto.UserDtoForShop;
 import ru.itis.master.party.dormdeals.models.Shop;
+import ru.itis.master.party.dormdeals.utils.ResourceType;
+import ru.itis.master.party.dormdeals.utils.ResourceUrlResolver;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -27,21 +29,26 @@ public class ShopDto {
     private String placeSells;
     @Schema(description = "владелец магазина")
     private UserDtoForShop owner;
+    @Schema(description = "url изображения магазина")
+    private String shopImageUrl;
 
-    public static ShopDto from(Shop shop) {
+    public static ShopDto from(Shop shop, ResourceUrlResolver resolver) {
         return ShopDto.builder()
                 .name(shop.getName())
                 .description(shop.getDescription())
                 .rating(shop.getRating())
                 .placeSells(shop.getPlaceSells())
                 .owner(UserDtoForShop.from(shop.getOwner()))
+                .shopImageUrl(resolver.resolveUrl(
+                        shop.getId().toString(),
+                        ResourceType.SHOP_IMAGE))
                 .build();
     }
 
-    public static List<ShopDto> from(List<Shop> shops) {
+    public static List<ShopDto> from(List<Shop> shops, ResourceUrlResolver resolver) {
         return shops
                 .stream()
-                .map(ShopDto::from)
+                .map(shop -> from(shop, resolver))
                 .collect(Collectors.toList());
     }
 

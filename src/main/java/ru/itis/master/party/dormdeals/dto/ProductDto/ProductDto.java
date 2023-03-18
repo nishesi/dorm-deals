@@ -6,9 +6,10 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import ru.itis.master.party.dormdeals.models.Product;
+import ru.itis.master.party.dormdeals.utils.ResourceType;
+import ru.itis.master.party.dormdeals.utils.ResourceUrlResolver;
 
 import java.util.List;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Data
@@ -32,9 +33,14 @@ public class ProductDto {
     private float price;
     @Schema(description = "количество на складе", example = "13")
     private short countInStorage;
-    private UUID uuidOfPhotos;
+    private List<String> imageUrlList;
 
-    public static ProductDto from(Product product) {
+    public static ProductDto from(Product product, ResourceUrlResolver resolver) {
+        List<String> imageUrls = product.getImages().stream()
+                .map(image -> resolver.resolveUrl(
+                        image.getId(),
+                        ResourceType.PRODUCT_IMAGE))
+                .toList();
         return ProductDto.builder()
                 .id(product.getId())
                 .name(product.getName())
@@ -42,14 +48,14 @@ public class ProductDto {
                 .category(product.getCategory())
                 .price(product.getPrice())
                 .countInStorage(product.getCountInStorage())
-                .uuidOfPhotos(product.getUuidOfPhotos())
+                .imageUrlList(imageUrls)
                 .build();
     }
 
-    public static List<ProductDto> from(List<Product> products) {
+    public static List<ProductDto> from(List<Product> products, ResourceUrlResolver resolver) {
         return products
                 .stream()
-                .map(ProductDto::from)
+                .map(product -> ProductDto.from(product, resolver))
                 .collect(Collectors.toList());
     }
 }

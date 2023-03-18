@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import ru.itis.master.party.dormdeals.dto.UserDto.NewUserDto;
 import ru.itis.master.party.dormdeals.dto.UserDto.UserDto;
 import ru.itis.master.party.dormdeals.exceptions.NotFoundException;
 import ru.itis.master.party.dormdeals.models.Role;
@@ -12,6 +13,8 @@ import ru.itis.master.party.dormdeals.models.User;
 import ru.itis.master.party.dormdeals.repositories.UserRepository;
 import ru.itis.master.party.dormdeals.services.UserService;
 import ru.itis.master.party.dormdeals.utils.EmailUtil;
+import ru.itis.master.party.dormdeals.utils.OwnerChecker;
+import ru.itis.master.party.dormdeals.utils.ResourceUrlResolver;
 
 import java.util.Map;
 import java.util.UUID;
@@ -19,15 +22,16 @@ import java.util.UUID;
 @Service
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
-
+    private final ResourceUrlResolver resourceUrlResolver;
+    private final PasswordEncoder passwordEncoder;
     private final UserRepository userRepository;
 
-    private final PasswordEncoder passwordEncoder;
+    private final OwnerChecker ownerChecker;
 
     private final EmailUtil emailUtil;
 
     @Transactional
-    public String register(UserDto userDto) {
+    public String register(NewUserDto userDto) {
         if (userRepository.existsUserByEmail(userDto.getEmail()))
             throw new IllegalArgumentException("User with email = <" + userDto.getEmail() + "> is exist");
 
@@ -56,17 +60,18 @@ public class UserServiceImpl implements UserService {
 
     public UserDto getUser(String email) {
         User user = getUserFromRepository(email);
-        return UserDto.from(user);
+        return UserDto.from(user, resourceUrlResolver);
     }
 
-    public UserDto updateUser(UserDto userDto) {
-        User updatedUser = getUserFromRepository(userDto.getEmail());
-        updatedUser.setHashPassword(passwordEncoder.encode(userDto.getPassword()));
-        updatedUser.setFirstName(userDto.getFirstName());
-        updatedUser.setLastName(userDto.getLastName());
-        updatedUser.setTelephone(userDto.getTelephone());
+    public UserDto updateUser(NewUserDto userDto) {
+        User user = ownerChecker.initThisUser(userRepository);
+        user.setFirstName(userDto.getFirstName());
+        user.setLastName(userDto.getLastName());
+        user.setTelephone(userDto.getTelephone());
+        user.setDormitory(userDto.getDormitory());
+        user.setHashPassword(passwordEncoder.encode(userDto.getPassword()));
 
-        return UserDto.from(userRepository.save(updatedUser));
+        return UserDto.from(userRepository.save(user), resourceUrlResolver);
     }
 
     public void deleteUser(String email) {

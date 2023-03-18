@@ -20,12 +20,14 @@ import ru.itis.master.party.dormdeals.repositories.UserRepository;
 import ru.itis.master.party.dormdeals.services.ProductService;
 import ru.itis.master.party.dormdeals.utils.OwnerChecker;
 import ru.itis.master.party.dormdeals.utils.GetOrThrow;
+import ru.itis.master.party.dormdeals.utils.ResourceUrlResolver;
 
 import static ru.itis.master.party.dormdeals.dto.ProductDto.ProductDto.from;
 
 @Service
 @RequiredArgsConstructor
 public class ProductServiceImpl implements ProductService {
+    private final ResourceUrlResolver resourceUrlResolver;
     private final ProductsRepository productsRepository;
     private final ShopsRepository shopsRepository;
     private final UserRepository userRepository;
@@ -41,7 +43,7 @@ public class ProductServiceImpl implements ProductService {
         Page<Product> productsPage = productsRepository.findAllByStateOrderById(Product.State.ACTIVE, pageRequest);
 
         return ProductsPage.builder()
-                .products(from(productsPage.getContent()))
+                .products(from(productsPage.getContent(), resourceUrlResolver))
                 .totalPageCount(productsPage.getTotalPages())
                 .build();
     }
@@ -57,20 +59,19 @@ public class ProductServiceImpl implements ProductService {
                 .category(newProduct.getCategory())
                 .price(newProduct.getPrice())
                 .countInStorage(newProduct.getCountInStorage())
-                .uuidOfPhotos(newProduct.getUuidOfPhotos())
                 .shop(shop)
                 .state(Product.State.ACTIVE)
                 .build();
 
         productsRepository.save(product);
 
-        return from(product);
+        return from(product, resourceUrlResolver);
     }
 
     @Override
     public ProductDto getProduct(Long productId) {
         Product product = getOrThrow.getProductOrThrow(productId, productsRepository);
-        return from(product);
+        return from(product, resourceUrlResolver);
     }
 
     @Override
@@ -85,7 +86,7 @@ public class ProductServiceImpl implements ProductService {
 
         productsRepository.save(productForUpdate);
 
-        return from(productForUpdate);
+        return from(productForUpdate, resourceUrlResolver);
     }
 
     @Override

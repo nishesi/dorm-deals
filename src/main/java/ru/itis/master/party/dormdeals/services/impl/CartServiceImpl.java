@@ -19,6 +19,7 @@ import ru.itis.master.party.dormdeals.repositories.UserRepository;
 import ru.itis.master.party.dormdeals.services.CartService;
 import ru.itis.master.party.dormdeals.utils.GetOrThrow;
 import ru.itis.master.party.dormdeals.utils.OwnerChecker;
+import ru.itis.master.party.dormdeals.utils.ResourceUrlResolver;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -28,11 +29,12 @@ import static ru.itis.master.party.dormdeals.dto.ProductDto.ProductDtoCart.from;
 @Service
 @RequiredArgsConstructor
 public class CartServiceImpl implements CartService {
+    private final ResourceUrlResolver resourceUrlResolver;
+    private final ProductsRepository productsRepository;
+    private final CartRepository cartRepository;
+    private final UserRepository userRepository;
     private final OwnerChecker ownerChecker;
     private final GetOrThrow getOrThrow;
-    private final UserRepository userRepository;
-    private final CartRepository cartRepository;
-    private final ProductsRepository productsRepository;
 
     //TODO вот это мне ваще не нравится, тоже надо что то придумать
     @Autowired
@@ -79,7 +81,7 @@ public class CartServiceImpl implements CartService {
 
         User user = ownerChecker.initThisUser(userRepository);
         List<Cart> cart = cartRepository.findByUserId(user.getId());
-        List<ProductDtoCart> productDto = from(cart);
+        List<ProductDtoCart> productDto = from(cart, resourceUrlResolver);
 
         //TODO написать реализацию получения суммы товаров по другому более красиво
 

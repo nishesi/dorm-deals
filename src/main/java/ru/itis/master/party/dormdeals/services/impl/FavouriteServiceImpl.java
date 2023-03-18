@@ -13,6 +13,7 @@ import ru.itis.master.party.dormdeals.repositories.ProductsRepository;
 import ru.itis.master.party.dormdeals.repositories.UserRepository;
 import ru.itis.master.party.dormdeals.services.FavouriteService;
 import ru.itis.master.party.dormdeals.utils.OwnerChecker;
+import ru.itis.master.party.dormdeals.utils.ResourceUrlResolver;
 
 import static ru.itis.master.party.dormdeals.dto.ProductDto.ProductDto.from;
 
@@ -22,9 +23,10 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class FavouriteServiceImpl implements FavouriteService {
+    private final ResourceUrlResolver resourceUrlResolver;
     private final FavouriteRepository favouriteRepository;
-    private final UserRepository userRepository;
     private final ProductsRepository productsRepository;
+    private final UserRepository userRepository;
     private final OwnerChecker ownerChecker;
 
     @Override
@@ -46,7 +48,7 @@ public class FavouriteServiceImpl implements FavouriteService {
         User user = ownerChecker.initThisUser(userRepository);
         List<Product> products = favouriteRepository.findByUserId(user.getId()).stream()
                 .map(Favourites::getProduct).collect(Collectors.toList());
-        return from(products);
+        return from(products, resourceUrlResolver);
     }
 
     @Transactional

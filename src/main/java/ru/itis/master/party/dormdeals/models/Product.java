@@ -6,7 +6,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.UUID;
+import java.util.List;
 
 @Entity
 @Data
@@ -37,7 +37,9 @@ public class Product {
     //TODO: реализовать проверку на ноль после заказа, если ноль то переводить состояние в "NOT_AVAILABLE"
     @Column(columnDefinition = "smallint check (count_in_storage >= 0)", nullable = false)
     private short countInStorage;
-    private UUID uuidOfPhotos;
+
+    @OneToMany
+    private List<ProductImage> images;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "shop_id")
     private Shop shop;

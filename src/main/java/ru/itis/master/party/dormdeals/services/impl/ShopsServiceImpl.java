@@ -23,6 +23,7 @@ import ru.itis.master.party.dormdeals.repositories.UserRepository;
 import ru.itis.master.party.dormdeals.services.ShopsService;
 import ru.itis.master.party.dormdeals.utils.OwnerChecker;
 import ru.itis.master.party.dormdeals.utils.GetOrThrow;
+import ru.itis.master.party.dormdeals.utils.ResourceUrlResolver;
 
 import static ru.itis.master.party.dormdeals.dto.ShopDto.ShopDto.from;
 
@@ -30,8 +31,9 @@ import static ru.itis.master.party.dormdeals.dto.ShopDto.ShopDto.from;
 @RequiredArgsConstructor
 
 public class ShopsServiceImpl implements ShopsService {
-    private final ShopsRepository shopsRepository;
+    private final ResourceUrlResolver resourceUrlResolver;
     private final ProductsRepository productsRepository;
+    private final ShopsRepository shopsRepository;
     private final UserRepository userRepository;
     private final OwnerChecker ownerChecker;
     private final GetOrThrow getOrThrow;
@@ -43,7 +45,7 @@ public class ShopsServiceImpl implements ShopsService {
 
     @Override
     public ShopDto getShop(Long shopId) {
-        return from(getOrThrow.getShopOrThrow(shopId, shopsRepository));
+        return from(getOrThrow.getShopOrThrow(shopId, shopsRepository), resourceUrlResolver);
     }
 
     @Override
@@ -52,7 +54,7 @@ public class ShopsServiceImpl implements ShopsService {
         Page<Shop> shopsPage = shopsRepository.findAllByOrderByIdAsc(pageRequest);
 
         return ShopsPage.builder()
-                .shops(from(shopsPage.getContent()))
+                .shops(from(shopsPage.getContent(), resourceUrlResolver))
                 .totalPagesCount(shopsPage.getTotalPages())
                 .build();
     }
@@ -68,7 +70,6 @@ public class ShopsServiceImpl implements ShopsService {
         Shop shop = Shop.builder()
                 .name(newShop.getName())
                 .description(newShop.getDescription())
-                .rating(newShop.getRating())
                 .placeSells(newShop.getPlaceSells())
                 .owner(User.builder()
                         .id(thisUser.getId())
@@ -79,7 +80,7 @@ public class ShopsServiceImpl implements ShopsService {
                 .build();
 
         shopsRepository.save(shop);
-        return from(shop);
+        return from(shop, resourceUrlResolver);
     }
 
     @Override
@@ -90,12 +91,11 @@ public class ShopsServiceImpl implements ShopsService {
 
         shopForUpdate.setName(updateShop.getName());
         shopForUpdate.setDescription(updateShop.getDescription());
-        shopForUpdate.setRating(updateShop.getRating());
         shopForUpdate.setPlaceSells(updateShop.getPlaceSells());
 
         shopsRepository.save(shopForUpdate);
 
-        return from(shopForUpdate);
+        return from(shopForUpdate, resourceUrlResolver);
     }
 
     @Override
@@ -113,7 +113,7 @@ public class ShopsServiceImpl implements ShopsService {
         Page<Product> productsPageTemp = productsRepository
                 .findAllByShopIdAndStateOrderById(shopId, Product.State.ACTIVE, pageRequest);
         ProductsPage productsPage= ProductsPage.builder()
-                .products(ProductDto.from(productsPageTemp.getContent()))
+                .products(ProductDto.from(productsPageTemp.getContent(), resourceUrlResolver))
                 .totalPageCount(productsPageTemp.getTotalPages())
                 .build();
 

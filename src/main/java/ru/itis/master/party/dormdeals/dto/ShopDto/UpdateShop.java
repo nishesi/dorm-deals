@@ -1,11 +1,12 @@
 package ru.itis.master.party.dormdeals.dto.ShopDto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import ru.itis.master.party.dormdeals.models.User;
 
 @Data
 @NoArgsConstructor
@@ -13,9 +14,14 @@ import ru.itis.master.party.dormdeals.models.User;
 @Builder
 @Schema(description = "Обновленный магазин")
 public class UpdateShop {
+    @Schema(description = "название магазина", example = "казанэкспресс")
+    @NotBlank
+    @Size(min = 5, max = 100)
     private String name;
+    @Schema(description = "описание магазина", example = "у нас самые низкие цены")
+    @NotBlank
+    @Size(max = 1000)
     private String description;
-    private int rating;
+    @Schema(description = "расположение магазина", example = "расположение магазина")
     private String placeSells;
-    private User owner;
 }
