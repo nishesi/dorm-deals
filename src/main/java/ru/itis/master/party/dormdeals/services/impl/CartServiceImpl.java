@@ -34,6 +34,7 @@ public class CartServiceImpl implements CartService {
     private final CartRepository cartRepository;
     private final ProductsRepository productsRepository;
 
+    //TODO вот это мне ваще не нравится, тоже надо что то придумать
     @Autowired
     private HttpServletRequest request;
 
