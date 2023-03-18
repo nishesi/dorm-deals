@@ -55,6 +55,12 @@ public class OrdersServiceImpl implements OrdersService {
 
     @Override
     public OrderDto updateOrderState(Long id, Order.State state) {
+        ownerChecker.checkOwnerShop(getOrder(id)
+                        .getShop()
+                        .getOwner()
+                        .getId(),
+                ownerChecker.initThisUser(userRepository));
+
         Order order = getOrThrow.getOrderOrThrow(id, ordersRepository);
         order.setState(state);
 
@@ -111,7 +117,7 @@ public class OrdersServiceImpl implements OrdersService {
             orderProductsRepository.save(orderProduct);
         }
 
-        for (OrderDto orderDto: orderMap.values()) {
+        for (OrderDto orderDto : orderMap.values()) {
             updateOrderPrice(orderDto.getId(), orderDto.getPrice());
         }
 
