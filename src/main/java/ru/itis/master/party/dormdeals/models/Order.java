@@ -41,6 +41,8 @@ public class Order {
     @JoinColumn(name = "shop_id")
     private Shop shop;
 
+    private float price;
+
     @Enumerated(value = EnumType.STRING)
     private State state;
 }

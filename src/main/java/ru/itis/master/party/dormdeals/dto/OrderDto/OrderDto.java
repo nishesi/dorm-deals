@@ -20,6 +20,9 @@ import java.util.stream.Collectors;
 @Builder
 @Schema(description = "Заказ")
 public class OrderDto {
+    @Schema(description = "Идентификатор заказа", example = "1")
+    private Long id;
+
     @Schema(description = "Заказчик")
     private User user;
 
@@ -30,15 +33,20 @@ public class OrderDto {
     @Schema(description = "Комментарий от заказчика", example = "Хочу оставить вам чаевые =)")
     private String userComment;
 
+    @Schema(description = "Стоимость заказа")
+    private float price;
+
     @Schema(description = "Магазин")
     private Shop shop;
 
     public static OrderDto from(Order order) {
         return OrderDto.builder()
+                .id(order.getId())
                 .user(order.getUser())
                 .orderTime(order.getOrderTime())
                 .userComment(order.getUserComment())
                 .shop(order.getShop())
+                .price(order.getPrice())
                 .build();
     }
 
