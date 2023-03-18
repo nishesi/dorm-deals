@@ -29,6 +29,6 @@ public class Cart {
     @JoinColumn(name = "product_id")
     private Product product;
     private Integer count;
+    @Enumerated(value = EnumType.STRING)
     private State state;
-
 }

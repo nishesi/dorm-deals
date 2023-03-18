@@ -17,5 +17,5 @@ import java.util.List;
 @Data
 public class CartDto {
     private List<ProductDtoCart> productDtoCart;
-    private Integer sumOfProducts;
+    private Double sumOfProducts;
 }

@@ -6,4 +6,6 @@ public interface CartService {
     void addCart(Long productId);
 
     CartDto getCart();
+
+    void deleteCart(Long productId);
 }

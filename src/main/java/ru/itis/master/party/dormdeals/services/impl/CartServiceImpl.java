@@ -1,29 +1,27 @@
 package ru.itis.master.party.dormdeals.services.impl;
 
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.itis.master.party.dormdeals.dto.CartDto;
-import ru.itis.master.party.dormdeals.dto.ProductDto.ProductDto;
 import ru.itis.master.party.dormdeals.dto.ProductDto.ProductDtoCart;
 import ru.itis.master.party.dormdeals.exceptions.NotEnoughProductException;
 import ru.itis.master.party.dormdeals.models.Cart;
-import ru.itis.master.party.dormdeals.models.Favourites;
 import ru.itis.master.party.dormdeals.models.Product;
 import ru.itis.master.party.dormdeals.models.User;
 import ru.itis.master.party.dormdeals.repositories.CartRepository;
 import ru.itis.master.party.dormdeals.repositories.ProductsRepository;
 import ru.itis.master.party.dormdeals.repositories.UserRepository;
 import ru.itis.master.party.dormdeals.services.CartService;
-import ru.itis.master.party.dormdeals.utils.OwnerChecker;
 import ru.itis.master.party.dormdeals.utils.GetOrThrow;
-
-
-import static ru.itis.master.party.dormdeals.dto.ProductDto.ProductDtoCart.from;
+import ru.itis.master.party.dormdeals.utils.OwnerChecker;
 
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+
+import static ru.itis.master.party.dormdeals.dto.ProductDto.ProductDtoCart.from;
 
 @Service
 @RequiredArgsConstructor
@@ -51,7 +49,7 @@ public class CartServiceImpl implements CartService {
             } else {
                 cartRepository.save(Cart.builder()
                         .user(user)
-                        .product(getOrThrow.getProductOrThrow(productId, productsRepository))
+                        .product(product)
                         .count(1)
                         .state(Cart.State.ACTIVE)
                         .build());
@@ -70,8 +68,8 @@ public class CartServiceImpl implements CartService {
         Map<String, Float> productsPrices = productDto.stream()
                 .collect(Collectors.toMap(ProductDtoCart::getName, ProductDtoCart::getPrice));
 
-        Integer totalCost = cart.stream().mapToInt(i ->
-                (int) (productsPrices.getOrDefault(i.getProduct().getName(), 1F) * i.getCount()))
+        Double totalCost = cart.stream().mapToDouble(i ->
+                (productsPrices.getOrDefault(i.getProduct().getName(), 0.0F) * i.getCount()))
                 .sum();
 
 
@@ -79,5 +77,12 @@ public class CartServiceImpl implements CartService {
                 .productDtoCart(productDto)
                 .sumOfProducts(totalCost)
                 .build();
+    }
+
+    @Transactional
+    @Override
+    public void deleteCart(Long productId) {
+        User user = ownerChecker.initThisUser(userRepository);
+        cartRepository.deleteByUserIdAndProductId(user.getId(), productId);
     }
 }

@@ -50,4 +50,10 @@ public class PersonalUserController implements PersonalUserControllerApi {
     public ResponseEntity<CartDto> getCart() {
         return ResponseEntity.ok(cartService.getCart());
     }
+
+    @Override
+    public ResponseEntity<?> deleteCartProduct(Long productId) {
+        cartService.deleteCart(productId);
+        return ResponseEntity.accepted().build();
+    }
 }

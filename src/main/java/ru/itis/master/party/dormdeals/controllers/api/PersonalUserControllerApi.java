@@ -67,10 +67,29 @@ public interface PersonalUserControllerApi {
     @PutMapping("/cart/{product-id}")
     ResponseEntity<?> addCartProduct(@Parameter(name = "Индентификатор товара") @PathVariable("product-id") Long productId);
 
-
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Корзина",
+                    content = {
+                            @Content(mediaType = "application/json", schema = @Schema(implementation = CartDto.class))
+                    })
+    })
     @GetMapping("/cart")
     ResponseEntity<CartDto> getCart();
 
 //    @PutMapping("/cart/{product-id}/inactive")
 //    ResponseEntity<?> inactiveProduct(@Parameter(name = "Индентификатор товара") @PathVariable("product-id") Long productId);
+
+
+    @Operation(summary = "Удаление товара из корзины")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "202", description = "Товар удален из корзины"),
+            @ApiResponse(responseCode = "404", description = "Сведения об ошибке",
+                    content = {
+                            @Content(mediaType = "application/json",
+                                    schema = @Schema(implementation = ExceptionDto.class))
+                    }
+            )
+    })
+    @DeleteMapping("/cart/{product-id}")
+    ResponseEntity<?> deleteCartProduct(@Parameter(name = "Индентификатор товара") @PathVariable("product-id") Long productId);
 }
