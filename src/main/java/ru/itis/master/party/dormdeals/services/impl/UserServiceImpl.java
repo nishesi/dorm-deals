@@ -6,28 +6,27 @@ import org.apache.commons.codec.digest.DigestUtils;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import ru.itis.master.party.dormdeals.dto.UserDto.NewUserDto;
+import ru.itis.master.party.dormdeals.dto.UserDto.UpdateUserDto;
 import ru.itis.master.party.dormdeals.dto.UserDto.UserDto;
+import ru.itis.master.party.dormdeals.dto.converters.UserConverter;
 import ru.itis.master.party.dormdeals.exceptions.NotFoundException;
 import ru.itis.master.party.dormdeals.models.Role;
 import ru.itis.master.party.dormdeals.models.User;
 import ru.itis.master.party.dormdeals.repositories.UserRepository;
 import ru.itis.master.party.dormdeals.services.UserService;
 import ru.itis.master.party.dormdeals.utils.EmailUtil;
-import ru.itis.master.party.dormdeals.utils.OwnerChecker;
-import ru.itis.master.party.dormdeals.utils.ResourceUrlResolver;
 
-import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
-    private final ResourceUrlResolver resourceUrlResolver;
-    private final PasswordEncoder passwordEncoder;
-    private final UserRepository userRepository;
 
-    private final OwnerChecker ownerChecker;
+    private final PasswordEncoder passwordEncoder;
+
+    private final UserRepository userRepository;
+    private final UserConverter userConverter;
 
     private final EmailUtil emailUtil;
 
@@ -60,32 +59,33 @@ public class UserServiceImpl implements UserService {
     }
 
     public UserDto getUser(String email) {
-        User user = getUserFromRepository(email);
-        return UserDto.from(user, resourceUrlResolver);
+        User user = getUserOrElseThrow(email);
+        return userConverter.from(user);
     }
 
-    public UserDto updateUser(NewUserDto userDto) {
-        User user = ownerChecker.initThisUser(userRepository);
+    public UserDto updateUser(String email, UpdateUserDto userDto) {
+        User user = getUserOrElseThrow(email);
+
+        user.setHashPassword(passwordEncoder.encode(userDto.getPassword()));
         user.setFirstName(userDto.getFirstName());
         user.setLastName(userDto.getLastName());
         user.setTelephone(userDto.getTelephone());
         user.setDormitory(userDto.getDormitory());
-        user.setHashPassword(passwordEncoder.encode(userDto.getPassword()));
 
-        return UserDto.from(userRepository.save(user), resourceUrlResolver);
+        user = userRepository.save(user);
+        return userConverter.from(user);
     }
 
     public void deleteUser(String email) {
-        User user = getUserFromRepository(email);
+        User user = getUserOrElseThrow(email);
         user.setState(User.State.DELETED);
         userRepository.save(user);
     }
 
-    private User getUserFromRepository(String email) {
+    private User getUserOrElseThrow(String email) {
         return userRepository.getByEmail(email)
                 .orElseThrow(() -> new NotFoundException("User with email = <" + email + "> is not found"));
     }
-
 
     @Transactional
     @Override
