@@ -65,6 +65,7 @@ public class CartServiceImpl implements CartService {
     }
 
     @Override
+    @Transactional
     public CartDto getCart() {
         Cookie[] cookies = request.getCookies();
         List<Long> productIdFromCookie = new ArrayList<>();
@@ -88,15 +89,16 @@ public class CartServiceImpl implements CartService {
         User user = ownerChecker.initThisUser(userRepository);
 
         if (user != null) {
-            List<Cart> cart = cartRepository.findByUserId(user.getId());
-            List<ProductDtoCart> productDtoCart = from(cart);
-
             if (productIdAndCountFromCookie.size() > 0) {
                 productIdAndCountFromCookie.forEach(((productId, count) -> {
                     addCart(productId);
                     setCountProduct(productId, count);
                 }));
             }
+
+            List<Cart> cart = cartRepository.findByUserId(user.getId());
+            List<ProductDtoCart> productDtoCart = from(cart);
+
 
             return CartDto.builder()
                     .productDtoCart(productDtoCart)
