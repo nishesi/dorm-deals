@@ -7,4 +7,5 @@ public interface UserService {
     UserDto getUser(String email);
     UserDto updateUser(UserDto userDto);
     void deleteUser(String email);
+    void deleteUnconfirmedUsers();
 }
