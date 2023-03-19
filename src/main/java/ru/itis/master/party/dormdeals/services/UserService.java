@@ -8,4 +8,5 @@ public interface UserService {
     UserDto getUser(String email);
     UserDto updateUser(NewUserDto userDto);
     void deleteUser(String email);
+    void deleteUnconfirmedUsers();
 }

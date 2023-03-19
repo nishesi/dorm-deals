@@ -9,4 +9,5 @@ public interface UserRepository  extends CrudRepository<User, Long> {
     Optional<User> getByEmail(String email);
     Optional<User> getByHashForConfirm(String hashForConfirm);
     boolean existsUserByEmail(String email);
+    void deleteByStateEquals(User.State state);
 }

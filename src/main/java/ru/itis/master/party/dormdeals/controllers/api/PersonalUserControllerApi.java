@@ -75,7 +75,7 @@ public interface PersonalUserControllerApi {
                     })
     })
     @GetMapping("/cart")
-    ResponseEntity<CartDto> getCart();
+    ResponseEntity<CartDto> getCart(@RequestHeader(value = "Cookie", required = false) String cookieHeader);
 
 //    @PutMapping("/cart/{product-id}/inactive")
 //    ResponseEntity<?> inactiveProduct(@Parameter(name = "Индентификатор товара") @PathVariable("product-id") Long productId);

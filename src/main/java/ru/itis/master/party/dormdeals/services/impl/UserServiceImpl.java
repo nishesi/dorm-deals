@@ -16,6 +16,7 @@ import ru.itis.master.party.dormdeals.utils.EmailUtil;
 import ru.itis.master.party.dormdeals.utils.OwnerChecker;
 import ru.itis.master.party.dormdeals.utils.ResourceUrlResolver;
 
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -83,5 +84,12 @@ public class UserServiceImpl implements UserService {
     private User getUserFromRepository(String email) {
         return userRepository.getByEmail(email)
                 .orElseThrow(() -> new NotFoundException("User with email = <" + email + "> is not found"));
+    }
+
+
+    @Transactional
+    @Override
+    public void deleteUnconfirmedUsers() {
+        userRepository.deleteByStateEquals(User.State.NOT_CONFIRMED);
     }
 }

@@ -7,6 +7,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import ru.itis.master.party.dormdeals.controllers.api.PersonalUserControllerApi;
@@ -55,13 +56,14 @@ public class PersonalUserController implements PersonalUserControllerApi {
     }
 
     @Override
-    public ResponseEntity<CartDto> getCart() {
-        if (checkAuthentication()) {
-            return ResponseEntity.ok(cartService.getCart());
-        //TODO сделать что то с получение корзины для неавторизованного юзера
-        } else {
-            return ResponseEntity.ok().build();
-        }
+    public ResponseEntity<CartDto> getCart(String cookieHeader) {
+        return ResponseEntity.ok(cartService.getCart(cookieHeader));
+//        if (checkAuthentication()) {
+//            return ResponseEntity.ok(cartService.getCart());
+//        //TODO сделать что то с получение корзины для неавторизованного юзера
+//        } else {
+//            return ResponseEntity.ok().build();
+//        }
     }
 
     @Override
