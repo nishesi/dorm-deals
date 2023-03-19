@@ -8,20 +8,25 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 @Schema(description = "Обновленный магазин")
 public class UpdateShop {
+
     @Schema(description = "название магазина", example = "казанэкспресс")
     @NotBlank
     @Size(min = 5, max = 100)
     private String name;
+
     @Schema(description = "описание магазина", example = "у нас самые низкие цены")
     @NotBlank
     @Size(max = 1000)
     private String description;
-    @Schema(description = "расположение магазина", example = "расположение магазина")
-    private String placeSells;
+
+    @Schema(description = "идентификаторы мест продажи", example = "[1, 2, 3]")
+    private List<Long> dormitoryIdList;
 }

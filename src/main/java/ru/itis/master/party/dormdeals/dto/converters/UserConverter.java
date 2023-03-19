@@ -18,7 +18,6 @@ public class UserConverter {
                 .firstName(user.getFirstName())
                 .lastName(user.getLastName())
                 .telephone(user.getTelephone())
-                .dormitory(user.getDormitory())
                 .userImageUrl(imageUrl)
                 .build();
     }

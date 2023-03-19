@@ -12,9 +12,12 @@ import ru.itis.master.party.dormdeals.dto.ShopDto.UpdateShop;
 import ru.itis.master.party.dormdeals.dto.ShopWithProducts;
 import ru.itis.master.party.dormdeals.services.ShopsService;
 
+import java.security.Principal;
+
 @RestController
 @RequiredArgsConstructor
 public class ShopsController implements ShopsApi {
+
     private final ShopsService shopsService;
 
     @Override
@@ -24,9 +27,9 @@ public class ShopsController implements ShopsApi {
     }
 
     @Override
-    public ResponseEntity<ShopDto> createShop(NewShop newShop) {
+    public ResponseEntity<ShopDto> createShop(Principal principal, NewShop newShop) {
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(shopsService.createShop(newShop));
+                .body(shopsService.createShop(principal.getName(), newShop));
     }
 
     @Override
@@ -49,6 +52,4 @@ public class ShopsController implements ShopsApi {
     public ResponseEntity<ShopWithProducts> getAllProductsThisShop(Long shopId, int page) {
         return ResponseEntity.ok().body(shopsService.getAllProductsThisShop(shopId, page));
     }
-
-
 }

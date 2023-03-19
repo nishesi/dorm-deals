@@ -1,7 +1,5 @@
 package ru.itis.master.party.dormdeals.services.impl;
 
-
-
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
@@ -11,6 +9,7 @@ import ru.itis.master.party.dormdeals.dto.ProductDto.NewProduct;
 import ru.itis.master.party.dormdeals.dto.ProductDto.ProductDto;
 import ru.itis.master.party.dormdeals.dto.ProductDto.ProductsPage;
 import ru.itis.master.party.dormdeals.dto.ProductDto.UpdateProduct;
+import ru.itis.master.party.dormdeals.dto.converters.ProductConverter;
 import ru.itis.master.party.dormdeals.exceptions.NotFoundException;
 import ru.itis.master.party.dormdeals.models.Product;
 import ru.itis.master.party.dormdeals.models.Shop;
@@ -18,16 +17,14 @@ import ru.itis.master.party.dormdeals.repositories.ProductsRepository;
 import ru.itis.master.party.dormdeals.repositories.ShopsRepository;
 import ru.itis.master.party.dormdeals.repositories.UserRepository;
 import ru.itis.master.party.dormdeals.services.ProductService;
-import ru.itis.master.party.dormdeals.utils.OwnerChecker;
 import ru.itis.master.party.dormdeals.utils.GetOrThrow;
-import ru.itis.master.party.dormdeals.utils.ResourceUrlResolver;
+import ru.itis.master.party.dormdeals.utils.OwnerChecker;
 
-import static ru.itis.master.party.dormdeals.dto.ProductDto.ProductDto.from;
 
 @Service
 @RequiredArgsConstructor
 public class ProductServiceImpl implements ProductService {
-    private final ResourceUrlResolver resourceUrlResolver;
+    private final ProductConverter productConverter;
     private final ProductsRepository productsRepository;
     private final ShopsRepository shopsRepository;
     private final UserRepository userRepository;
@@ -43,7 +40,7 @@ public class ProductServiceImpl implements ProductService {
         Page<Product> productsPage = productsRepository.findAllByStateOrderById(Product.State.ACTIVE, pageRequest);
 
         return ProductsPage.builder()
-                .products(from(productsPage.getContent(), resourceUrlResolver))
+                .products(productConverter.from(productsPage.getContent()))
                 .totalPageCount(productsPage.getTotalPages())
                 .build();
     }
@@ -65,13 +62,13 @@ public class ProductServiceImpl implements ProductService {
 
         productsRepository.save(product);
 
-        return from(product, resourceUrlResolver);
+        return productConverter.from(product);
     }
 
     @Override
     public ProductDto getProduct(Long productId) {
         Product product = getOrThrow.getProductOrThrow(productId, productsRepository);
-        return from(product, resourceUrlResolver);
+        return productConverter.from(product);
     }
 
     @Override
@@ -86,7 +83,7 @@ public class ProductServiceImpl implements ProductService {
 
         productsRepository.save(productForUpdate);
 
-        return from(productForUpdate, resourceUrlResolver);
+        return productConverter.from(productForUpdate);
     }
 
     @Override

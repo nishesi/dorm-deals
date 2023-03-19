@@ -41,7 +41,6 @@ public class UserServiceImpl implements UserService {
                 .firstName(userDto.getFirstName())
                 .lastName(userDto.getLastName())
                 .telephone(userDto.getTelephone())
-                .dormitory(userDto.getDormitory())
                 .state(User.State.NOT_CONFIRMED)
                 .hashForConfirm(DigestUtils.sha256Hex(userDto.getEmail() + UUID.randomUUID()))
                 .role(Role.ROLE_USER)
@@ -70,7 +69,6 @@ public class UserServiceImpl implements UserService {
         user.setFirstName(userDto.getFirstName());
         user.setLastName(userDto.getLastName());
         user.setTelephone(userDto.getTelephone());
-        user.setDormitory(userDto.getDormitory());
 
         user = userRepository.save(user);
         return userConverter.from(user);

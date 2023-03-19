@@ -9,6 +9,7 @@ import java.util.Optional;
 
 public interface ShopsRepository extends CrudRepository<Shop, Long> {
     Page<Shop> findAllByOrderByIdAsc(Pageable pageable);
-    Integer countShopsByOwnerId(Long ownerId);
     Optional<Shop> findShopByOwnerId(Long ownerId);
+    boolean existsByOwnerId(Long ownerId);
+    boolean existsByName(String name);
 }

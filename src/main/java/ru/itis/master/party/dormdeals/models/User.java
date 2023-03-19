@@ -36,7 +36,6 @@ public class User {
     private String lastName;
     @Column(length = 15)
     private String telephone;
-    private String dormitory;
     @Column(columnDefinition = "char(64)")
     private String hashForConfirm;
     @Enumerated(EnumType.STRING)

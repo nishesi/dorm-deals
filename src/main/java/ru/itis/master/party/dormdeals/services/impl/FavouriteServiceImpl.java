@@ -4,6 +4,7 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.itis.master.party.dormdeals.dto.ProductDto.ProductDto;
+import ru.itis.master.party.dormdeals.dto.converters.ProductConverter;
 import ru.itis.master.party.dormdeals.exceptions.MostAddedProductsInFavouriteException;
 import ru.itis.master.party.dormdeals.models.Favourites;
 import ru.itis.master.party.dormdeals.models.Product;
@@ -13,9 +14,6 @@ import ru.itis.master.party.dormdeals.repositories.ProductsRepository;
 import ru.itis.master.party.dormdeals.repositories.UserRepository;
 import ru.itis.master.party.dormdeals.services.FavouriteService;
 import ru.itis.master.party.dormdeals.utils.OwnerChecker;
-import ru.itis.master.party.dormdeals.utils.ResourceUrlResolver;
-
-import static ru.itis.master.party.dormdeals.dto.ProductDto.ProductDto.from;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -23,10 +21,15 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class FavouriteServiceImpl implements FavouriteService {
-    private final ResourceUrlResolver resourceUrlResolver;
+
+    private final ProductConverter productConverter;
+
     private final FavouriteRepository favouriteRepository;
+
     private final ProductsRepository productsRepository;
+
     private final UserRepository userRepository;
+
     private final OwnerChecker ownerChecker;
 
     @Override
@@ -48,7 +51,7 @@ public class FavouriteServiceImpl implements FavouriteService {
         User user = ownerChecker.initThisUser(userRepository);
         List<Product> products = favouriteRepository.findByUserId(user.getId()).stream()
                 .map(Favourites::getProduct).collect(Collectors.toList());
-        return from(products, resourceUrlResolver);
+        return productConverter.from(products);
     }
 
     @Transactional

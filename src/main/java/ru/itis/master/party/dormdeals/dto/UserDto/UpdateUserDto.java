@@ -35,8 +35,4 @@ public class UpdateUserDto {
     @Pattern(regexp = "[+]?[0-9]{11}", message = "не соответствует телефонному номеру")
     @Length(max = 50)
     private String telephone;
-
-    @Schema(example = "Universiade Village, 18")
-    @NotBlank
-    private String dormitory;
 }
