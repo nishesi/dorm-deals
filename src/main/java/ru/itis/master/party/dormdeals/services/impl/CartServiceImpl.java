@@ -17,6 +17,7 @@ import ru.itis.master.party.dormdeals.repositories.UserRepository;
 import ru.itis.master.party.dormdeals.services.CartService;
 import ru.itis.master.party.dormdeals.utils.GetOrThrow;
 import ru.itis.master.party.dormdeals.utils.OwnerChecker;
+import ru.itis.master.party.dormdeals.utils.ResourceUrlResolver;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -27,6 +28,7 @@ import static ru.itis.master.party.dormdeals.dto.ProductDto.ProductDtoCart.from;
 @Service
 @RequiredArgsConstructor
 public class CartServiceImpl implements CartService {
+    private final ResourceUrlResolver resourceUrlResolver;
     private final OwnerChecker ownerChecker;
     private final GetOrThrow getOrThrow;
     private final UserRepository userRepository;
@@ -103,7 +105,7 @@ public class CartServiceImpl implements CartService {
             }
 
             List<Cart> cart = cartRepository.findByUserId(user.getId());
-            List<ProductDtoCart> productDtoCart = from(cart);
+            List<ProductDtoCart> productDtoCart = from(cart, resourceUrlResolver);
 
 
             return CartDto.builder()
@@ -118,7 +120,7 @@ public class CartServiceImpl implements CartService {
                             .product(getOrThrow.getProductOrThrow(finalProductIdFromCookie.get(i), productsRepository))
                                     .count(finalProductCountFromCookie.get(i))
                             .build()).collect(Collectors.toList());
-            List<ProductDtoCart> productDtoCart = from(cart);
+            List<ProductDtoCart> productDtoCart = from(cart, resourceUrlResolver);
 
             return CartDto.builder()
                     .productDtoCart(productDtoCart)
