@@ -6,29 +6,27 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
-import ru.itis.master.party.dormdeals.models.Order;
-import ru.itis.master.party.dormdeals.models.Shop;
-import ru.itis.master.party.dormdeals.models.User;
+import ru.itis.master.party.dormdeals.dto.ShopDto.ShopDto;
+import ru.itis.master.party.dormdeals.dto.UserDto.UserDto;
 
-import java.util.Date;
-import java.util.List;
-import java.util.stream.Collectors;
+import java.time.ZonedDateTime;
 
 @Data
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
 @Schema(description = "Заказ")
 public class OrderDto {
+
     @Schema(description = "Идентификатор заказа", example = "1")
     private Long id;
 
     @Schema(description = "Заказчик")
-    private User user;
+    private UserDto user;
 
     @Schema(description = "Время заказа", example = "16-03-2023 21:40")
-    @DateTimeFormat(pattern = "dd-MM-yyyy hh-mm")
-    private Date orderTime;
+    @DateTimeFormat(pattern = "dd-MM-yyyy hh-mm-ss XX")
+    private ZonedDateTime orderTime;
 
     @Schema(description = "Комментарий от заказчика", example = "Хочу оставить вам чаевые =)")
     private String userComment;
@@ -37,24 +35,5 @@ public class OrderDto {
     private float price;
 
     @Schema(description = "Магазин")
-    private Shop shop;
-
-    public static OrderDto from(Order order) {
-        return OrderDto.builder()
-                .id(order.getId())
-                .user(order.getUser())
-                .orderTime(order.getOrderTime())
-                .userComment(order.getUserComment())
-                .shop(order.getShop())
-                .price(order.getPrice())
-                .build();
-    }
-
-    public static List<OrderDto> from(List<Order> orders) {
-        return orders
-                .stream()
-                .map(OrderDto::from)
-                .collect(Collectors.toList());
-    }
-
+    private ShopDto shop;
 }

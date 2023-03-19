@@ -7,14 +7,15 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 
-import java.util.Date;
+import java.time.ZonedDateTime;
 
-@Table(name = "orders")
-@Entity
+
 @Data
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
+@Table(name = "orders")
+@Entity
 public class Order {
     public enum State {
         IN_PROCESSING,
@@ -31,9 +32,9 @@ public class Order {
     @JoinColumn(name = "user_id")
     private User user;
 
-    @DateTimeFormat(pattern = "dd-MM-yyyy hh-mm")
+    @DateTimeFormat(pattern = "dd-MM-yyyy hh-mm-ss XX")
     @Temporal(TemporalType.TIMESTAMP)
-    private Date orderTime;
+    private ZonedDateTime orderTime;
 
     private String userComment;
 

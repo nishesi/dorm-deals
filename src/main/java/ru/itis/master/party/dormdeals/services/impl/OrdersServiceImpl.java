@@ -6,27 +6,35 @@ import org.springframework.stereotype.Service;
 import ru.itis.master.party.dormdeals.dto.OrderDto.NewOrder;
 import ru.itis.master.party.dormdeals.dto.OrderDto.OrderDto;
 import ru.itis.master.party.dormdeals.dto.OrderDto.OrderWithProducts;
-import ru.itis.master.party.dormdeals.dto.ProductDto.ProductDtoCart;
+import ru.itis.master.party.dormdeals.dto.ProductDto.CartProductDto;
+import ru.itis.master.party.dormdeals.dto.converters.OrderConverter;
+import ru.itis.master.party.dormdeals.exceptions.NotFoundException;
 import ru.itis.master.party.dormdeals.models.Order;
 import ru.itis.master.party.dormdeals.models.OrderProduct;
 import ru.itis.master.party.dormdeals.models.Product;
+import ru.itis.master.party.dormdeals.models.Shop;
+import ru.itis.master.party.dormdeals.models.User;
 import ru.itis.master.party.dormdeals.repositories.OrderProductsRepository;
 import ru.itis.master.party.dormdeals.repositories.OrdersRepository;
 import ru.itis.master.party.dormdeals.repositories.ProductsRepository;
+import ru.itis.master.party.dormdeals.repositories.ShopsRepository;
 import ru.itis.master.party.dormdeals.repositories.UserRepository;
 import ru.itis.master.party.dormdeals.services.OrdersService;
 import ru.itis.master.party.dormdeals.utils.GetOrThrow;
 import ru.itis.master.party.dormdeals.utils.OwnerChecker;
 
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.*;
 
-import static ru.itis.master.party.dormdeals.dto.OrderDto.OrderDto.from;
 
 @Service
 @RequiredArgsConstructor
 public class OrdersServiceImpl implements OrdersService {
+    private final OrderConverter orderConverter;
     private final OrdersRepository ordersRepository;
     private final OrderProductsRepository orderProductsRepository;
+    private final ShopsRepository shopsRepository;
     private final ProductsRepository productsRepository;
     private final OwnerChecker ownerChecker;
     private final UserRepository userRepository;
@@ -34,15 +42,23 @@ public class OrdersServiceImpl implements OrdersService {
 
     @Override
     public OrderDto getOrder(Long id) {
-        return from(getOrThrow.getOrderOrThrow(id, ordersRepository));
+        return orderConverter.from(getOrThrow.getOrderOrThrow(id, ordersRepository));
     }
 
     @Override
-    public OrderDto createOrder(NewOrder newOrder) {
+    public OrderDto createOrder(String userEmail, NewOrder newOrder) {
+        User user = userRepository.getByEmail(userEmail).orElseThrow(() ->
+                new NotFoundException("user with email <" + userEmail + "> not found"));
+
+        Shop shop = shopsRepository.findById(newOrder.getShopId()).orElseThrow(() ->
+                new NotFoundException("shop with id <" + newOrder.getShopId() + "> not found"));
+
+        ZonedDateTime orderTime = ZonedDateTime.now(ZoneId.of("Europe/Moscow"));
+
         Order order = Order.builder()
-                .user(newOrder.getUser())
-                .shop(newOrder.getShop())
-                .orderTime(newOrder.getOrderTime())
+                .user(user)
+                .shop(shop)
+                .orderTime(orderTime)
                 .userComment(newOrder.getUserComment())
                 .price(0)
                 .state(Order.State.IN_PROCESSING)
@@ -50,12 +66,13 @@ public class OrdersServiceImpl implements OrdersService {
 
         ordersRepository.save(order);
 
-        return from(order);
+        return orderConverter.from(order);
     }
 
     @Override
     public OrderDto updateOrderState(Long id, Order.State state) {
-        ownerChecker.checkOwnerShop(getOrder(id)
+        ownerChecker.checkOwnerShop(
+                getOrder(id)
                         .getShop()
                         .getOwner()
                         .getId(),
@@ -64,7 +81,7 @@ public class OrdersServiceImpl implements OrdersService {
         Order order = getOrThrow.getOrderOrThrow(id, ordersRepository);
         order.setState(state);
 
-        return from(ordersRepository.save(order));
+        return orderConverter.from(ordersRepository.save(order));
     }
 
     @Transactional
@@ -77,12 +94,12 @@ public class OrdersServiceImpl implements OrdersService {
     }
 
     @Override
-    public List<OrderDto> createOrder(List<ProductDtoCart> productDtoCartList) {
+    public List<OrderDto> createOrder(String userEmail, List<CartProductDto> cartProductDtoList) {
         Map<Long, OrderDto> orderMap = new HashMap<>(); // shopId -> orderDto
         Set<Long> shopsIdSet = new HashSet<>();
 
-        for (ProductDtoCart productDtoCart : productDtoCartList) {
-            Long productId = productDtoCart.getId();
+        for (CartProductDto cartProductDto : cartProductDtoList) {
+            Long productId = cartProductDto.getId();
             Product product = getOrThrow
                     .getProductOrThrow(productId, productsRepository);
             Long shopId = product.getShop().getId();
@@ -91,14 +108,11 @@ public class OrdersServiceImpl implements OrdersService {
                 shopsIdSet.add(shopId);
 
                 NewOrder newOrder = NewOrder.builder()
-                        .orderTime(new Date())
-                        .user(ownerChecker
-                                .initThisUser(userRepository))
-                        .shop(product
-                                .getShop())
+                        .shopId(product
+                                .getShop().getId())
                         .build();
 
-                OrderDto orderDto = createOrder(newOrder);
+                OrderDto orderDto = createOrder(userEmail, newOrder);
                 orderMap.put(shopId, orderDto);
             }
 
@@ -110,7 +124,7 @@ public class OrdersServiceImpl implements OrdersService {
                             .getOrderOrThrow(
                                     orderDto.getId(),
                                     ordersRepository))
-                    .count(productDtoCart.getCountInCart())
+                    .count(cartProductDto.getCount())
                     .build();
 
             orderDto.setPrice(orderDto.getPrice() + orderProduct.getProduct().getPrice() * orderProduct.getCount());
@@ -121,7 +135,7 @@ public class OrdersServiceImpl implements OrdersService {
             updateOrderPrice(orderDto.getId(), orderDto.getPrice());
         }
 
-        return (List<OrderDto>) orderMap.values();
+        return new ArrayList<>(orderMap.values());
     }
 
     @Override

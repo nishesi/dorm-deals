@@ -1,12 +1,12 @@
 package ru.itis.master.party.dormdeals.services.impl;
 
-
 import jakarta.servlet.http.Cookie;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.itis.master.party.dormdeals.dto.CartDto;
-import ru.itis.master.party.dormdeals.dto.ProductDto.ProductDtoCart;
+import ru.itis.master.party.dormdeals.dto.ProductDto.CartProductDto;
+import ru.itis.master.party.dormdeals.dto.converters.CartProductConverter;
 import ru.itis.master.party.dormdeals.exceptions.NotEnoughProductException;
 import ru.itis.master.party.dormdeals.models.Cart;
 import ru.itis.master.party.dormdeals.models.Product;
@@ -17,22 +17,30 @@ import ru.itis.master.party.dormdeals.repositories.UserRepository;
 import ru.itis.master.party.dormdeals.services.CartService;
 import ru.itis.master.party.dormdeals.utils.GetOrThrow;
 import ru.itis.master.party.dormdeals.utils.OwnerChecker;
-import ru.itis.master.party.dormdeals.utils.ResourceUrlResolver;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
-
-import static ru.itis.master.party.dormdeals.dto.ProductDto.ProductDtoCart.from;
 
 @Service
 @RequiredArgsConstructor
 public class CartServiceImpl implements CartService {
-    private final ResourceUrlResolver resourceUrlResolver;
+
+    private final CartProductConverter cartProductConverter;
+
     private final OwnerChecker ownerChecker;
+
     private final GetOrThrow getOrThrow;
+
     private final UserRepository userRepository;
+
     private final CartRepository cartRepository;
+
     private final ProductsRepository productsRepository;
 
     @Override
@@ -59,6 +67,7 @@ public class CartServiceImpl implements CartService {
             }
         }
     }
+
     //TODO ЭТО ПРОСТО КРИНЖА надо всё переделать, но зато щас работает)))
     @Override
     @Transactional
@@ -105,12 +114,12 @@ public class CartServiceImpl implements CartService {
             }
 
             List<Cart> cart = cartRepository.findByUserId(user.getId());
-            List<ProductDtoCart> productDtoCart = from(cart, resourceUrlResolver);
+            List<CartProductDto> cartProductDto = cartProductConverter.from(cart);
 
 
             return CartDto.builder()
-                    .productDtoCart(productDtoCart)
-                    .sumOfProducts(getSumOfProducts(productDtoCart, cart))
+                    .cartProductDto(cartProductDto)
+                    .sumOfProducts(getSumOfProducts(cartProductDto, cart))
                     .build();
         } else {
             List<Integer> finalProductCountFromCookie = productCountFromCookie;
@@ -118,13 +127,13 @@ public class CartServiceImpl implements CartService {
             List<Cart> cart = IntStream.range(0, productIdFromCookie.size())
                     .mapToObj(i -> Cart.builder()
                             .product(getOrThrow.getProductOrThrow(finalProductIdFromCookie.get(i), productsRepository))
-                                    .count(finalProductCountFromCookie.get(i))
+                            .count(finalProductCountFromCookie.get(i))
                             .build()).collect(Collectors.toList());
-            List<ProductDtoCart> productDtoCart = from(cart, resourceUrlResolver);
+            List<CartProductDto> cartProductDto = cartProductConverter.from(cart);
 
             return CartDto.builder()
-                    .productDtoCart(productDtoCart)
-                    .sumOfProducts(getSumOfProducts(productDtoCart, cart))
+                    .cartProductDto(cartProductDto)
+                    .sumOfProducts(getSumOfProducts(cartProductDto, cart))
                     .build();
         }
     }
@@ -145,8 +154,7 @@ public class CartServiceImpl implements CartService {
 
         if (count > product.getCountInStorage()) {
             throw new NotEnoughProductException("На складе осталось только " + product.getCountInStorage() + " позиций");
-        }
-        else if (count == 0) {
+        } else if (count == 0) {
             deleteCart(productId);
         } else {
             cart.setCount(count);
@@ -154,11 +162,10 @@ public class CartServiceImpl implements CartService {
         }
     }
 
-
     //TODO сделать этот метод поумнее
-    private Double getSumOfProducts(List<ProductDtoCart> productDtoCart, List<Cart> cart) {
-        Map<String, Float> productsPrices = productDtoCart.stream()
-                .collect(Collectors.toMap(ProductDtoCart::getName, ProductDtoCart::getPrice));
+    private Double getSumOfProducts(List<CartProductDto> cartProductDto, List<Cart> cart) {
+        Map<String, Float> productsPrices = cartProductDto.stream()
+                .collect(Collectors.toMap(CartProductDto::getName, CartProductDto::getPrice));
 
         return cart.stream().mapToDouble(i ->
                         (productsPrices.getOrDefault(i.getProduct().getName(), 0.0F) * i.getCount()))

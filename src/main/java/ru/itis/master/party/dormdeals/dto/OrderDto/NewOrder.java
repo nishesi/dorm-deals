@@ -5,10 +5,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import ru.itis.master.party.dormdeals.models.Shop;
-import ru.itis.master.party.dormdeals.models.User;
-
-import java.util.Date;
 
 @Data
 @NoArgsConstructor
@@ -16,8 +12,10 @@ import java.util.Date;
 @Builder
 @Schema(description = "Новый заказ")
 public class NewOrder {
-    private User user;
-    private Date orderTime;
+
+    @Schema(description = "идентификатор магазина", example = "100500")
+    private Long shopId;
+
+    @Schema(description = "комментарий пользователя", example = "а можно шоколадку в подарок :)")
     private String userComment;
-    private Shop shop;
 }

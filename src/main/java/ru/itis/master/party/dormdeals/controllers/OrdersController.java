@@ -7,10 +7,11 @@ import org.springframework.web.bind.annotation.RestController;
 import ru.itis.master.party.dormdeals.controllers.api.OrdersApi;
 import ru.itis.master.party.dormdeals.dto.OrderDto.OrderDto;
 import ru.itis.master.party.dormdeals.dto.OrderDto.OrderWithProducts;
-import ru.itis.master.party.dormdeals.dto.ProductDto.ProductDtoCart;
+import ru.itis.master.party.dormdeals.dto.ProductDto.CartProductDto;
 import ru.itis.master.party.dormdeals.models.Order;
 import ru.itis.master.party.dormdeals.services.OrdersService;
 
+import java.security.Principal;
 import java.util.List;
 
 @RestController
@@ -19,9 +20,9 @@ public class OrdersController implements OrdersApi {
     private final OrdersService ordersService;
 
     @Override
-    public ResponseEntity<List<OrderDto>> createOrder(List<ProductDtoCart> productDtoCartList) {
+    public ResponseEntity<List<OrderDto>> createOrder(Principal principal, List<CartProductDto> cartProductDtoList) {
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(ordersService.createOrder(productDtoCartList));
+                .body(ordersService.createOrder(principal.getName(), cartProductDtoList));
     }
 
     @Override

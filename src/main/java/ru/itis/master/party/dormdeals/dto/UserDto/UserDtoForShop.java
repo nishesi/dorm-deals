@@ -9,6 +9,7 @@ import ru.itis.master.party.dormdeals.models.User;
 @NoArgsConstructor
 @Builder
 public class UserDtoForShop {
+    private Long id;
 
     @Schema(example = "Bob")
     private String firstName;

@@ -1,6 +1,5 @@
 package ru.itis.master.party.dormdeals.controllers.api;
 
-
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -14,14 +13,17 @@ import org.springframework.web.bind.annotation.*;
 import ru.itis.master.party.dormdeals.dto.ExceptionDto;
 import ru.itis.master.party.dormdeals.dto.OrderDto.OrderDto;
 import ru.itis.master.party.dormdeals.dto.OrderDto.OrderWithProducts;
-import ru.itis.master.party.dormdeals.dto.ProductDto.ProductDtoCart;
+import ru.itis.master.party.dormdeals.dto.ProductDto.CartProductDto;
 
+import java.security.Principal;
 import java.util.List;
+
 @Tags(value = {
         @Tag(name = "Orders")
 })
 @RequestMapping("/orders")
 public interface OrdersApi {
+
     @Operation(summary = "Заказ(ы) товаров из корзины")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "Заказ(ы) создан(ы)",
@@ -32,8 +34,10 @@ public interface OrdersApi {
             )
     })
     @PostMapping
-    ResponseEntity<List<OrderDto>> createOrder(@Parameter(description = "Список товаров с корзины")
-                                               @RequestBody List<ProductDtoCart> productDtoCartList);
+    ResponseEntity<List<OrderDto>> createOrder(
+            Principal principal,
+            @Parameter(description = "Список товаров с корзины")
+            @RequestBody List<CartProductDto> cartProductDtoList);
 
     @Operation(summary = "Получение заказа")
     @ApiResponses(value = {
@@ -52,7 +56,7 @@ public interface OrdersApi {
     })
     @GetMapping("/{order-id}")
     ResponseEntity<OrderDto> getOrder(@Parameter(description = "Идентификатор заказа", example = "1")
-                                    @PathVariable("order-id") Long orderId);
+                                      @PathVariable("order-id") Long orderId);
 
     @Operation(summary = "Обновление статуса заказа на CONFIRMED")
     @ApiResponses(value = {
@@ -72,7 +76,6 @@ public interface OrdersApi {
     @PutMapping("/{order-id}/confirm")
     ResponseEntity<OrderDto> updateOrderStateToConfirmed(
             @Parameter(description = "Идентификатор заказа", example = "1") @PathVariable("order-id") Long orderId);
-
 
     @Operation(summary = "Обновление статуса заказа на IN_DELIVERY")
     @ApiResponses(value = {
@@ -125,7 +128,6 @@ public interface OrdersApi {
     @DeleteMapping("/{order-id}")
     ResponseEntity<?> deleteOrder(
             @Parameter(description = "Идентификатор заказа", example = "1") @PathVariable("order-id") Long orderId);
-
 
     @Operation(summary = "Получение заказа с его товарами")
     @ApiResponses(value = {
