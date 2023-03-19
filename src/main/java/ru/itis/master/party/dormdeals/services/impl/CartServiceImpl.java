@@ -2,10 +2,8 @@ package ru.itis.master.party.dormdeals.services.impl;
 
 
 import jakarta.servlet.http.Cookie;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.itis.master.party.dormdeals.dto.CartDto;
 import ru.itis.master.party.dormdeals.dto.ProductDto.ProductDtoCart;
@@ -35,10 +33,6 @@ public class CartServiceImpl implements CartService {
     private final CartRepository cartRepository;
     private final ProductsRepository productsRepository;
 
-    //TODO вот это мне ваще не нравится, тоже надо что то придумать
-    @Autowired
-    private HttpServletRequest request;
-
     @Override
     public void addCart(Long productId) {
         User user = ownerChecker.initThisUser(userRepository);
@@ -63,16 +57,28 @@ public class CartServiceImpl implements CartService {
             }
         }
     }
-
+    //TODO ЭТО ПРОСТО КРИНЖА надо всё переделать, но зато щас работает)))
     @Override
     @Transactional
-    public CartDto getCart() {
-        Cookie[] cookies = request.getCookies();
+    public CartDto getCart(String cookieHeader) {
         List<Long> productIdFromCookie = new ArrayList<>();
         List<Integer> productCountFromCookie = new ArrayList<>();
         Map<Long, Integer> productIdAndCountFromCookie = new HashMap<>();
 
-        if (cookies != null) {
+        if (cookieHeader != null) {
+            List<Cookie> cookies = Arrays.stream(cookieHeader.split(";"))
+                    .map(String::trim)
+                    .map(cookieString -> {
+                        String[] parts = cookieString.split("=");
+                        if (parts.length == 2) {
+                            return new Cookie(parts[0], parts[1]);
+                        } else {
+                            return null;
+                        }
+                    })
+                    .filter(Objects::nonNull)
+                    .toList();
+
             for (Cookie cookie : cookies) {
                 if (cookie.getName().equals("cart")) {
                     productIdFromCookie = Arrays.stream(cookie.getValue().split("&")).map(Long::parseLong).collect(Collectors.toList());
@@ -82,8 +88,8 @@ public class CartServiceImpl implements CartService {
                 }
             }
             productIdAndCountFromCookie = IntStream.range(0, productIdFromCookie.size())
-                            .boxed()
-                                    .collect(Collectors.toMap(productIdFromCookie::get, productCountFromCookie::get));
+                    .boxed()
+                    .collect(Collectors.toMap(productIdFromCookie::get, productCountFromCookie::get));
         }
 
         User user = ownerChecker.initThisUser(userRepository);
@@ -146,6 +152,8 @@ public class CartServiceImpl implements CartService {
         }
     }
 
+
+    //TODO сделать этот метод поумнее
     private Double getSumOfProducts(List<ProductDtoCart> productDtoCart, List<Cart> cart) {
         Map<String, Float> productsPrices = productDtoCart.stream()
                 .collect(Collectors.toMap(ProductDtoCart::getName, ProductDtoCart::getPrice));
