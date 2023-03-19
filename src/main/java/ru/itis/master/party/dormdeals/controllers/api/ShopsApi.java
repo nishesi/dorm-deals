@@ -18,6 +18,8 @@ import ru.itis.master.party.dormdeals.dto.ShopDto.UpdateShop;
 import ru.itis.master.party.dormdeals.models.Shop;
 import ru.itis.master.party.dormdeals.dto.ShopWithProducts;
 
+import java.security.Principal;
+
 @Tags(value = {
         @Tag(name = "Shops")
 })
@@ -45,7 +47,7 @@ public interface ShopsApi {
             )
     })
     @PostMapping
-    ResponseEntity<ShopDto> createShop(@RequestBody NewShop newShop);
+    ResponseEntity<ShopDto> createShop(Principal principal, @RequestBody NewShop newShop);
 
     @Operation(summary = "Получение магазина")
     @ApiResponses(value = {
