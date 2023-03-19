@@ -8,8 +8,12 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import ru.itis.master.party.dormdeals.dto.ProductDto.ProductDto;
 import ru.itis.master.party.dormdeals.dto.ProductDto.ProductDtoCart;
+import ru.itis.master.party.dormdeals.models.Cart;
+
+import static ru.itis.master.party.dormdeals.dto.ProductDto.ProductDto.from;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Builder
 @AllArgsConstructor

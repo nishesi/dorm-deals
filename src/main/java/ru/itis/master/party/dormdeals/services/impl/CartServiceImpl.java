@@ -22,6 +22,7 @@ import ru.itis.master.party.dormdeals.utils.OwnerChecker;
 
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import static ru.itis.master.party.dormdeals.dto.ProductDto.ProductDtoCart.from;
 
@@ -42,7 +43,7 @@ public class CartServiceImpl implements CartService {
     public void addCart(Long productId) {
         User user = ownerChecker.initThisUser(userRepository);
         Product product = getOrThrow.getProductOrThrow(productId, productsRepository);
-        Cart cart = getOrThrow.getCartOrThrow(user.getId(), productId, cartRepository);
+        Cart cart = cartRepository.findByUserIdAndProductId(user.getId(), productId).orElse(null);
 
         if (product.getState().equals(Product.State.ACTIVE)) {
             if (cart != null && product.getCountInStorage() == cart.getCount()) {
@@ -67,34 +68,55 @@ public class CartServiceImpl implements CartService {
     public CartDto getCart() {
         Cookie[] cookies = request.getCookies();
         List<Long> productIdFromCookie = new ArrayList<>();
+        List<Integer> productCountFromCookie = new ArrayList<>();
+        Map<Long, Integer> productIdAndCountFromCookie = new HashMap<>();
 
         if (cookies != null) {
             for (Cookie cookie : cookies) {
                 if (cookie.getName().equals("cart")) {
                     productIdFromCookie = Arrays.stream(cookie.getValue().split("&")).map(Long::parseLong).collect(Collectors.toList());
                 }
+                if (cookie.getName().equals("count")) {
+                    productCountFromCookie = Arrays.stream(cookie.getValue().split("&")).map(Integer::parseInt).collect(Collectors.toList());
+                }
             }
-            productIdFromCookie.forEach(this::addCart);
+            productIdAndCountFromCookie = IntStream.range(0, productIdFromCookie.size())
+                            .boxed()
+                                    .collect(Collectors.toMap(productIdFromCookie::get, productCountFromCookie::get));
         }
 
         User user = ownerChecker.initThisUser(userRepository);
-        List<Cart> cart = cartRepository.findByUserId(user.getId());
-        List<ProductDtoCart> productDto = from(cart);
 
-        //TODO написать реализацию получения суммы товаров по другому более красиво
+        if (user != null) {
+            List<Cart> cart = cartRepository.findByUserId(user.getId());
+            List<ProductDtoCart> productDtoCart = from(cart);
 
-        Map<String, Float> productsPrices = productDto.stream()
-                .collect(Collectors.toMap(ProductDtoCart::getName, ProductDtoCart::getPrice));
+            if (productIdAndCountFromCookie.size() > 0) {
+                productIdAndCountFromCookie.forEach(((productId, count) -> {
+                    addCart(productId);
+                    setCountProduct(productId, count);
+                }));
+            }
 
-        Double totalCost = cart.stream().mapToDouble(i ->
-                (productsPrices.getOrDefault(i.getProduct().getName(), 0.0F) * i.getCount()))
-                .sum();
+            return CartDto.builder()
+                    .productDtoCart(productDtoCart)
+                    .sumOfProducts(getSumOfProducts(productDtoCart, cart))
+                    .build();
+        } else {
+            List<Integer> finalProductCountFromCookie = productCountFromCookie;
+            List<Long> finalProductIdFromCookie = productIdFromCookie;
+            List<Cart> cart = IntStream.range(0, productIdFromCookie.size())
+                    .mapToObj(i -> Cart.builder()
+                            .product(getOrThrow.getProductOrThrow(finalProductIdFromCookie.get(i), productsRepository))
+                                    .count(finalProductCountFromCookie.get(i))
+                            .build()).collect(Collectors.toList());
+            List<ProductDtoCart> productDtoCart = from(cart);
 
-
-        return CartDto.builder()
-                .productDtoCart(productDto)
-                .sumOfProducts(totalCost)
-                .build();
+            return CartDto.builder()
+                    .productDtoCart(productDtoCart)
+                    .sumOfProducts(getSumOfProducts(productDtoCart, cart))
+                    .build();
+        }
     }
 
     @Transactional
@@ -120,6 +142,15 @@ public class CartServiceImpl implements CartService {
             cart.setCount(count);
             cartRepository.save(cart);
         }
+    }
+
+    private Double getSumOfProducts(List<ProductDtoCart> productDtoCart, List<Cart> cart) {
+        Map<String, Float> productsPrices = productDtoCart.stream()
+                .collect(Collectors.toMap(ProductDtoCart::getName, ProductDtoCart::getPrice));
+
+        return cart.stream().mapToDouble(i ->
+                        (productsPrices.getOrDefault(i.getProduct().getName(), 0.0F) * i.getCount()))
+                .sum();
     }
 
 }
