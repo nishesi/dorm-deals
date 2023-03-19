@@ -85,11 +85,6 @@ public class UserServiceImpl implements UserService {
     @Transactional
     @Override
     public void deleteUnconfirmedUsers() {
-        List<User> users = (List<User>) userRepository.findAll();
-        for (User user : users) {
-            if (user.getState().equals(User.State.NOT_CONFIRMED)) {
-                userRepository.delete(user);
-            }
-        }
+        userRepository.deleteByStateEquals(User.State.NOT_CONFIRMED);
     }
 }
