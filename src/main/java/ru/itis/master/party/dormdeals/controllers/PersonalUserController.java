@@ -56,12 +56,13 @@ public class PersonalUserController implements PersonalUserControllerApi {
 
     @Override
     public ResponseEntity<CartDto> getCart() {
-        if (checkAuthentication()) {
-            return ResponseEntity.ok(cartService.getCart());
-        //TODO сделать что то с получение корзины для неавторизованного юзера
-        } else {
-            return ResponseEntity.ok().build();
-        }
+        return ResponseEntity.ok(cartService.getCart());
+//        if (checkAuthentication()) {
+//            return ResponseEntity.ok(cartService.getCart());
+//        //TODO сделать что то с получение корзины для неавторизованного юзера
+//        } else {
+//            return ResponseEntity.ok().build();
+//        }
     }
 
     @Override
