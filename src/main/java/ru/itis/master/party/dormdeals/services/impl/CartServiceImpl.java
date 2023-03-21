@@ -18,12 +18,14 @@ import ru.itis.master.party.dormdeals.services.CartService;
 import ru.itis.master.party.dormdeals.utils.GetOrThrow;
 import ru.itis.master.party.dormdeals.utils.OwnerChecker;
 
+import java.net.HttpCookie;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -69,35 +71,26 @@ public class CartServiceImpl implements CartService {
     }
 
     //TODO ЭТО ПРОСТО КРИНЖА надо всё переделать, но зато щас работает)))
+    //TODO сделать проверку на количество в куках и количество на складе, но это мб будет делать фронт
     @Override
     @Transactional
     public CartDto getCart(String cookieHeader) {
         List<Long> productIdFromCookie = new ArrayList<>();
-        List<Integer> productCountFromCookie = new ArrayList<>();
+        List<Integer> productCountFromCookie= new ArrayList<>();
         Map<Long, Integer> productIdAndCountFromCookie = new HashMap<>();
 
         if (cookieHeader != null) {
-            List<Cookie> cookies = Arrays.stream(cookieHeader.split(";"))
-                    .map(String::trim)
-                    .map(cookieString -> {
-                        String[] parts = cookieString.split("=");
-                        if (parts.length == 2) {
-                            return new Cookie(parts[0], parts[1]);
-                        } else {
-                            return null;
-                        }
-                    })
-                    .filter(Objects::nonNull)
-                    .toList();
+            List<Cookie> cookies = getCookieFromHeader(cookieHeader);
 
             for (Cookie cookie : cookies) {
-                if (cookie.getName().equals("cart")) {
-                    productIdFromCookie = Arrays.stream(cookie.getValue().split("&")).map(Long::parseLong).collect(Collectors.toList());
-                }
-                if (cookie.getName().equals("count")) {
-                    productCountFromCookie = Arrays.stream(cookie.getValue().split("&")).map(Integer::parseInt).collect(Collectors.toList());
+                switch (cookie.getName()) {
+                    case "cart" -> productIdFromCookie = Arrays.stream(cookie.getValue().split("&"))
+                            .map(Long::parseLong).collect(Collectors.toList());
+                    case "count" -> productCountFromCookie = Arrays.stream(cookie.getValue().split("&"))
+                            .map(Integer::parseInt).collect(Collectors.toList());
                 }
             }
+
             productIdAndCountFromCookie = IntStream.range(0, productIdFromCookie.size())
                     .boxed()
                     .collect(Collectors.toMap(productIdFromCookie::get, productCountFromCookie::get));
@@ -162,14 +155,21 @@ public class CartServiceImpl implements CartService {
         }
     }
 
-    //TODO сделать этот метод поумнее
     private Double getSumOfProducts(List<CartProductDto> cartProductDto, List<Cart> cart) {
-        Map<String, Float> productsPrices = cartProductDto.stream()
-                .collect(Collectors.toMap(CartProductDto::getName, CartProductDto::getPrice));
+        return cart.stream()
+                .mapToDouble(c -> cartProductDto.stream()
+                        .filter(cp -> cp.getName().equals(c.getProduct().getName()))
+                        .findFirst()
+                        .map(CartProductDto::getPrice)
+                        .orElse(0.0F) * c.getCount())
+                .reduce(0.0, Double::sum);
+    }
 
-        return cart.stream().mapToDouble(i ->
-                        (productsPrices.getOrDefault(i.getProduct().getName(), 0.0F) * i.getCount()))
-                .sum();
+    private List<Cookie> getCookieFromHeader(String cookieHeader) {
+        List<Cookie> cookies = Arrays.stream(cookieHeader.split(";\\s*"))
+                .map(s -> new Cookie(s.split("=", 2)[0], s.split("=", 2)[1]))
+                .collect(Collectors.toList());
+        return cookies;
     }
 
 }
