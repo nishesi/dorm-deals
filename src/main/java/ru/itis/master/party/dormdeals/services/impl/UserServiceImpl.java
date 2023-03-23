@@ -10,12 +10,13 @@ import ru.itis.master.party.dormdeals.dto.UserDto.UpdateUserDto;
 import ru.itis.master.party.dormdeals.dto.UserDto.UserDto;
 import ru.itis.master.party.dormdeals.dto.converters.UserConverter;
 import ru.itis.master.party.dormdeals.exceptions.NotFoundException;
-import ru.itis.master.party.dormdeals.models.Role;
+import ru.itis.master.party.dormdeals.models.Authority;
 import ru.itis.master.party.dormdeals.models.User;
 import ru.itis.master.party.dormdeals.repositories.UserRepository;
 import ru.itis.master.party.dormdeals.services.UserService;
 import ru.itis.master.party.dormdeals.utils.EmailUtil;
 
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -43,7 +44,7 @@ public class UserServiceImpl implements UserService {
                 .telephone(userDto.getTelephone())
                 .state(User.State.NOT_CONFIRMED)
                 .hashForConfirm(DigestUtils.sha256Hex(userDto.getEmail() + UUID.randomUUID()))
-                .role(Role.ROLE_USER)
+                .authorities(List.of(Authority.ROLE_USER))
                 .build());
 
         String confirmationUrl = "http://localhost/email/confirm?accept=" +

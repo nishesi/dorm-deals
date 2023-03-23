@@ -18,7 +18,6 @@ import ru.itis.master.party.dormdeals.exceptions.NotCreateSecondShop;
 import ru.itis.master.party.dormdeals.exceptions.NotFoundException;
 import ru.itis.master.party.dormdeals.models.Dormitory;
 import ru.itis.master.party.dormdeals.models.Product;
-import ru.itis.master.party.dormdeals.models.Role;
 import ru.itis.master.party.dormdeals.models.Shop;
 import ru.itis.master.party.dormdeals.models.User;
 import ru.itis.master.party.dormdeals.repositories.DormitoryRepository;
@@ -75,9 +74,6 @@ public class ShopsServiceImpl implements ShopsService {
     public ShopDto createShop(String ownerEmail, NewShop newShop) {
         User thisUser = userRepository.getByEmail(ownerEmail).orElseThrow(() ->
                 new NotFoundException("user with email <" + ownerEmail + "> not found"));
-
-        if (thisUser.getRole() != Role.ROLE_SELLER)
-            throw new IllegalArgumentException("You can not create a shop");
 
         if (shopsRepository.existsByOwnerId(thisUser.getId()))
             throw new NotCreateSecondShop("Вы не можете иметь больше одного магазина");

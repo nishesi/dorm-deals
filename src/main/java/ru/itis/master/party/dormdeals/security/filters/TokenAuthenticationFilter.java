@@ -4,21 +4,18 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import org.springframework.context.annotation.Bean;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.stereotype.Component;
-import ru.itis.master.party.dormdeals.exceptions.NotFoundException;
-import ru.itis.master.party.dormdeals.models.Role;
+import ru.itis.master.party.dormdeals.models.Authority;
 import ru.itis.master.party.dormdeals.models.Token;
-import ru.itis.master.party.dormdeals.models.User;
 import ru.itis.master.party.dormdeals.repositories.TokenRepository;
-import ru.itis.master.party.dormdeals.repositories.UserRepository;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -50,11 +47,15 @@ public class TokenAuthenticationFilter extends UsernamePasswordAuthenticationFil
         Token token = tokenRepository
                 .findByEmail(authResult.getName())
                 .orElseGet(() -> {
-                    String role = authResult.getAuthorities().stream().findFirst().orElseThrow().getAuthority();
+                    List<Authority> authorities = authResult.getAuthorities().stream()
+                            .map(GrantedAuthority::getAuthority)
+                            .map(Authority::valueOf)
+                            .toList();
+
                     Token newToken = Token.builder()
                             .token(UUID.randomUUID().toString())
                             .email(authResult.getName())
-                            .role(Role.valueOf(role))
+                            .authorities(authorities)
                             .build();
                     tokenRepository.save(newToken);
                     return newToken;
