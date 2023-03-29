@@ -1,4 +1,4 @@
-package ru.itis.master.party.dormdeals.security.utils;
+package ru.itis.master.party.dormdeals.security.service;
 
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.stereotype.Component;

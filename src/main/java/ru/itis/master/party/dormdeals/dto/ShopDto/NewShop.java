@@ -27,6 +27,6 @@ public class NewShop {
     @Size(max = 1000)
     private String description;
 
-    @Schema(description = "идентификаторы мест продажи", example = "[1, 2, 3]")
+    @Schema(description = "идентификаторы мест продажи", example = "['1', '2']")
     private List<Long> dormitoryIdList;
 }
