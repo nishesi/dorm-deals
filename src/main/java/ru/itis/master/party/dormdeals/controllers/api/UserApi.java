@@ -20,6 +20,7 @@ import ru.itis.master.party.dormdeals.dto.ExceptionDto;
 import ru.itis.master.party.dormdeals.dto.UserDto.NewUserDto;
 import ru.itis.master.party.dormdeals.dto.UserDto.UpdateUserDto;
 import ru.itis.master.party.dormdeals.dto.UserDto.UserDto;
+import ru.itis.master.party.dormdeals.validation.responses.ValidationErrorsDto;
 
 import java.security.Principal;
 
@@ -29,16 +30,18 @@ import java.security.Principal;
 @RequestMapping("/user")
 @Schema(description = "Работа с пользователем")
 public interface UserApi {
+
     @Operation(summary = "регистрация пользователя")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "user",
-                    content = {
-                            @Content(mediaType = "application/json", examples = @ExampleObject(name = "message", value = "некоторое сообщение"))
-                    }),
+                    content = @Content(mediaType = "application/json", examples = @ExampleObject(name = "message", value = "некоторое сообщение"))
+            ),
             @ApiResponse(responseCode = "400", description = "пользователь существует",
-                    content = {
-                            @Content(mediaType = "application/json", schema = @Schema(implementation = ExceptionDto.class))
-                    })})
+                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = ExceptionDto.class))
+            ),
+            @ApiResponse(responseCode = "422", description = "невалидные данные",
+                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = ValidationErrorsDto.class)))
+    })
     @PostMapping
     ResponseEntity<?> addUser(@RequestBody @Valid NewUserDto userDto);
 
@@ -64,7 +67,10 @@ public interface UserApi {
             @ApiResponse(responseCode = "404", description = "пользователь не найден",
                     content = {
                             @Content(mediaType = "application/json", schema = @Schema(implementation = ExceptionDto.class))
-                    })})
+                    }),
+            @ApiResponse(responseCode = "422", description = "невалидные данные",
+                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = ValidationErrorsDto.class)))
+    })
     @PutMapping
     UserDto updateUser(Principal principal, @RequestBody @Valid UpdateUserDto userDto);
 

@@ -17,6 +17,7 @@ import ru.itis.master.party.dormdeals.dto.ShopDto.ShopsPage;
 import ru.itis.master.party.dormdeals.dto.ShopDto.UpdateShop;
 import ru.itis.master.party.dormdeals.models.Shop;
 import ru.itis.master.party.dormdeals.dto.ShopWithProducts;
+import ru.itis.master.party.dormdeals.validation.responses.ValidationErrorsDto;
 
 import java.security.Principal;
 
@@ -44,7 +45,12 @@ public interface ShopsApi {
                             @Content(mediaType = "application/json",
                                     schema = @Schema(implementation = ShopDto.class))
                     }
-            )
+            ),
+            @ApiResponse(responseCode = "422", description = "невалидные данные",
+                    content = {
+                            @Content(mediaType = "application/json",
+                                    schema = @Schema(implementation = ValidationErrorsDto.class))
+                    })
     })
     @PostMapping
     ResponseEntity<ShopDto> createShop(Principal principal, @RequestBody NewShop newShop);
@@ -81,6 +87,12 @@ public interface ShopsApi {
                             @Content(mediaType = "application/json",
                                     schema = @Schema(implementation = ExceptionDto.class))
                     }
+            ),
+            @ApiResponse(responseCode = "422", description = "невалидные данные",
+                    content = {
+                            @Content(mediaType = "application/json",
+                                    schema = @Schema(implementation = ValidationErrorsDto.class))
+                    }
             )
     })
     @PutMapping("/{shop-id}")
@@ -101,7 +113,6 @@ public interface ShopsApi {
     @DeleteMapping("/{shop-id}")
     ResponseEntity<?> deleteShop(
             @Parameter(description = "Идентификатор магазина", example = "1") @PathVariable("shop-id") Long shopId);
-
 
     @Operation(summary = "Получение главной страницы магазина с его товарами постранично")
     @ApiResponses(value = {

@@ -14,6 +14,7 @@ import ru.itis.master.party.dormdeals.dto.ExceptionDto;
 import ru.itis.master.party.dormdeals.dto.OrderDto.OrderDto;
 import ru.itis.master.party.dormdeals.dto.OrderDto.OrderWithProducts;
 import ru.itis.master.party.dormdeals.dto.ProductDto.CartProductDto;
+import ru.itis.master.party.dormdeals.validation.responses.ValidationErrorsDto;
 
 import java.security.Principal;
 import java.util.List;
@@ -30,8 +31,12 @@ public interface OrdersApi {
                     content = {
                             @Content(mediaType = "application/json",
                                     schema = @Schema(implementation = OrderDto.class))
-                    }
-            )
+                    }),
+            @ApiResponse(responseCode = "422", description = "невалидные данные",
+                    content = {
+                            @Content(mediaType = "application/json",
+                                    schema = @Schema(implementation = ValidationErrorsDto.class))
+                    })
     })
     @PostMapping
     ResponseEntity<List<OrderDto>> createOrder(

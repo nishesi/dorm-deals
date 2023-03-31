@@ -1,44 +1,67 @@
 package ru.itis.master.party.dormdeals.validation.handlers;
 
-
-import org.springframework.http.ResponseEntity;
+import lombok.RequiredArgsConstructor;
+import org.springframework.context.MessageSource;
+import org.springframework.http.HttpStatus;
 import org.springframework.validation.FieldError;
+import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import ru.itis.master.party.dormdeals.validation.responses.ValidationErrorDto;
 import ru.itis.master.party.dormdeals.validation.responses.ValidationErrorsDto;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 @ControllerAdvice
+@RequiredArgsConstructor
 public class ValidationExceptionHandler {
+
+    private final MessageSource messageSource;
+
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<ValidationErrorsDto> handleMethodArgumentNotValidException(MethodArgumentNotValidException ex) {
-        List<ValidationErrorDto> errors = new ArrayList<>();
+    @ResponseStatus(HttpStatus.UNPROCESSABLE_ENTITY)
+    public ValidationErrorsDto handleMethodArgumentNotValidException(MethodArgumentNotValidException ex, Locale locale) {
 
-        ex.getBindingResult().getAllErrors().forEach(error -> {
-            String errorMessage = error.getDefaultMessage();
+        List<ValidationErrorDto> errors = ex
+                .resolveErrorMessages(messageSource, locale)
+                .entrySet()
+                .stream()
+                .map(entry -> {
+                    ObjectError objectError = entry.getKey();
+                    var vedBuilder = ValidationErrorDto.builder();
 
-            String fieldName = null;
-            String objectName = error.getObjectName();
+                    if (objectError instanceof FieldError)
+                        vedBuilder.field(((FieldError) objectError).getField());
 
-            if (error instanceof FieldError) {
-                fieldName = ((FieldError)error).getField();
-            }
-            ValidationErrorDto errorDto = ValidationErrorDto.builder()
-                    .message(errorMessage)
-                    .field(fieldName)
-                    .object(objectName)
-                    .build();
+                    vedBuilder
+                            .object(objectError.getObjectName())
+                            .message(entry.getValue());
+                    return vedBuilder.build();
+                })
+                .toList();
 
-            errors.add(errorDto);
-        });
+//        ex.getBindingResult().getAllErrors().forEach(error -> {
+//            String errorMessage = error.getDefaultMessage();
+//
+//            String fieldName = null;
+//            String objectName = error.getObjectName();
+//
+//            if (error instanceof FieldError) {
+//                fieldName = ((FieldError) error).getField();
+//            }
+//            ValidationErrorDto errorDto = ValidationErrorDto.builder()
+//                    .message(errorMessage)
+//                    .field(fieldName)
+//                    .object(objectName)
+//                    .build();
+//
+//            errors.add(errorDto);
+//        });
 
-        return ResponseEntity.ok(ValidationErrorsDto.builder()
-                .errors(errors)
-                .build());
+        return new ValidationErrorsDto(errors);
     }
 
 }

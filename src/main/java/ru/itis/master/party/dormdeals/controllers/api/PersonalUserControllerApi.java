@@ -1,6 +1,5 @@
 package ru.itis.master.party.dormdeals.controllers.api;
 
-
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -18,6 +17,7 @@ import java.util.List;
 
 @RequestMapping("/my")
 public interface PersonalUserControllerApi {
+
     @Operation(summary = "Добавление товара в избранное")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "202", description = "Товар добавлен в избранное"),
@@ -50,10 +50,8 @@ public interface PersonalUserControllerApi {
                     }
             )
     })
-
     @DeleteMapping("/favourites/{product-id}")
     ResponseEntity<?> deleteFavouriteProduct(@Parameter(name = "Идентификатор товара") @PathVariable("product-id") Long productId);
-
 
     @Operation(summary = "Добавление товара в корзину")
     @ApiResponses(value = {
@@ -80,7 +78,6 @@ public interface PersonalUserControllerApi {
 //    @PutMapping("/cart/{product-id}/inactive")
 //    ResponseEntity<?> inactiveProduct(@Parameter(name = "Индентификатор товара") @PathVariable("product-id") Long productId);
 
-
     @Operation(summary = "Удаление товара из корзины")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "202", description = "Товар удален из корзины"),
@@ -93,7 +90,6 @@ public interface PersonalUserControllerApi {
     })
     @DeleteMapping("/cart/{product-id}")
     ResponseEntity<?> deleteCartProduct(@Parameter(name = "Индентификатор товара") @PathVariable("product-id") Long productId);
-
 
     @Operation(summary = "Обновление количества товара в корзине")
     @ApiResponses(value = {
