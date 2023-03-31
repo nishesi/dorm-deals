@@ -1,5 +1,6 @@
 package ru.itis.master.party.dormdeals.controllers;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -27,7 +28,7 @@ public class ShopsController implements ShopsApi {
     }
 
     @Override
-    public ResponseEntity<ShopDto> createShop(Principal principal, NewShop newShop) {
+    public ResponseEntity<ShopDto> createShop(Principal principal,@Valid NewShop newShop) {
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(shopsService.createShop(principal.getName(), newShop));
     }
@@ -38,7 +39,7 @@ public class ShopsController implements ShopsApi {
     }
 
     @Override
-    public ResponseEntity<ShopDto> updateShop(Long shopId, UpdateShop updateShop) {
+    public ResponseEntity<ShopDto> updateShop(Long shopId, @Valid UpdateShop updateShop) {
         return ResponseEntity.accepted().body(shopsService.updateShop(shopId, updateShop));
     }
 

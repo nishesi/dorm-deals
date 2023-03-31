@@ -8,7 +8,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import io.swagger.v3.oas.annotations.tags.Tags;
-import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -55,7 +54,6 @@ public interface UserApi {
     @PostMapping
     ResponseEntity<?> addUser(
             @RequestBody
-            @Valid
             NewUserDto userDto);
 
     @Operation(summary = "Получение информации о пользователе")
@@ -102,7 +100,6 @@ public interface UserApi {
     UserDto updateUser(
             Principal principal,
             @RequestBody
-            @Valid
             UpdateUserDto userDto);
 
     @Operation(summary = "удаление пользователя")

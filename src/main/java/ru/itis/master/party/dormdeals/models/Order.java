@@ -36,6 +36,7 @@ public class Order {
     @Temporal(TemporalType.TIMESTAMP)
     private ZonedDateTime orderTime;
 
+    @Column
     private String userComment;
 
     @ManyToOne(fetch = FetchType.LAZY)

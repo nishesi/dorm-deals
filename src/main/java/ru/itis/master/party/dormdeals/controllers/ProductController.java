@@ -1,6 +1,7 @@
 package ru.itis.master.party.dormdeals.controllers;
 
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -30,7 +31,7 @@ public class ProductController implements ProductApi {
     }
 
     @Override
-    public ResponseEntity<ProductDto> addProduct(NewProduct newProduct) {
+    public ResponseEntity<ProductDto> addProduct(@Valid NewProduct newProduct) {
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(productService.addProduct(newProduct));
     }
@@ -41,7 +42,7 @@ public class ProductController implements ProductApi {
     }
 
     @Override
-    public ResponseEntity<ProductDto> updateProduct(Long productId, UpdateProduct updatedProduct) {
+    public ResponseEntity<ProductDto> updateProduct(Long productId, @Valid UpdateProduct updatedProduct) {
         return ResponseEntity.accepted().body(productService.updateProduct(productId, updatedProduct));
     }
 

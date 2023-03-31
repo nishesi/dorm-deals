@@ -1,5 +1,6 @@
 package ru.itis.master.party.dormdeals.controllers;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
@@ -19,8 +20,8 @@ public class UserController implements UserApi {
     private final UserService userService;
 
     @Override
-    public ResponseEntity<?> addUser(NewUserDto userDto) {
-        return ResponseEntity.accepted().body(Map.of("message",userService.register(userDto)));
+    public ResponseEntity<?> addUser(@Valid NewUserDto userDto) {
+        return ResponseEntity.accepted().body(Map.of("message", userService.register(userDto)));
     }
 
     @Override
@@ -29,7 +30,7 @@ public class UserController implements UserApi {
     }
 
     @Override
-    public UserDto updateUser(Principal principal, UpdateUserDto userDto) {
+    public UserDto updateUser(Principal principal, @Valid UpdateUserDto userDto) {
         return userService.updateUser(principal.getName(), userDto);
     }
 
