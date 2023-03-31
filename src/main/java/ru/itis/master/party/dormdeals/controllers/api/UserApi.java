@@ -34,53 +34,88 @@ public interface UserApi {
     @Operation(summary = "регистрация пользователя")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "user",
-                    content = @Content(mediaType = "application/json", examples = @ExampleObject(name = "message", value = "некоторое сообщение"))
+                    content = {
+                            @Content(mediaType = "application/json",
+                                    examples = @ExampleObject(name = "message", value = "некоторое сообщение"))
+                    }
             ),
             @ApiResponse(responseCode = "400", description = "пользователь существует",
-                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = ExceptionDto.class))
+                    content = {
+                            @Content(mediaType = "application/json",
+                                    schema = @Schema(implementation = ExceptionDto.class))
+                    }
             ),
             @ApiResponse(responseCode = "422", description = "невалидные данные",
-                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = ValidationErrorsDto.class)))
+                    content = {
+                            @Content(mediaType = "application/json",
+                                    schema = @Schema(implementation = ValidationErrorsDto.class))
+                    }
+            )
     })
     @PostMapping
-    ResponseEntity<?> addUser(@RequestBody @Valid NewUserDto userDto);
+    ResponseEntity<?> addUser(
+            @RequestBody
+            @Valid
+            NewUserDto userDto);
 
     @Operation(summary = "Получение информации о пользователе")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "user",
                     content = {
-                            @Content(mediaType = "application/json", schema = @Schema(implementation = UserDto.class))
-                    }),
+                            @Content(mediaType = "application/json",
+                                    schema = @Schema(implementation = UserDto.class))
+                    }
+            ),
             @ApiResponse(responseCode = "404", description = "пользователь не найден",
                     content = {
-                            @Content(mediaType = "application/json", schema = @Schema(implementation = ExceptionDto.class))
-                    })})
+                            @Content(mediaType = "application/json",
+                                    schema = @Schema(implementation = ExceptionDto.class))
+                    }
+            )
+    })
     @GetMapping
-    UserDto getUser(Principal principal);
+    UserDto getUser(
+            Principal principal);
 
     @Operation(summary = "обновление информации о пользователе")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "202", description = "user",
                     content = {
-                            @Content(mediaType = "application/json", schema = @Schema(implementation = UserDto.class))
-                    }),
+                            @Content(mediaType = "application/json",
+                                    schema = @Schema(implementation = UserDto.class))
+                    }
+            ),
             @ApiResponse(responseCode = "404", description = "пользователь не найден",
                     content = {
-                            @Content(mediaType = "application/json", schema = @Schema(implementation = ExceptionDto.class))
-                    }),
+                            @Content(mediaType = "application/json",
+                                    schema = @Schema(implementation = ExceptionDto.class))
+                    }
+            ),
             @ApiResponse(responseCode = "422", description = "невалидные данные",
-                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = ValidationErrorsDto.class)))
+                    content = {
+                            @Content(mediaType = "application/json",
+                                    schema = @Schema(implementation = ValidationErrorsDto.class))
+                    }
+            )
     })
     @PutMapping
-    UserDto updateUser(Principal principal, @RequestBody @Valid UpdateUserDto userDto);
+    UserDto updateUser(
+            Principal principal,
+            @RequestBody
+            @Valid
+            UpdateUserDto userDto);
 
     @Operation(summary = "удаление пользователя")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "user deleted"),
             @ApiResponse(responseCode = "404", description = "user not found",
                     content = {
-                            @Content(mediaType = "application/json", schema = @Schema(implementation = ExceptionDto.class))
-                    })})
+                            @Content(mediaType = "application/json",
+                                    schema = @Schema(implementation = ExceptionDto.class))
+                    }
+            )
+    })
     @DeleteMapping
-    ResponseEntity<?> deleteUser(Principal principal);
+    ResponseEntity<?> deleteUser(
+            Principal principal);
 }

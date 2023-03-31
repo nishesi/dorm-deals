@@ -7,8 +7,12 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestMapping;
 import ru.itis.master.party.dormdeals.dto.CartDto;
 import ru.itis.master.party.dormdeals.dto.ExceptionDto;
 import ru.itis.master.party.dormdeals.dto.ProductDto.ProductDto;
@@ -29,13 +33,18 @@ public interface PersonalUserControllerApi {
             )
     })
     @PutMapping("/favourites/{product-id}")
-    ResponseEntity<?> addFavouriteProduct(@Parameter(name = "Идентификатор товара") @PathVariable("product-id") Long productId);
+    ResponseEntity<?> addFavouriteProduct(
+            @Parameter(name = "Идентификатор товара")
+            @PathVariable("product-id")
+            Long productId);
 
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Избранное",
                     content = {
-                            @Content(mediaType = "application/json", schema = @Schema(implementation = ProductDto.class))
-                    })
+                            @Content(mediaType = "application/json",
+                                    schema = @Schema(implementation = ProductDto.class))
+                    }
+            )
     })
     @GetMapping("/favourites")
     ResponseEntity<List<ProductDto>> getFavourites();
@@ -51,7 +60,10 @@ public interface PersonalUserControllerApi {
             )
     })
     @DeleteMapping("/favourites/{product-id}")
-    ResponseEntity<?> deleteFavouriteProduct(@Parameter(name = "Идентификатор товара") @PathVariable("product-id") Long productId);
+    ResponseEntity<?> deleteFavouriteProduct(
+            @Parameter(name = "Идентификатор товара")
+            @PathVariable("product-id")
+            Long productId);
 
     @Operation(summary = "Добавление товара в корзину")
     @ApiResponses(value = {
@@ -64,16 +76,22 @@ public interface PersonalUserControllerApi {
             )
     })
     @PutMapping("/cart/{product-id}")
-    ResponseEntity<?> addCartProduct(@Parameter(name = "Индентификатор товара") @PathVariable("product-id") Long productId);
+    ResponseEntity<?> addCartProduct(
+            @Parameter(name = "Индентификатор товара")
+            @PathVariable("product-id")
+            Long productId);
 
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Корзина",
                     content = {
                             @Content(mediaType = "application/json", schema = @Schema(implementation = CartDto.class))
-                    })
+                    }
+            )
     })
     @GetMapping("/cart")
-    ResponseEntity<CartDto> getCart(@RequestHeader(value = "Cookie", required = false) String cookieHeader);
+    ResponseEntity<CartDto> getCart(
+            @RequestHeader(value = "Cookie", required = false)
+            String cookieHeader);
 
 //    @PutMapping("/cart/{product-id}/inactive")
 //    ResponseEntity<?> inactiveProduct(@Parameter(name = "Индентификатор товара") @PathVariable("product-id") Long productId);
@@ -89,7 +107,10 @@ public interface PersonalUserControllerApi {
             )
     })
     @DeleteMapping("/cart/{product-id}")
-    ResponseEntity<?> deleteCartProduct(@Parameter(name = "Индентификатор товара") @PathVariable("product-id") Long productId);
+    ResponseEntity<?> deleteCartProduct(
+            @Parameter(name = "Индентификатор товара")
+            @PathVariable("product-id")
+            Long productId);
 
     @Operation(summary = "Обновление количества товара в корзине")
     @ApiResponses(value = {
@@ -102,6 +123,11 @@ public interface PersonalUserControllerApi {
             )
     })
     @PutMapping("/cart/{product-id}/{count}")
-    ResponseEntity<?> setCountProductInCart(@Parameter(name = "Индентификатор товара") @PathVariable("product-id") Long productId,
-                                            @Parameter(description = "Количество товара в корзине") @PathVariable("count") Integer count);
+    ResponseEntity<?> setCountProductInCart(
+            @Parameter(name = "Индентификатор товара")
+            @PathVariable("product-id")
+            Long productId,
+            @Parameter(description = "Количество товара в корзине")
+            @PathVariable("count")
+            Integer count);
 }
