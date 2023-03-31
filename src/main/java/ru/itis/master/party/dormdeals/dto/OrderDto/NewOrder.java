@@ -18,7 +18,7 @@ public class NewOrder {
 
     @Schema(description = "идентификатор магазина", example = "100500")
     @NotNull
-    @Positive
+    @Positive(message = "{constraint.id.positive.message}")
     private Long shopId;
 
     @Schema(description = "комментарий пользователя", example = "а можно шоколадку в подарок :)")

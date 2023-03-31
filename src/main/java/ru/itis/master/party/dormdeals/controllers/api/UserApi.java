@@ -2,7 +2,6 @@ package ru.itis.master.party.dormdeals.controllers.api;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -16,6 +15,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import ru.itis.master.party.dormdeals.dto.ExceptionDto;
+import ru.itis.master.party.dormdeals.dto.MessageDto;
 import ru.itis.master.party.dormdeals.dto.UserDto.NewUserDto;
 import ru.itis.master.party.dormdeals.dto.UserDto.UpdateUserDto;
 import ru.itis.master.party.dormdeals.dto.UserDto.UserDto;
@@ -32,10 +32,10 @@ public interface UserApi {
 
     @Operation(summary = "регистрация пользователя")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "user",
+            @ApiResponse(responseCode = "202", description = "user",
                     content = {
                             @Content(mediaType = "application/json",
-                                    examples = @ExampleObject(name = "message", value = "некоторое сообщение"))
+                                    schema = @Schema(implementation = MessageDto.class))
                     }
             ),
             @ApiResponse(responseCode = "400", description = "пользователь существует",

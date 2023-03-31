@@ -135,7 +135,7 @@ public class ShopsServiceImpl implements ShopsService {
                 .build();
 
         return ShopWithProducts.builder()
-                .shop(thisShop)
+                .shop(shopConverter.from(thisShop))
                 .productsPage(productsPage)
                 .build();
     }

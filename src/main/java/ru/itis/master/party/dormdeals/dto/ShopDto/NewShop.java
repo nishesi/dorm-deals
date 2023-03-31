@@ -29,6 +29,6 @@ public class NewShop {
     private String description;
 
     @Schema(description = "идентификаторы мест продажи", example = "['1', '2', '3']")
-    @NotEmpty
+    @NotEmpty(message = "{constraint.dormitories.nonempty.message}")
     private List<Long> dormitoryIdList;
 }
