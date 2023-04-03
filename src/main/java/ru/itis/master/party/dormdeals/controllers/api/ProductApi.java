@@ -1,6 +1,5 @@
 package ru.itis.master.party.dormdeals.controllers.api;
 
-
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -17,12 +16,11 @@ import ru.itis.master.party.dormdeals.dto.ProductDto.NewProduct;
 import ru.itis.master.party.dormdeals.dto.ProductDto.ProductDto;
 import ru.itis.master.party.dormdeals.dto.ProductDto.ProductsPage;
 import ru.itis.master.party.dormdeals.dto.ProductDto.UpdateProduct;
+import ru.itis.master.party.dormdeals.validation.responses.ValidationErrorsDto;
 
 @Tags(value = {
         @Tag(name = "Products")
 })
-
-
 @RequestMapping("/products")
 public interface ProductApi {
 
@@ -41,22 +39,37 @@ public interface ProductApi {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Страница с продуктами",
                     content = {
-                            @Content(mediaType = "application/json", schema = @Schema(implementation = ProductsPage.class))
-                    })
+                            @Content(mediaType = "application/json",
+                                    schema = @Schema(implementation = ProductsPage.class))
+                    }
+            )
     })
-    @GetMapping()
-    ResponseEntity<ProductsPage> getAllProducts(@Parameter(description = "Номер страницы") @RequestParam("page") int page);
-
+    @GetMapping
+    ResponseEntity<ProductsPage> getAllProducts(
+            @Parameter(description = "Номер страницы")
+            @RequestParam("page")
+            int page);
 
     @Operation(summary = "Добавление нового продукта")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "Добавленный продукт",
-                    content =
-                    @Content(mediaType = "application/json", schema = @Schema(implementation = ProductDto.class)))
+                    content = {
+                            @Content(mediaType = "application/json",
+                                    schema = @Schema(implementation = ProductDto.class))
+                    }
+            ),
+            @ApiResponse(responseCode = "422", description = "невалидные данные",
+                    content = {
+                            @Content(mediaType = "application/json",
+                                    schema = @Schema(implementation = ValidationErrorsDto.class))
+                    }
+            )
     })
     @PostMapping
-    ResponseEntity<ProductDto> addProduct(@Parameter(description = "Данные нового товара") @RequestBody @Valid NewProduct newProduct);
-
+    ResponseEntity<ProductDto> addProduct(
+            @Parameter(description = "Данные нового товара")
+            @RequestBody @Valid
+            NewProduct newProduct);
 
     @Operation(summary = "Получение товара")
     @ApiResponses(value = {
@@ -73,10 +86,11 @@ public interface ProductApi {
                     }
             )
     })
-
     @GetMapping("/{product-id}")
-    ResponseEntity<ProductDto> getProduct(@Parameter(description = "Получение товара по идентификатору", example = "1")
-                                          @PathVariable("product-id") Long productId);
+    ResponseEntity<ProductDto> getProduct(
+            @Parameter(description = "Получение товара по идентификатору", example = "1")
+            @PathVariable("product-id")
+            Long productId);
 
     @Operation(summary = "Обновление товара")
     @ApiResponses(value = {
@@ -91,12 +105,21 @@ public interface ProductApi {
                             @Content(mediaType = "application/json",
                                     schema = @Schema(implementation = ExceptionDto.class))
                     }
+            ),
+            @ApiResponse(responseCode = "422", description = "невалидные данные",
+                    content = {
+                            @Content(mediaType = "application/json",
+                                    schema = @Schema(implementation = ValidationErrorsDto.class))
+                    }
             )
     })
     @PutMapping("/{product-id}")
-    ResponseEntity<ProductDto> updateProduct(@Parameter(description = "Обновление товара") @PathVariable("product-id") Long productId,
-                                             @RequestBody UpdateProduct updatedProduct);
-
+    ResponseEntity<ProductDto> updateProduct(
+            @Parameter(description = "Обновление товара")
+            @PathVariable("product-id")
+            Long productId,
+            @RequestBody
+            UpdateProduct updatedProduct);
 
     @Operation(summary = "Удаление товара")
     @ApiResponses(value = {
@@ -108,9 +131,11 @@ public interface ProductApi {
                     }
             )
     })
-
     @DeleteMapping("/{product-id}")
-    ResponseEntity<?> deleteProduct(@Parameter(description = "Удаление товара", example = "1") @PathVariable("product-id") Long productId);
+    ResponseEntity<?> deleteProduct(
+            @Parameter(description = "Удаление товара", example = "1")
+            @PathVariable("product-id")
+            Long productId);
 
     @Operation(summary = "Возврат товара в продажу")
     @ApiResponses(value = {
@@ -123,6 +148,8 @@ public interface ProductApi {
             )
     })
     @PutMapping("/{product-id}/restore")
-    ResponseEntity<ProductDto> returnProductInSell(@Parameter(description = "Возвращение товара в продажу", example = "1")
-                                                   @PathVariable("product-id") Long productId);
+    ResponseEntity<ProductDto> returnProductInSell(
+            @Parameter(description = "Возвращение товара в продажу", example = "1")
+            @PathVariable("product-id")
+            Long productId);
 }

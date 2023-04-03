@@ -14,6 +14,7 @@ import ru.itis.master.party.dormdeals.dto.ExceptionDto;
 import ru.itis.master.party.dormdeals.dto.OrderDto.OrderDto;
 import ru.itis.master.party.dormdeals.dto.OrderDto.OrderWithProducts;
 import ru.itis.master.party.dormdeals.dto.ProductDto.CartProductDto;
+import ru.itis.master.party.dormdeals.validation.responses.ValidationErrorsDto;
 
 import java.security.Principal;
 import java.util.List;
@@ -31,13 +32,20 @@ public interface OrdersApi {
                             @Content(mediaType = "application/json",
                                     schema = @Schema(implementation = OrderDto.class))
                     }
+            ),
+            @ApiResponse(responseCode = "422", description = "Сведения о невалидных данных",
+                    content = {
+                            @Content(mediaType = "application/json",
+                                    schema = @Schema(implementation = ValidationErrorsDto.class))
+                    }
             )
     })
     @PostMapping
     ResponseEntity<List<OrderDto>> createOrder(
             Principal principal,
             @Parameter(description = "Список товаров с корзины")
-            @RequestBody List<CartProductDto> cartProductDtoList);
+            @RequestBody
+            List<CartProductDto> cartProductDtoList);
 
     @Operation(summary = "Получение заказа")
     @ApiResponses(value = {
@@ -55,8 +63,10 @@ public interface OrdersApi {
             )
     })
     @GetMapping("/{order-id}")
-    ResponseEntity<OrderDto> getOrder(@Parameter(description = "Идентификатор заказа", example = "1")
-                                      @PathVariable("order-id") Long orderId);
+    ResponseEntity<OrderDto> getOrder(
+            @Parameter(description = "Идентификатор заказа", example = "1")
+            @PathVariable("order-id")
+            Long orderId);
 
     @Operation(summary = "Обновление статуса заказа на CONFIRMED")
     @ApiResponses(value = {
@@ -75,7 +85,9 @@ public interface OrdersApi {
     })
     @PutMapping("/{order-id}/confirm")
     ResponseEntity<OrderDto> updateOrderStateToConfirmed(
-            @Parameter(description = "Идентификатор заказа", example = "1") @PathVariable("order-id") Long orderId);
+            @Parameter(description = "Идентификатор заказа", example = "1")
+            @PathVariable("order-id")
+            Long orderId);
 
     @Operation(summary = "Обновление статуса заказа на IN_DELIVERY")
     @ApiResponses(value = {
@@ -94,7 +106,9 @@ public interface OrdersApi {
     })
     @PutMapping("/{order-id}/in_delivery")
     ResponseEntity<OrderDto> updateOrderStateToInDelivery(
-            @Parameter(description = "Идентификатор заказа", example = "1") @PathVariable("order-id") Long orderId);
+            @Parameter(description = "Идентификатор заказа", example = "1")
+            @PathVariable("order-id")
+            Long orderId);
 
     @Operation(summary = "Обновление статуса заказа на DELIVERED")
     @ApiResponses(value = {
@@ -113,7 +127,9 @@ public interface OrdersApi {
     })
     @PutMapping("/{order-id}/delivered")
     ResponseEntity<OrderDto> updateOrderStateToDelivered(
-            @Parameter(description = "Идентификатор заказа", example = "1") @PathVariable("order-id") Long orderId);
+            @Parameter(description = "Идентификатор заказа", example = "1")
+            @PathVariable("order-id")
+            Long orderId);
 
     @Operation(summary = "Удаление заказа")
     @ApiResponses(value = {
@@ -127,7 +143,9 @@ public interface OrdersApi {
     })
     @DeleteMapping("/{order-id}")
     ResponseEntity<?> deleteOrder(
-            @Parameter(description = "Идентификатор заказа", example = "1") @PathVariable("order-id") Long orderId);
+            @Parameter(description = "Идентификатор заказа", example = "1")
+            @PathVariable("order-id")
+            Long orderId);
 
     @Operation(summary = "Получение заказа с его товарами")
     @ApiResponses(value = {
@@ -145,6 +163,8 @@ public interface OrdersApi {
             )
     })
     @GetMapping("/{order-id}/products")
-    ResponseEntity<OrderWithProducts> getAllProductsThisOrder(@Parameter(description = "Идентификатор заказа")
-                                                              @PathVariable("order-id") Long orderId);
+    ResponseEntity<OrderWithProducts> getAllProductsThisOrder(
+            @Parameter(description = "Идентификатор заказа")
+            @PathVariable("order-id")
+            Long orderId);
 }

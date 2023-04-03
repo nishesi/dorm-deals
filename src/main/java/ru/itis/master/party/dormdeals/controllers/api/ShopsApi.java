@@ -9,14 +9,21 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import io.swagger.v3.oas.annotations.tags.Tags;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import ru.itis.master.party.dormdeals.dto.ExceptionDto;
 import ru.itis.master.party.dormdeals.dto.ShopDto.NewShop;
 import ru.itis.master.party.dormdeals.dto.ShopDto.ShopDto;
 import ru.itis.master.party.dormdeals.dto.ShopDto.ShopsPage;
 import ru.itis.master.party.dormdeals.dto.ShopDto.UpdateShop;
-import ru.itis.master.party.dormdeals.models.Shop;
 import ru.itis.master.party.dormdeals.dto.ShopWithProducts;
+import ru.itis.master.party.dormdeals.validation.responses.ValidationErrorsDto;
 
 import java.security.Principal;
 
@@ -31,23 +38,35 @@ public interface ShopsApi {
             @ApiResponse(responseCode = "200", description = "Страница с магазинами",
                     content = {
                             @Content(mediaType = "application/json", schema = @Schema(implementation = ShopsPage.class))
-                    })
+                    }
+            )
     })
     @GetMapping
-    ResponseEntity<ShopsPage> getAllShops(@Parameter(description = "Номер страницы") @RequestParam("page") int page);
+    ResponseEntity<ShopsPage> getAllShops(
+            @Parameter(description = "Номер страницы")
+            @RequestParam("page")
+            int page);
 
     @Operation(summary = "Добавление магазина")
-
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "Добавленный магазин",
                     content = {
                             @Content(mediaType = "application/json",
                                     schema = @Schema(implementation = ShopDto.class))
                     }
+            ),
+            @ApiResponse(responseCode = "422", description = "невалидные данные",
+                    content = {
+                            @Content(mediaType = "application/json",
+                                    schema = @Schema(implementation = ValidationErrorsDto.class))
+                    }
             )
     })
     @PostMapping
-    ResponseEntity<ShopDto> createShop(Principal principal, @RequestBody NewShop newShop);
+    ResponseEntity<ShopDto> createShop(
+            Principal principal,
+            @RequestBody
+            NewShop newShop);
 
     @Operation(summary = "Получение магазина")
     @ApiResponses(value = {
@@ -65,8 +84,10 @@ public interface ShopsApi {
             )
     })
     @GetMapping("/{shop-id}")
-    ResponseEntity<ShopDto> getShop(@Parameter(description = "Идентификатор магазина", example = "1")
-                                    @PathVariable("shop-id") Long shopId);
+    ResponseEntity<ShopDto> getShop(
+            @Parameter(description = "Идентификатор магазина", example = "1")
+            @PathVariable("shop-id")
+            Long shopId);
 
     @Operation(summary = "Обновление магазина")
     @ApiResponses(value = {
@@ -81,12 +102,21 @@ public interface ShopsApi {
                             @Content(mediaType = "application/json",
                                     schema = @Schema(implementation = ExceptionDto.class))
                     }
+            ),
+            @ApiResponse(responseCode = "422", description = "невалидные данные",
+                    content = {
+                            @Content(mediaType = "application/json",
+                                    schema = @Schema(implementation = ValidationErrorsDto.class))
+                    }
             )
     })
     @PutMapping("/{shop-id}")
     ResponseEntity<ShopDto> updateShop(
-            @Parameter(description = "Идентификатор магазина", example = "1") @PathVariable("shop-id") Long shopId,
-            @RequestBody UpdateShop updateShop);
+            @Parameter(description = "Идентификатор магазина", example = "1")
+            @PathVariable("shop-id")
+            Long shopId,
+            @RequestBody
+            UpdateShop updateShop);
 
     @Operation(summary = "Удаление магазина")
     @ApiResponses(value = {
@@ -100,15 +130,16 @@ public interface ShopsApi {
     })
     @DeleteMapping("/{shop-id}")
     ResponseEntity<?> deleteShop(
-            @Parameter(description = "Идентификатор магазина", example = "1") @PathVariable("shop-id") Long shopId);
-
+            @Parameter(description = "Идентификатор магазина", example = "1")
+            @PathVariable("shop-id")
+            Long shopId);
 
     @Operation(summary = "Получение главной страницы магазина с его товарами постранично")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Информация о магазине и его товары",
                     content = {
                             @Content(mediaType = "application/json",
-                                    schema = @Schema(implementation = Shop.class))
+                                    schema = @Schema(implementation = ShopDto.class))
                     }
             ),
             @ApiResponse(responseCode = "404", description = "Сведения об ошибке",
@@ -119,6 +150,12 @@ public interface ShopsApi {
             )
     })
     @GetMapping("/{shop-id}/products")
-    ResponseEntity<ShopWithProducts> getAllProductsThisShop(@Parameter(description = "Идентификатор магазина") @PathVariable("shop-id") Long shopId, @Parameter(description = "Страница товаров") @RequestParam("page") int page);
+    ResponseEntity<ShopWithProducts> getAllProductsThisShop(
+            @Parameter(description = "Идентификатор магазина")
+            @PathVariable("shop-id")
+            Long shopId,
+            @Parameter(description = "Страница товаров")
+            @RequestParam("page")
+            int page);
 }
 

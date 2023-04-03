@@ -39,7 +39,6 @@ public class NewUserDto {
 
     @Schema(example = "89993335566")
     @NotBlank
-    @Pattern(regexp = "[+]?[0-9]{11}", message = "не соответствует телефонному номеру")
-    @Length(max = 50)
+    @Pattern(regexp = "[+]?[0-9]{11}", message = "{constraint.telephone.message}")
     private String telephone;
 }

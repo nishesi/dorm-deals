@@ -2,6 +2,7 @@ package ru.itis.master.party.dormdeals.dto.ShopDto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -27,6 +28,7 @@ public class NewShop {
     @Size(max = 1000)
     private String description;
 
-    @Schema(description = "идентификаторы мест продажи", example = "['1', '2']")
+    @Schema(description = "идентификаторы мест продажи", example = "['1', '2', '3']")
+    @NotEmpty(message = "{constraint.dormitories.nonempty.message}")
     private List<Long> dormitoryIdList;
 }
