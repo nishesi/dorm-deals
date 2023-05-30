@@ -1,10 +1,10 @@
-server.port=80
+server.port=${SERVER_PORT}
 
 server.servlet.context-path=/app
 spring.datasource.driver-class-name=org.postgresql.Driver
-spring.datasource.url=#db url
-spring.datasource.username=#db username
-spring.datasource.password=#db password
+spring.datasource.url=${SPRING_DATASOURCE_URL}
+spring.datasource.username=${SPRING_DATASOURCE_USERNAME}
+spring.datasource.password=${SPRING_DATASOURCE_PASSWORD}
 spring.datasource.hikari.maximum-pool-size=20
 
 spring.jpa.hibernate.ddl-auto=update
