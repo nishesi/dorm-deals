@@ -40,10 +40,11 @@ services:
       - database
       - redis
     environment:
+      - "SPRING_SERVER_PORT=8080"
+      - "SPRING_DATASOURCE_URL=jdbc:postgresql://database:5432/DormDeals"
       - "SPRING_DATASOURCE_USERNAME=postgres"
       - "SPRING_DATASOURCE_PASSWORD=postgresPassword"
-      - "SPRING_DATASOURCE_URL=jdbc:postgresql://database:5432/DormDeals"
-      - "SERVER_PORT=8080"
+      - "SPRING_JWT_SECRET=secret"
 
 volumes:
   postgres_volume:
