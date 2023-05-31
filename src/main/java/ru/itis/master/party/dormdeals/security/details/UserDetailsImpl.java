@@ -8,8 +8,8 @@ import ru.itis.master.party.dormdeals.models.User;
 
 import java.util.Collection;
 
-@Getter
 public class UserDetailsImpl implements UserDetails {
+    @Getter
     private final User user;
     private final Collection<? extends GrantedAuthority> grantedAuthorities;
 
@@ -23,7 +23,6 @@ public class UserDetailsImpl implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-
         return grantedAuthorities;
     }
 

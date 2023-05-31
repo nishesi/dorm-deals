@@ -8,7 +8,7 @@ import org.springframework.security.core.GrantedAuthority;
 import java.util.Collection;
 
 @AllArgsConstructor
-public class RefreshTokenAuthentication implements Authentication {
+public class RefreshAuthenticationToken implements Authentication {
     private String refreshToken;
 
     @Override

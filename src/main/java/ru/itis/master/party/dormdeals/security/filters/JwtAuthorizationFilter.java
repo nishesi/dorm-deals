@@ -1,6 +1,7 @@
 package ru.itis.master.party.dormdeals.security.filters;
 
 import com.auth0.jwt.exceptions.JWTVerificationException;
+import jakarta.annotation.Nonnull;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -26,23 +27,23 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
     private final JwtUtil jwtUtil;
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        if (request.getServletPath().equals(AUTHENTICATION_URL)) {
-            filterChain.doFilter(request, response);
-        } else {
-            if (authorizationHeaderUtil.hasAuthorizationToken(request)) {
-                String jwt = authorizationHeaderUtil.getToken(request);
-                try {
-                    Authentication authentication = jwtUtil.buildAuthentication(jwt);
-                    SecurityContextHolder.getContext().setAuthentication(authentication);
-                    filterChain.doFilter(request, response);
-                } catch (JWTVerificationException e) {
-                    logger.info(e.getMessage());
-                    response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
-                }
-            } else{
-                filterChain.doFilter(request, response);
+    protected void doFilterInternal(HttpServletRequest request,
+                                    @Nonnull HttpServletResponse response,
+                                    @Nonnull FilterChain filterChain) throws ServletException, IOException {
+        if (!request.getServletPath().equals(AUTHENTICATION_URL) &&
+                authorizationHeaderUtil.hasAuthorizationToken(request)) {
+
+            String jwt = authorizationHeaderUtil.getToken(request);
+            try {
+                Authentication authentication = jwtUtil.buildAuthentication(jwt);
+                SecurityContextHolder.getContext().setAuthentication(authentication);
+
+            } catch (JWTVerificationException e) {
+                logger.info(e.getMessage());
+                response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
+                return;
             }
         }
+        filterChain.doFilter(request, response);
     }
 }

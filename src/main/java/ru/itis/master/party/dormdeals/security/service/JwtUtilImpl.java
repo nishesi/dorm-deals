@@ -34,43 +34,44 @@ public class JwtUtilImpl implements JwtUtil {
     private String secret;
 
     @Override
-    public Map<String, String> generateTokens(String subject, String authority, String issuer) {
+    public Map<String, String> generateTokens(String subject, List<String> authorities, String issuer) {
         Algorithm algorithm = Algorithm.HMAC256(secret.getBytes(StandardCharsets.UTF_8));
 
         String accessToken = JWT.create()
                 .withSubject(subject)
                 .withExpiresAt(new Date(System.currentTimeMillis() + ACCESS_TOKEN_EXPIRES_TIME))
-                .withClaim("role", authority)
+                .withClaim("authorities", authorities)
                 .withIssuer(issuer)
                 .sign(algorithm);
 
         String refreshToken = JWT.create()
                 .withSubject(subject)
                 .withExpiresAt(new Date(System.currentTimeMillis() + REFRESH_TOKEN_EXPIRES_TIME))
-                .withClaim("role", authority)
+                .withClaim("authorities", authorities)
                 .withIssuer(issuer)
                 .sign(algorithm);
 
-        Map<String, String> tokens = new HashMap<>();
-        tokens.put("accessToken", accessToken);
-        tokens.put("refreshToken", refreshToken);
-
-        return tokens;
+        return Map.of(
+                "accessToken", accessToken,
+                "refreshToken", refreshToken);
     }
 
     @Override
     public Authentication buildAuthentication(String token) throws JWTVerificationException {
         ParsedToken parsedToken = parse(token);
+        List<Authority> authorities = parsedToken.getAuthorities().stream().map(Authority::valueOf).toList();
 
         UserDetails userDetails = new UserDetailsImpl(
                 User.builder()
-                        .authorities(Collections.singletonList((Authority.valueOf(parsedToken.getRole()))))
+                        .authorities(authorities)
                         .email(parsedToken.getEmail())
                         .build());
 
-        return new UsernamePasswordAuthenticationToken(userDetails,
-                null,
-                Collections.singleton(new SimpleGrantedAuthority(parsedToken.getRole())));
+        List<SimpleGrantedAuthority> grantedAuthorities = parsedToken.getAuthorities().stream()
+                .map(SimpleGrantedAuthority::new)
+                .toList();
+
+        return new UsernamePasswordAuthenticationToken(userDetails, null, grantedAuthorities);
     }
 
     private ParsedToken parse(String token) throws JWTVerificationException {
@@ -81,10 +82,10 @@ public class JwtUtilImpl implements JwtUtil {
         DecodedJWT decodedJWT = verifier.verify(token);
 
         String email = decodedJWT.getSubject();
-        String role = decodedJWT.getClaim("role").asString();
+        List<String> authorities = decodedJWT.getClaim("authorities").asList(String.class);
 
         return ParsedToken.builder()
-                .role(role)
+                .authorities(authorities)
                 .email(email)
                 .build();
     }
@@ -95,6 +96,6 @@ public class JwtUtilImpl implements JwtUtil {
     @Builder
     private static class ParsedToken {
         private String email;
-        private String role;
+        private List<String> authorities;
     }
 }
