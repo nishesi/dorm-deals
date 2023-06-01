@@ -1,4 +1,4 @@
-package ru.itis.master.party.dormdeals.redis;
+package ru.itis.master.party.dormdeals.repositories;
 
 import ru.itis.master.party.dormdeals.security.service.Jwt;
 

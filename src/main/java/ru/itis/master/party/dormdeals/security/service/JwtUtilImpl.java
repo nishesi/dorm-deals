@@ -28,8 +28,8 @@ import java.util.Map;
 @Component
 public class JwtUtilImpl implements JwtUtil {
 
-    private static final Duration ACCESS_TOKEN_EXPIRATION = Duration.ofSeconds(1 * 60);
-    private static final Duration REFRESH_TOKEN_EXPIRATION = Duration.ofSeconds(4 * 60);
+    private static final Duration ACCESS_TOKEN_EXPIRATION = Duration.ofSeconds(10 * 60);
+    private static final Duration REFRESH_TOKEN_EXPIRATION = Duration.ofSeconds(20 * 60);
 
     @Value("${jwt.secret}")
     private String secret;

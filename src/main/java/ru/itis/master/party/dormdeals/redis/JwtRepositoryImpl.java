@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.stereotype.Repository;
+import ru.itis.master.party.dormdeals.repositories.JwtRepository;
 import ru.itis.master.party.dormdeals.security.service.Jwt;
 
 import java.util.List;

@@ -2,6 +2,8 @@ package ru.itis.master.party.dormdeals.redis;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import ru.itis.master.party.dormdeals.repositories.JwtRepository;
+import ru.itis.master.party.dormdeals.repositories.JwtService;
 import ru.itis.master.party.dormdeals.security.service.JwtUtil;
 
 import java.util.List;

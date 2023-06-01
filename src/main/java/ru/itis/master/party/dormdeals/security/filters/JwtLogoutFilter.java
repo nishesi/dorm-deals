@@ -12,7 +12,7 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
-import ru.itis.master.party.dormdeals.redis.JwtService;
+import ru.itis.master.party.dormdeals.repositories.JwtService;
 import ru.itis.master.party.dormdeals.security.details.UserDetailsImpl;
 import ru.itis.master.party.dormdeals.security.service.AuthorizationHeaderUtil;
 import ru.itis.master.party.dormdeals.security.service.JwtUtil;

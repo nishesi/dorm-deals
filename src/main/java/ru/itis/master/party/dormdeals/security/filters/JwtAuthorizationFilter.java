@@ -11,7 +11,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
-import ru.itis.master.party.dormdeals.redis.JwtService;
+import ru.itis.master.party.dormdeals.repositories.JwtService;
 import ru.itis.master.party.dormdeals.security.service.AuthorizationHeaderUtil;
 import ru.itis.master.party.dormdeals.security.service.JwtUtil;
 

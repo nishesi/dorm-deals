@@ -9,7 +9,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.stereotype.Component;
-import ru.itis.master.party.dormdeals.redis.JwtService;
+import ru.itis.master.party.dormdeals.repositories.JwtService;
 import ru.itis.master.party.dormdeals.security.authentication.RefreshAuthenticationToken;
 import ru.itis.master.party.dormdeals.security.details.UserDetailsImpl;
 import ru.itis.master.party.dormdeals.security.service.AuthorizationHeaderUtil;
