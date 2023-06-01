@@ -10,4 +10,5 @@ public interface JwtUtil {
     Map<String, String> generateTokens(String subject, List<String> authorities, String issuer);
 
     Authentication buildAuthentication(String token) throws JWTVerificationException;
+    Jwt from(String token);
 }
