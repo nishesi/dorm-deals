@@ -50,3 +50,8 @@ server.error.include-exception=true
 server.error.include-binding-errors=always
 
 jwt.secret=${SPRING_JWT_SECRET}
+
+
+# Redis
+
+spring.data.redis.url=${SPRING_REDIS_URL}
