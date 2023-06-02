@@ -9,6 +9,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.stereotype.Component;
+import ru.itis.master.party.dormdeals.services.JwtService;
 import ru.itis.master.party.dormdeals.security.authentication.RefreshAuthenticationToken;
 import ru.itis.master.party.dormdeals.security.details.UserDetailsImpl;
 import ru.itis.master.party.dormdeals.security.service.AuthorizationHeaderUtil;
@@ -25,12 +26,14 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
     public static final String AUTHENTICATION_URL = "/auth/token";
     private final AuthorizationHeaderUtil authorizationHeaderUtil;
     private final ObjectMapper objectMapper;
+    private final JwtService jwtService;
     private final JwtUtil jwtUtil;
 
 
     public JwtAuthenticationFilter(AuthenticationConfiguration authenticationConfiguration,
                                    AuthorizationHeaderUtil authorizationHeaderUtil,
                                    ObjectMapper objectMapper,
+                                   JwtService jwtService,
                                    JwtUtil jwtUtil
     ) throws Exception {
         super(authenticationConfiguration.getAuthenticationManager());
@@ -39,6 +42,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 
         this.authorizationHeaderUtil = authorizationHeaderUtil;
         this.objectMapper = objectMapper;
+        this.jwtService = jwtService;
         this.jwtUtil = jwtUtil;
     }
 
@@ -47,11 +51,11 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
             HttpServletRequest request, HttpServletResponse response
     ) throws AuthenticationException {
         if (authorizationHeaderUtil.hasAuthorizationToken(request)) {
+
             String refreshToken = authorizationHeaderUtil.getToken(request);
             RefreshAuthenticationToken authentication = new RefreshAuthenticationToken(refreshToken);
             return getAuthenticationManager().authenticate(authentication);
         }
-        //TODO why we use UsernamePasswordAuthenticationFilter logic two times
         return super.attemptAuthentication(request, response);
     }
 
@@ -67,6 +71,8 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 
         List<String> authorities = userDetails.getUser().getAuthorities().stream().map(Enum::toString).toList();
         Map<String, String> tokens = jwtUtil.generateTokens(email, authorities, issuer);
+
+        jwtService.addTokensToUser(email, tokens.get("accessToken"), tokens.get("refreshToken"));
 
         objectMapper.writeValue(response.getOutputStream(), tokens);
     }

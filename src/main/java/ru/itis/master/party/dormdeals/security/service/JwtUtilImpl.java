@@ -20,16 +20,17 @@ import ru.itis.master.party.dormdeals.models.User;
 import ru.itis.master.party.dormdeals.security.details.UserDetailsImpl;
 
 import java.nio.charset.StandardCharsets;
-import java.util.*;
+import java.time.Duration;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
 
 @Component
 public class JwtUtilImpl implements JwtUtil {
 
-    private static final long ACCESS_TOKEN_EXPIRES_TIME = 1000 * 60 * 24;
+    private static final Duration ACCESS_TOKEN_EXPIRATION = Duration.ofSeconds(10 * 60);
+    private static final Duration REFRESH_TOKEN_EXPIRATION = Duration.ofSeconds(20 * 60);
 
-    private static final long REFRESH_TOKEN_EXPIRES_TIME = 1000 * 60 * 24 * 10;
-
-    //TODO: перенести secret key в переменную окружения
     @Value("${jwt.secret}")
     private String secret;
 
@@ -37,16 +38,17 @@ public class JwtUtilImpl implements JwtUtil {
     public Map<String, String> generateTokens(String subject, List<String> authorities, String issuer) {
         Algorithm algorithm = Algorithm.HMAC256(secret.getBytes(StandardCharsets.UTF_8));
 
+
         String accessToken = JWT.create()
                 .withSubject(subject)
-                .withExpiresAt(new Date(System.currentTimeMillis() + ACCESS_TOKEN_EXPIRES_TIME))
+                .withExpiresAt(new Date(System.currentTimeMillis() + ACCESS_TOKEN_EXPIRATION.toMillis()))
                 .withClaim("authorities", authorities)
                 .withIssuer(issuer)
                 .sign(algorithm);
 
         String refreshToken = JWT.create()
                 .withSubject(subject)
-                .withExpiresAt(new Date(System.currentTimeMillis() + REFRESH_TOKEN_EXPIRES_TIME))
+                .withExpiresAt(new Date(System.currentTimeMillis() + REFRESH_TOKEN_EXPIRATION.toMillis()))
                 .withClaim("authorities", authorities)
                 .withIssuer(issuer)
                 .sign(algorithm);
@@ -74,6 +76,18 @@ public class JwtUtilImpl implements JwtUtil {
         return new UsernamePasswordAuthenticationToken(userDetails, null, grantedAuthorities);
     }
 
+    @Override
+    public Jwt from(String token) {
+        ParsedToken parsedToken = parse(token);
+        Duration expiration = Duration.ofMillis(parsedToken.expiresAt.getTime() - System.currentTimeMillis());
+        if (expiration.isNegative()) expiration = Duration.ZERO;
+
+        return Jwt.builder()
+                .token(token)
+                .expiration(expiration)
+                .build();
+    }
+
     private ParsedToken parse(String token) throws JWTVerificationException {
         Algorithm algorithm = Algorithm.HMAC256(secret.getBytes(StandardCharsets.UTF_8));
 
@@ -82,10 +96,12 @@ public class JwtUtilImpl implements JwtUtil {
         DecodedJWT decodedJWT = verifier.verify(token);
 
         String email = decodedJWT.getSubject();
+        Date date = decodedJWT.getExpiresAt();
         List<String> authorities = decodedJWT.getClaim("authorities").asList(String.class);
 
         return ParsedToken.builder()
                 .authorities(authorities)
+                .expiresAt(date)
                 .email(email)
                 .build();
     }
@@ -96,6 +112,7 @@ public class JwtUtilImpl implements JwtUtil {
     @Builder
     private static class ParsedToken {
         private String email;
+        private Date expiresAt;
         private List<String> authorities;
     }
 }

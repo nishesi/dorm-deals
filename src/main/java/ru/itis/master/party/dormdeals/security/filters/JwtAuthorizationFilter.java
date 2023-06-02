@@ -11,6 +11,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
+import ru.itis.master.party.dormdeals.services.JwtService;
 import ru.itis.master.party.dormdeals.security.service.AuthorizationHeaderUtil;
 import ru.itis.master.party.dormdeals.security.service.JwtUtil;
 
@@ -26,6 +27,8 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
 
     private final JwtUtil jwtUtil;
 
+    private final JwtService jwtService;
+
     @Override
     protected void doFilterInternal(HttpServletRequest request,
                                     @Nonnull HttpServletResponse response,
@@ -34,6 +37,9 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
                 authorizationHeaderUtil.hasAuthorizationToken(request)) {
 
             String jwt = authorizationHeaderUtil.getToken(request);
+            if (jwtService.isBlockedAccessToken(jwt)) {
+                response.sendError(HttpServletResponse.SC_FORBIDDEN);
+            }
             try {
                 Authentication authentication = jwtUtil.buildAuthentication(jwt);
                 SecurityContextHolder.getContext().setAuthentication(authentication);

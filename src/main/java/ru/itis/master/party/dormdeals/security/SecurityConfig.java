@@ -13,9 +13,12 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.Http403ForbiddenEntryPoint;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.authentication.logout.LogoutFilter;
 import ru.itis.master.party.dormdeals.security.filters.JwtAuthenticationFilter;
 import ru.itis.master.party.dormdeals.security.filters.JwtAuthorizationFilter;
+import ru.itis.master.party.dormdeals.security.filters.JwtLogoutFilter;
 
 
 @Configuration
@@ -30,12 +33,14 @@ public class SecurityConfig {
     @Bean
     SecurityFilterChain chain(HttpSecurity http,
                               JwtAuthenticationFilter jwtAuthenticationFilter,
-                              JwtAuthorizationFilter jwtAuthorizationFilter
+                              JwtAuthorizationFilter jwtAuthorizationFilter,
+                              JwtLogoutFilter jwtLogoutFilter
     ) throws Exception {
         http
                 .csrf().disable()
                 .addFilter(jwtAuthenticationFilter)
                 .addFilterBefore(jwtAuthorizationFilter, UsernamePasswordAuthenticationFilter.class)
+                .addFilterAt(jwtLogoutFilter, LogoutFilter.class)
                 .sessionManagement(configurer -> configurer
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
@@ -45,6 +50,7 @@ public class SecurityConfig {
                                 // User
 
                                 .requestMatchers("/auth/token", "/email/confirm/**").permitAll()
+                                .requestMatchers(HttpMethod.POST, "/logout").permitAll()
                                 .requestMatchers(HttpMethod.POST, "/user").permitAll()
                                 .requestMatchers("/my/favourites/**").hasAnyRole("USER", "SELLER")
                                 .requestMatchers("/user/**").hasRole("USER")
@@ -64,9 +70,9 @@ public class SecurityConfig {
 
                                 .requestMatchers("/swagger-ui.html", "/swagger-ui/**", "/v3/**").permitAll()
                 )
-//                .logout(logout -> logout
-//                        .logoutUrl("/logout")
-//                        .addLogoutHandler(tokenLogoutHandler))
+                .exceptionHandling(configurer -> configurer
+                        .authenticationEntryPoint(new Http403ForbiddenEntryPoint())
+                )
                 .headers().xssProtection()
                 .and()
                 .contentSecurityPolicy("script-src 'self'");
