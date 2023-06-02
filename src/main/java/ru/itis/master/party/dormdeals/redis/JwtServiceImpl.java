@@ -56,8 +56,6 @@ public class JwtServiceImpl implements JwtService {
     public void blockAllTokensForUser(String userId) {
         Optional<RedisUser> redisUserOptional = redisUserRepository.findById(userId);
 
-        redisUserOptional.ifPresent(redisUserRepository::delete);
-
         redisUserOptional.ifPresent(redisUser -> {
             if (redisUser.getRefreshTokens() != null)
                 jwtRepository.saveAllToBlackList(redisUser.getRefreshTokens().stream()
@@ -68,6 +66,8 @@ public class JwtServiceImpl implements JwtService {
                 jwtRepository.saveAllToBlackList(redisUser.getAccessTokens().stream()
                         .map(jwtUtil::from)
                         .toList());
+
+            redisUserRepository.delete(redisUser);
         });
     }
 }
