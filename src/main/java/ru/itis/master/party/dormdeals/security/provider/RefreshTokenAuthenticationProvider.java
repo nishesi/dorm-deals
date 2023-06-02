@@ -7,7 +7,7 @@ import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.stereotype.Component;
-import ru.itis.master.party.dormdeals.repositories.JwtService;
+import ru.itis.master.party.dormdeals.services.JwtService;
 import ru.itis.master.party.dormdeals.security.authentication.RefreshAuthenticationToken;
 import ru.itis.master.party.dormdeals.security.exceptions.RefreshTokenException;
 import ru.itis.master.party.dormdeals.security.service.JwtUtil;

@@ -3,7 +3,7 @@ package ru.itis.master.party.dormdeals.redis;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.itis.master.party.dormdeals.repositories.JwtRepository;
-import ru.itis.master.party.dormdeals.repositories.JwtService;
+import ru.itis.master.party.dormdeals.services.JwtService;
 import ru.itis.master.party.dormdeals.security.service.JwtUtil;
 
 import java.util.List;
@@ -55,6 +55,8 @@ public class JwtServiceImpl implements JwtService {
     @Override
     public void blockAllTokensForUser(String userId) {
         Optional<RedisUser> redisUserOptional = redisUserRepository.findById(userId);
+
+        redisUserOptional.ifPresent(redisUserRepository::delete);
 
         redisUserOptional.ifPresent(redisUser -> {
             if (redisUser.getRefreshTokens() != null)

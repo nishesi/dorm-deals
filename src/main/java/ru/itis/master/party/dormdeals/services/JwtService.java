@@ -1,4 +1,4 @@
-package ru.itis.master.party.dormdeals.repositories;
+package ru.itis.master.party.dormdeals.services;
 
 public interface JwtService {
     void addTokensToUser(String userId, String accessToken, String refreshToken);
