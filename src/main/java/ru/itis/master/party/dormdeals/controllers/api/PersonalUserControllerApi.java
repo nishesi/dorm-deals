@@ -33,7 +33,7 @@ public interface PersonalUserControllerApi {
             )
     })
     @PutMapping("/favourites/{product-id}")
-    ResponseEntity<?> addFavouriteProduct(
+    ResponseEntity<?> addFavoriteProduct(
             @Parameter(name = "Идентификатор товара")
             @PathVariable("product-id")
             Long productId);
@@ -47,7 +47,7 @@ public interface PersonalUserControllerApi {
             )
     })
     @GetMapping("/favourites")
-    ResponseEntity<List<ProductDto>> getFavourites();
+    ResponseEntity<List<ProductDto>> getFavorites();
 
     @Operation(summary = "Удаление товара из избранное")
     @ApiResponses(value = {
@@ -60,7 +60,7 @@ public interface PersonalUserControllerApi {
             )
     })
     @DeleteMapping("/favourites/{product-id}")
-    ResponseEntity<?> deleteFavouriteProduct(
+    ResponseEntity<?> deleteFavoriteProduct(
             @Parameter(name = "Идентификатор товара")
             @PathVariable("product-id")
             Long productId);

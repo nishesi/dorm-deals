@@ -1,11 +1,9 @@
 package ru.itis.master.party.dormdeals.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -47,6 +45,15 @@ public class Product {
     @ElementCollection(fetch = FetchType.EAGER)
     @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     private List<String> resources = new ArrayList<>();
+
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable (name="favorites",
+            joinColumns=@JoinColumn (name="product_id"),
+            inverseJoinColumns=@JoinColumn(name="user_id"))
+
+    @ToString.Exclude
+    @JsonIgnore
+    private List<User> users = new ArrayList<>();
 
     @Enumerated(value = EnumType.STRING)
     private State state;

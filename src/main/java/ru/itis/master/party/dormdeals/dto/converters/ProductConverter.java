@@ -16,6 +16,8 @@ import java.util.stream.IntStream;
 public class ProductConverter {
     private final ResourceUrlResolver resolver;
     public ProductDto from(Product product) {
+
+        //TODO: определять тип файла
         List<String> imageUrls = IntStream.range(0, product.getResources().size())
                 .mapToObj(index -> resolver.resolveUrl(product.getId(), File.FileDtoType.PRODUCT, File.FileType.IMAGE, index + 1))
                 .toList();
