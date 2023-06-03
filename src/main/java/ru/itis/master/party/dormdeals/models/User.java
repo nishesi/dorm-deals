@@ -40,6 +40,7 @@ public class User {
     private String telephone;
     @Column(columnDefinition = "char(64)")
     private String hashForConfirm;
+    private String resource;
     @Enumerated(EnumType.STRING)
     private State state;
     @Enumerated(EnumType.STRING)

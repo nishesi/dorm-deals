@@ -35,6 +35,6 @@ public class ShopDto {
     @Schema(description = "владелец магазина")
     private UserDtoForShop owner;
 
-    @Schema(description = "url изображения магазина")
-    private String shopImageUrl;
+    @Schema(description = "изображение магазина")
+    private String resourceUrl;
 }

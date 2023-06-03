@@ -32,6 +32,7 @@ public class ProductDto {
 
     @Schema(description = "количество на складе", example = "13")
     private short countInStorage;
+    @Schema(description = "фотографии/видео")
+    private List<String> resources;
 
-    private List<String> imageUrlList;
 }

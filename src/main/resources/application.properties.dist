@@ -39,6 +39,7 @@ spring.mail.properties.mail.debug=true
 
 default.page-size=3
 password.encoder.strength = 10
+storage.path=${STORAGE_PATH}
 
 
 # Develop properties
