@@ -57,6 +57,7 @@ public class OpenApiConfig {
         return new ApiResponses()
                 .addApiResponse("200",
                         new ApiResponse()
+                                .description("authentication succeed")
                                 .content(new Content()
                                         .addMediaType("application/json",
                                                 new MediaType()
