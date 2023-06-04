@@ -2,6 +2,7 @@ package ru.itis.master.party.dormdeals.controllers.api;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -34,7 +35,7 @@ public interface PersonalUserControllerApi {
     })
     @PutMapping("/favourites/{product-id}")
     ResponseEntity<?> addFavouriteProduct(
-            @Parameter(name = "Идентификатор товара")
+            @Parameter(name = "Идентификатор товара", in = ParameterIn.PATH)
             @PathVariable("product-id")
             Long productId);
 
@@ -108,7 +109,7 @@ public interface PersonalUserControllerApi {
     })
     @DeleteMapping("/cart/{product-id}")
     ResponseEntity<?> deleteCartProduct(
-            @Parameter(name = "Индентификатор товара")
+            @Parameter(name = "Индентификатор товара", in = ParameterIn.PATH)
             @PathVariable("product-id")
             Long productId);
 
@@ -124,10 +125,10 @@ public interface PersonalUserControllerApi {
     })
     @PutMapping("/cart/{product-id}/{count}")
     ResponseEntity<?> setCountProductInCart(
-            @Parameter(name = "Индентификатор товара")
+            @Parameter(name = "Индентификатор товара", in = ParameterIn.PATH)
             @PathVariable("product-id")
             Long productId,
-            @Parameter(description = "Количество товара в корзине")
+            @Parameter(description = "Количество товара в корзине", in = ParameterIn.PATH)
             @PathVariable("count")
             Integer count);
 }
