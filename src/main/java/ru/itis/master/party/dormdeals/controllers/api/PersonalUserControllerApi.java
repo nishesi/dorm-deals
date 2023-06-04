@@ -23,7 +23,7 @@ import java.util.List;
 @RequestMapping("/my")
 public interface PersonalUserControllerApi {
 
-    @Operation(summary = "Добавление товара в избранное")
+    @Operation(summary = "Добавление товара в избранное", parameters = {@Parameter()})
     @ApiResponses(value = {
             @ApiResponse(responseCode = "202", description = "Товар добавлен в избранное"),
             @ApiResponse(responseCode = "404", description = "Сведения об ошибке",
@@ -35,7 +35,7 @@ public interface PersonalUserControllerApi {
     })
     @PutMapping("/favourites/{product-id}")
     ResponseEntity<?> addFavouriteProduct(
-            @Parameter(name = "Идентификатор товара", in = ParameterIn.PATH)
+            @Parameter(description = "Идентификатор продукта")
             @PathVariable("product-id")
             Long productId);
 
@@ -62,7 +62,7 @@ public interface PersonalUserControllerApi {
     })
     @DeleteMapping("/favourites/{product-id}")
     ResponseEntity<?> deleteFavouriteProduct(
-            @Parameter(name = "Идентификатор товара")
+            @Parameter(description = "Идентификатор товара")
             @PathVariable("product-id")
             Long productId);
 
@@ -78,7 +78,7 @@ public interface PersonalUserControllerApi {
     })
     @PutMapping("/cart/{product-id}")
     ResponseEntity<?> addCartProduct(
-            @Parameter(name = "Индентификатор товара")
+            @Parameter(description = "Индентификатор товара")
             @PathVariable("product-id")
             Long productId);
 
@@ -109,7 +109,7 @@ public interface PersonalUserControllerApi {
     })
     @DeleteMapping("/cart/{product-id}")
     ResponseEntity<?> deleteCartProduct(
-            @Parameter(name = "Индентификатор товара", in = ParameterIn.PATH)
+            @Parameter(description = "Индентификатор товара")
             @PathVariable("product-id")
             Long productId);
 
@@ -125,10 +125,10 @@ public interface PersonalUserControllerApi {
     })
     @PutMapping("/cart/{product-id}/{count}")
     ResponseEntity<?> setCountProductInCart(
-            @Parameter(name = "Индентификатор товара", in = ParameterIn.PATH)
+            @Parameter(description = "Индентификатор товара")
             @PathVariable("product-id")
             Long productId,
-            @Parameter(description = "Количество товара в корзине", in = ParameterIn.PATH)
+            @Parameter(description = "Количество товара в корзине")
             @PathVariable("count")
             Integer count);
 }
