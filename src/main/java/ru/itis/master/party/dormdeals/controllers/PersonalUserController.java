@@ -2,45 +2,41 @@ package ru.itis.master.party.dormdeals.controllers;
 
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import ru.itis.master.party.dormdeals.controllers.api.PersonalUserControllerApi;
 //import ru.itis.master.party.dormdeals.dto.FavouritesDto;
 import ru.itis.master.party.dormdeals.dto.CartDto;
 import ru.itis.master.party.dormdeals.dto.ProductDto.ProductDto;
 import ru.itis.master.party.dormdeals.services.CartService;
-import ru.itis.master.party.dormdeals.services.FavouriteService;
+import ru.itis.master.party.dormdeals.services.FavoriteService;
 
-import java.security.Principal;
 import java.util.List;
 
 
 @RestController
 @RequiredArgsConstructor
 public class PersonalUserController implements PersonalUserControllerApi {
-    private final FavouriteService favouriteService;
+    private final FavoriteService favoriteService;
     private final CartService cartService;
 
     @Override
-    public ResponseEntity<?> addFavouriteProduct(Long productId) {
-        favouriteService.addFavourite(productId);
+    public ResponseEntity<?> addFavoriteProduct(Long productId) {
+        favoriteService.addFavorite(productId);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
     @Override
-    public ResponseEntity<List<ProductDto>> getFavourites() {
-        return ResponseEntity.ok(favouriteService.getFavourites());
+    public ResponseEntity<List<ProductDto>> getFavorites() {
+        return ResponseEntity.ok(favoriteService.getFavorites());
     }
 
     @Override
-    public ResponseEntity<?> deleteFavouriteProduct(Long productId) {
-        favouriteService.deleteFavourite(productId);
+    public ResponseEntity<?> deleteFavoriteProduct(Long productId) {
+        favoriteService.deleteFavorite(productId);
         return ResponseEntity.accepted().build();
     }
 

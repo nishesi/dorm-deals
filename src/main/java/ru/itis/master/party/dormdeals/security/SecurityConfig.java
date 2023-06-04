@@ -59,8 +59,9 @@ public class SecurityConfig {
                                 // business logic
 
 //                        .requestMatchers(HttpMethod.GET, "/products/**", "/shops/**").permitAll()
-                                .requestMatchers("/products/**", "/shops/**").hasRole("ROLE_SELLER")
-                                .requestMatchers("/products/**", "/shops/**").permitAll()
+                                .requestMatchers("/products/**", "/shops/**").hasRole("SELLER")
+                                .requestMatchers(HttpMethod.GET,"/resource/**").permitAll()
+                                .requestMatchers(HttpMethod.POST, "/resource/**").hasRole("SELLER")
 
                                 // base pages
 

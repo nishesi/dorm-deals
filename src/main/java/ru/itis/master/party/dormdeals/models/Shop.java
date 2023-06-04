@@ -32,6 +32,7 @@ public class Shop {
     private List<Dormitory> dormitories;
     @Column(columnDefinition = "numeric(2, 1)")
     private double rating;
+    private String resource;
     @OneToOne
     @JoinColumn(name = "owner_id")
     private User owner;

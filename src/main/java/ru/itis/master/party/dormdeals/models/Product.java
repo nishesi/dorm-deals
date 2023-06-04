@@ -1,11 +1,11 @@
 package ru.itis.master.party.dormdeals.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -38,11 +38,22 @@ public class Product {
     @Column(columnDefinition = "smallint check (count_in_storage >= 0)", nullable = false)
     private short countInStorage;
 
-    @OneToMany(mappedBy = "product")
-    private List<ProductImage> images;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "shop_id")
     private Shop shop;
+
+    @ElementCollection(fetch = FetchType.EAGER)
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+    private List<String> resources = new ArrayList<>();
+
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable (name="favorites",
+            joinColumns=@JoinColumn (name="product_id"),
+            inverseJoinColumns=@JoinColumn(name="user_id"))
+
+    @ToString.Exclude
+    @JsonIgnore
+    private List<User> users = new ArrayList<>();
 
     @Enumerated(value = EnumType.STRING)
     private State state;

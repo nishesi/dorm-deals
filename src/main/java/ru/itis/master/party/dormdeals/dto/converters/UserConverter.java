@@ -3,8 +3,8 @@ package ru.itis.master.party.dormdeals.dto.converters;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import ru.itis.master.party.dormdeals.dto.UserDto.UserDto;
+import ru.itis.master.party.dormdeals.models.File;
 import ru.itis.master.party.dormdeals.models.User;
-import ru.itis.master.party.dormdeals.utils.ResourceType;
 import ru.itis.master.party.dormdeals.utils.ResourceUrlResolver;
 
 @Component
@@ -12,13 +12,13 @@ import ru.itis.master.party.dormdeals.utils.ResourceUrlResolver;
 public class UserConverter {
     private final ResourceUrlResolver resolver;
     public UserDto from(User user) {
-        String imageUrl = resolver.resolveUrl(user.getId().toString(), ResourceType.USER_IMAGE);
+        String imageUrl = resolver.resolveUrl(user.getId(), File.FileDtoType.USER, File.FileType.IMAGE);
         return UserDto.builder()
                 .email(user.getEmail())
                 .firstName(user.getFirstName())
                 .lastName(user.getLastName())
                 .telephone(user.getTelephone())
-                .userImageUrl(imageUrl)
+                .resourceUrl(imageUrl)
                 .build();
     }
 }

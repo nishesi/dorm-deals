@@ -1,17 +1,10 @@
 package ru.itis.master.party.dormdeals.models;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import jakarta.persistence.*;
+import lombok.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Data
@@ -40,8 +33,17 @@ public class User {
     private String telephone;
     @Column(columnDefinition = "char(64)")
     private String hashForConfirm;
+    private String resource;
     @Enumerated(EnumType.STRING)
     private State state;
     @Enumerated(EnumType.STRING)
     private List<Authority> authorities;
+
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(name = "favorites",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "product_id"))
+    @JsonIgnore
+    @ToString.Exclude
+    private List<Product> favorites = new ArrayList<>();
 }

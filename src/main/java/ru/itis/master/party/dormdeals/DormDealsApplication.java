@@ -2,6 +2,7 @@ package ru.itis.master.party.dormdeals;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import freemarker.template.Configuration;
+import org.apache.tika.Tika;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -31,6 +32,12 @@ public class DormDealsApplication {
     ObjectMapper objectMapper() {
         return new ObjectMapper();
     }
+
+    @Bean
+    Tika tika() {
+        return new Tika();
+    }
+
     public static void main(String[] args) {
         SpringApplication.run(DormDealsApplication.class, args);
     }

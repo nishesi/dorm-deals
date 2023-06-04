@@ -48,7 +48,7 @@ public interface PersonalUserControllerApi {
             )
     })
     @GetMapping("/favourites")
-    ResponseEntity<List<ProductDto>> getFavourites();
+    ResponseEntity<List<ProductDto>> getFavorites();
 
     @Operation(summary = "Удаление товара из избранное")
     @ApiResponses(value = {
