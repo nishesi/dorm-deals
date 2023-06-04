@@ -23,7 +23,7 @@ import java.util.List;
 @RequestMapping("/my")
 public interface PersonalUserControllerApi {
 
-    @Operation(summary = "Добавление товара в избранное", parameters = {@Parameter()})
+    @Operation(summary = "Добавление товара в избранное")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "202", description = "Товар добавлен в избранное"),
             @ApiResponse(responseCode = "404", description = "Сведения об ошибке",
