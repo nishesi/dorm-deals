@@ -12,69 +12,35 @@ import ru.itis.master.party.dormdeals.exceptions.*;
 public class RestExceptionHandler {
     @ExceptionHandler(NotFoundException.class)
     public ResponseEntity<ExceptionDto> handle(NotFoundException ex) {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
-                ExceptionDto.builder()
-                        .message(ex.getMessage())
-                        .statusCode(HttpStatus.NOT_FOUND.value())
-                        .build());
+        return formResponse(HttpStatus.NOT_FOUND, ex.getMessage());
     }
 
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<ExceptionDto> handle(IllegalArgumentException ex) {
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
-                ExceptionDto.builder()
-                        .message(ex.getMessage())
-                        .statusCode(HttpStatus.BAD_REQUEST.value())
-                        .build());
-    }
-
-    @ExceptionHandler(NotAllowedException.class)
-    public ResponseEntity<ExceptionDto> handle(NotAllowedException ex) {
-        return ResponseEntity.status(HttpStatus.METHOD_NOT_ALLOWED).body(
-                ExceptionDto.builder()
-                        .message(ex.getMessage())
-                        .statusCode(HttpStatus.METHOD_NOT_ALLOWED.value())
-                        .build()
-        );
+        return formResponse(HttpStatus.BAD_REQUEST, ex.getMessage());
     }
 
 
-    @ExceptionHandler(NotCreateSecondShop.class)
-    public ResponseEntity<ExceptionDto> handle(NotCreateSecondShop ex) {
-        return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(
-                ExceptionDto.builder()
-                        .message(ex.getMessage())
-                        .statusCode(HttpStatus.NOT_ACCEPTABLE.value())
-                        .build()
-        );
+    @ExceptionHandler(NotAcceptableException.class)
+    public ResponseEntity<ExceptionDto> handle(NotAcceptableException ex) {
+        return formResponse(HttpStatus.NOT_ACCEPTABLE, ex.getMessage());
     }
 
     @ExceptionHandler(DataIntegrityViolationException.class)
     public ResponseEntity<ExceptionDto> handle(DataIntegrityViolationException ex) {
-        return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(
-                ExceptionDto.builder()
-                        .message(ex.getMessage())
-                        .statusCode(HttpStatus.NOT_ACCEPTABLE.value())
-                        .build()
-        );
+        return formResponse(HttpStatus.NOT_ACCEPTABLE, ex.getMessage());
     }
 
-    @ExceptionHandler(MostAddedProductsInFavouriteException.class)
-    public ResponseEntity<ExceptionDto> handle(MostAddedProductsInFavouriteException ex) {
-        return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(
-                ExceptionDto.builder()
-                        .message(ex.getMessage())
-                        .statusCode(HttpStatus.NOT_ACCEPTABLE.value())
-                        .build()
-        );
+    @ExceptionHandler(NotEnoughException.class)
+    public ResponseEntity<ExceptionDto> handle(NotEnoughException ex) {
+        return formResponse(HttpStatus.NOT_ACCEPTABLE, ex.getMessage());
     }
 
-    @ExceptionHandler(NotEnoughProductException.class)
-    public ResponseEntity<ExceptionDto> handle(NotEnoughProductException ex) {
-        return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(
+    private static ResponseEntity<ExceptionDto> formResponse(HttpStatus notAcceptable, String ex) {
+        return ResponseEntity.status(notAcceptable).body(
                 ExceptionDto.builder()
-                        .message(ex.getMessage())
-                        .statusCode(HttpStatus.NOT_ACCEPTABLE.value())
+                        .message(ex)
+                        .statusCode(notAcceptable.value())
                         .build()
         );
     }

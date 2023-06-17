@@ -7,7 +7,9 @@ import org.springframework.stereotype.Service;
 import ru.itis.master.party.dormdeals.dto.CartDto;
 import ru.itis.master.party.dormdeals.dto.ProductDto.CartProductDto;
 import ru.itis.master.party.dormdeals.dto.converters.CartProductConverter;
-import ru.itis.master.party.dormdeals.exceptions.NotEnoughProductException;
+import ru.itis.master.party.dormdeals.exceptions.NotAcceptableException;
+import ru.itis.master.party.dormdeals.exceptions.NotEnoughException;
+import ru.itis.master.party.dormdeals.exceptions.NotFoundException;
 import ru.itis.master.party.dormdeals.models.Cart;
 import ru.itis.master.party.dormdeals.models.Product;
 import ru.itis.master.party.dormdeals.models.User;
@@ -15,17 +17,13 @@ import ru.itis.master.party.dormdeals.repositories.CartRepository;
 import ru.itis.master.party.dormdeals.repositories.ProductsRepository;
 import ru.itis.master.party.dormdeals.repositories.UserRepository;
 import ru.itis.master.party.dormdeals.services.CartService;
-import ru.itis.master.party.dormdeals.utils.GetOrThrow;
-import ru.itis.master.party.dormdeals.utils.OwnerChecker;
+import ru.itis.master.party.dormdeals.utils.UserUtil;
 
-import java.net.HttpCookie;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
-import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -35,9 +33,7 @@ public class CartServiceImpl implements CartService {
 
     private final CartProductConverter cartProductConverter;
 
-    private final OwnerChecker ownerChecker;
-
-    private final GetOrThrow getOrThrow;
+    private final UserUtil userUtil;
 
     private final UserRepository userRepository;
 
@@ -47,13 +43,14 @@ public class CartServiceImpl implements CartService {
 
     @Override
     public void addCart(Long productId) {
-        User user = ownerChecker.initThisUser(userRepository);
-        Product product = getOrThrow.getProductOrThrow(productId, productsRepository);
+        User user = userUtil.initThisUser(userRepository);
+        Product product = productsRepository.findById(productId)
+                .orElseThrow(() -> new NotFoundException(Product.class, "id", productId));
         Cart cart = cartRepository.findByUserIdAndProductId(user.getId(), productId).orElse(null);
 
         if (product.getState().equals(Product.State.ACTIVE)) {
             if (cart != null && product.getCountInStorage() == cart.getCount()) {
-                throw new NotEnoughProductException("На складе осталось только " + product.getCountInStorage() + " позиций");
+                throw new NotEnoughException(Product.class, cart.getCount(), (int) product.getCountInStorage());
             }
 
             if (cart != null && cart.getCount() >= 1) {
@@ -96,32 +93,34 @@ public class CartServiceImpl implements CartService {
                     .collect(Collectors.toMap(productIdFromCookie::get, productCountFromCookie::get));
         }
 
-        User user = ownerChecker.initThisUser(userRepository);
-
-        if (user != null) {
+        try {
+            User user = userUtil.initThisUser(userRepository);
             if (productIdAndCountFromCookie.size() > 0) {
                 productIdAndCountFromCookie.forEach(((productId, count) -> {
                     addCart(productId);
                     setCountProduct(productId, count);
                 }));
             }
-
             List<Cart> cart = cartRepository.findByUserId(user.getId());
             List<CartProductDto> cartProductDto = cartProductConverter.from(cart);
-
 
             return CartDto.builder()
                     .cartProductDto(cartProductDto)
                     .sumOfProducts(getSumOfProducts(cartProductDto, cart))
                     .build();
-        } else {
+
+        } catch (NotAcceptableException ex) {
             List<Integer> finalProductCountFromCookie = productCountFromCookie;
             List<Long> finalProductIdFromCookie = productIdFromCookie;
             List<Cart> cart = IntStream.range(0, productIdFromCookie.size())
-                    .mapToObj(i -> Cart.builder()
-                            .product(getOrThrow.getProductOrThrow(finalProductIdFromCookie.get(i), productsRepository))
-                            .count(finalProductCountFromCookie.get(i))
-                            .build()).collect(Collectors.toList());
+                    .mapToObj(i -> {
+                        Long productId = finalProductIdFromCookie.get(i);
+                        return Cart.builder()
+                                .product(productsRepository.findById(productId).orElseThrow(
+                                        () -> new NotFoundException(Product.class, "id", productId)))
+                                .count(finalProductCountFromCookie.get(i))
+                                .build();
+                    }).collect(Collectors.toList());
             List<CartProductDto> cartProductDto = cartProductConverter.from(cart);
 
             return CartDto.builder()
@@ -134,19 +133,21 @@ public class CartServiceImpl implements CartService {
     @Transactional
     @Override
     public void deleteCart(Long productId) {
-        User user = ownerChecker.initThisUser(userRepository);
+        User user = userUtil.initThisUser(userRepository);
         cartRepository.deleteByUserIdAndProductId(user.getId(), productId);
     }
 
     @Transactional
     @Override
     public void setCountProduct(Long productId, Integer count) {
-        User user = ownerChecker.initThisUser(userRepository);
-        Cart cart = getOrThrow.getCartOrThrow(user.getId(), productId, cartRepository);
-        Product product = getOrThrow.getProductOrThrow(productId, productsRepository);
+        User user = userUtil.initThisUser(userRepository);
+        Cart cart = cartRepository.findByUserIdAndProductId(user.getId(), productId)
+                .orElseThrow(() -> new NotFoundException(Product.class, "id", productId));
+        Product product = productsRepository.findById(productId)
+                .orElseThrow(() -> new NotFoundException(Product.class, "id", productId));
 
         if (count > product.getCountInStorage()) {
-            throw new NotEnoughProductException("На складе осталось только " + product.getCountInStorage() + " позиций");
+            throw new NotEnoughException(Product.class, count, (int) product.getCountInStorage());
         } else if (count == 0) {
             deleteCart(productId);
         } else {
@@ -166,10 +167,9 @@ public class CartServiceImpl implements CartService {
     }
 
     private List<Cookie> getCookieFromHeader(String cookieHeader) {
-        List<Cookie> cookies = Arrays.stream(cookieHeader.split(";\\s*"))
+        return Arrays.stream(cookieHeader.split(";\\s*"))
                 .map(s -> new Cookie(s.split("=", 2)[0], s.split("=", 2)[1]))
                 .collect(Collectors.toList());
-        return cookies;
     }
 
 }

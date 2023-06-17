@@ -1,11 +1,19 @@
 package ru.itis.master.party.dormdeals.exceptions;
 
-import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.ResponseStatus;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.ToString;
 
-@ResponseStatus(HttpStatus.NOT_FOUND)
+@Getter
+@ToString
+@AllArgsConstructor
 public class NotFoundException extends RuntimeException {
-    public NotFoundException(String message) {
-        super(message);
+    private Class<?> clazz;
+    private String queryParam;
+    private Object queryValue;
+
+    @Override
+    public String getMessage() {
+        return clazz.getName() + "with " + queryParam + " <" + queryValue + "> not found";
     }
 }

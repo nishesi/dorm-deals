@@ -14,7 +14,7 @@ import ru.itis.master.party.dormdeals.dto.ShopDto.UpdateShop;
 import ru.itis.master.party.dormdeals.dto.ShopWithProducts;
 import ru.itis.master.party.dormdeals.dto.converters.ProductConverter;
 import ru.itis.master.party.dormdeals.dto.converters.ShopConverter;
-import ru.itis.master.party.dormdeals.exceptions.NotCreateSecondShop;
+import ru.itis.master.party.dormdeals.exceptions.NotAcceptableException;
 import ru.itis.master.party.dormdeals.exceptions.NotFoundException;
 import ru.itis.master.party.dormdeals.models.Dormitory;
 import ru.itis.master.party.dormdeals.models.Product;
@@ -25,8 +25,7 @@ import ru.itis.master.party.dormdeals.repositories.ProductsRepository;
 import ru.itis.master.party.dormdeals.repositories.ShopsRepository;
 import ru.itis.master.party.dormdeals.repositories.UserRepository;
 import ru.itis.master.party.dormdeals.services.ShopsService;
-import ru.itis.master.party.dormdeals.utils.GetOrThrow;
-import ru.itis.master.party.dormdeals.utils.OwnerChecker;
+import ru.itis.master.party.dormdeals.utils.UserUtil;
 
 import java.util.List;
 
@@ -47,16 +46,15 @@ public class ShopsServiceImpl implements ShopsService {
 
     private final UserRepository userRepository;
 
-    private final OwnerChecker ownerChecker;
-
-    private final GetOrThrow getOrThrow;
+    private final UserUtil userUtil;
 
     @Value("${default.page-size}")
     private int defaultPageSize;
 
     @Override
     public ShopDto getShop(Long shopId) {
-        return shopConverter.from(getOrThrow.getShopOrThrow(shopId, shopsRepository));
+        return shopConverter.from(shopsRepository.findById(shopId)
+                .orElseThrow(() -> new NotFoundException(Shop.class, "id", shopId)));
     }
 
     @Override
@@ -73,10 +71,10 @@ public class ShopsServiceImpl implements ShopsService {
     @Override
     public ShopDto createShop(String ownerEmail, NewShop newShop) {
         User thisUser = userRepository.getByEmail(ownerEmail).orElseThrow(() ->
-                new NotFoundException("user with email <" + ownerEmail + "> not found"));
+                new NotFoundException(User.class, "email", ownerEmail));
 
         if (shopsRepository.existsByOwnerId(thisUser.getId()))
-            throw new NotCreateSecondShop("Вы не можете иметь больше одного магазина");
+            throw new NotAcceptableException("Вы не можете иметь больше одного магазина");
 
         List<Dormitory> dormitories = dormitoryRepository.findByIdIn(newShop.getDormitoryIdList());
 
@@ -93,9 +91,10 @@ public class ShopsServiceImpl implements ShopsService {
 
     @Override
     public ShopDto updateShop(Long shopId, UpdateShop newShopData) {
-        Shop shop = getOrThrow.getShopOrThrow(shopId, shopsRepository);
+        Shop shop = shopsRepository.findById(shopId)
+                .orElseThrow(() -> new NotFoundException(Shop.class, "id", shopId));
 
-        ownerChecker.checkOwnerShop(shop.getOwner().getId(), ownerChecker.initThisUser(userRepository));
+        userUtil.checkShopOwner(shop.getOwner().getId(), userUtil.initThisUser(userRepository));
 
         if (!shop.getName().equals(newShopData.getName()) &&
                 shopsRepository.existsByName(newShopData.getName()))
@@ -115,9 +114,10 @@ public class ShopsServiceImpl implements ShopsService {
     @Override
     @Transactional
     public void deleteShop(Long shopId) {
-        ownerChecker.checkOwnerShop(
-                getOrThrow.getShopOrThrow(shopId, shopsRepository).getOwner().getId(),
-                ownerChecker.initThisUser(userRepository));
+        userUtil.checkShopOwner(
+                shopsRepository.findById(shopId).orElseThrow(() -> new NotFoundException(Shop.class, "id", shopId))
+                        .getOwner().getId(),
+                userUtil.initThisUser(userRepository));
 
         productsRepository.deleteAllByShopId(shopId);
         shopsRepository.deleteById(shopId);
@@ -125,7 +125,7 @@ public class ShopsServiceImpl implements ShopsService {
 
     @Override
     public ShopWithProducts getAllProductsThisShop(Long shopId, int page) {
-        Shop thisShop = getOrThrow.getShopOrThrow(shopId, shopsRepository);
+        Shop thisShop = shopsRepository.findById(shopId).orElseThrow(() -> new NotFoundException(Shop.class, "id", shopId));
         PageRequest pageRequest = PageRequest.of(page, defaultPageSize);
         Page<Product> productsPageTemp = productsRepository
                 .findAllByShopIdAndStateOrderById(shopId, Product.State.ACTIVE, pageRequest);
