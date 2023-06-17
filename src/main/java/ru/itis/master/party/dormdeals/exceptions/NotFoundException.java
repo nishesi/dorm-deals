@@ -14,8 +14,6 @@ public class NotFoundException extends RuntimeException {
 
     @Override
     public String getMessage() {
-        if (super.getMessage() != null)
-            return super.getMessage();
         return clazz.getName() + "with " + queryParam + " <" + queryValue + "> not found";
     }
 }

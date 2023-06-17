@@ -69,8 +69,8 @@ public class RestExceptionHandler {
         );
     }
 
-    @ExceptionHandler(NotEnoughProductException.class)
-    public ResponseEntity<ExceptionDto> handle(NotEnoughProductException ex) {
+    @ExceptionHandler(NotEnoughException.class)
+    public ResponseEntity<ExceptionDto> handle(NotEnoughException ex) {
         return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(
                 ExceptionDto.builder()
                         .message(ex.getMessage())

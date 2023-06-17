@@ -7,7 +7,7 @@ import org.springframework.stereotype.Service;
 import ru.itis.master.party.dormdeals.dto.CartDto;
 import ru.itis.master.party.dormdeals.dto.ProductDto.CartProductDto;
 import ru.itis.master.party.dormdeals.dto.converters.CartProductConverter;
-import ru.itis.master.party.dormdeals.exceptions.NotEnoughProductException;
+import ru.itis.master.party.dormdeals.exceptions.NotEnoughException;
 import ru.itis.master.party.dormdeals.exceptions.NotFoundException;
 import ru.itis.master.party.dormdeals.models.Cart;
 import ru.itis.master.party.dormdeals.models.Product;
@@ -49,7 +49,7 @@ public class CartServiceImpl implements CartService {
 
         if (product.getState().equals(Product.State.ACTIVE)) {
             if (cart != null && product.getCountInStorage() == cart.getCount()) {
-                throw new NotEnoughProductException("На складе осталось только " + product.getCountInStorage() + " позиций");
+                throw new NotEnoughException(Product.class, cart.getCount(), (int) product.getCountInStorage());
             }
 
             if (cart != null && cart.getCount() >= 1) {
@@ -148,7 +148,7 @@ public class CartServiceImpl implements CartService {
                 .orElseThrow(() -> new NotFoundException(Product.class, "id", productId));
 
         if (count > product.getCountInStorage()) {
-            throw new NotEnoughProductException("На складе осталось только " + product.getCountInStorage() + " позиций");
+            throw new NotEnoughException(Product.class, count, (int) product.getCountInStorage());
         } else if (count == 0) {
             deleteCart(productId);
         } else {
@@ -168,10 +168,9 @@ public class CartServiceImpl implements CartService {
     }
 
     private List<Cookie> getCookieFromHeader(String cookieHeader) {
-        List<Cookie> cookies = Arrays.stream(cookieHeader.split(";\\s*"))
+        return Arrays.stream(cookieHeader.split(";\\s*"))
                 .map(s -> new Cookie(s.split("=", 2)[0], s.split("=", 2)[1]))
                 .collect(Collectors.toList());
-        return cookies;
     }
 
 }
