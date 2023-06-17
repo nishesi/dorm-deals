@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import ru.itis.master.party.dormdeals.dto.CartDto;
 import ru.itis.master.party.dormdeals.dto.ProductDto.CartProductDto;
 import ru.itis.master.party.dormdeals.dto.converters.CartProductConverter;
+import ru.itis.master.party.dormdeals.exceptions.NotAcceptableException;
 import ru.itis.master.party.dormdeals.exceptions.NotEnoughException;
 import ru.itis.master.party.dormdeals.exceptions.NotFoundException;
 import ru.itis.master.party.dormdeals.models.Cart;
@@ -16,7 +17,7 @@ import ru.itis.master.party.dormdeals.repositories.CartRepository;
 import ru.itis.master.party.dormdeals.repositories.ProductsRepository;
 import ru.itis.master.party.dormdeals.repositories.UserRepository;
 import ru.itis.master.party.dormdeals.services.CartService;
-import ru.itis.master.party.dormdeals.utils.OwnerChecker;
+import ru.itis.master.party.dormdeals.utils.UserUtil;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -32,7 +33,7 @@ public class CartServiceImpl implements CartService {
 
     private final CartProductConverter cartProductConverter;
 
-    private final OwnerChecker ownerChecker;
+    private final UserUtil userUtil;
 
     private final UserRepository userRepository;
 
@@ -42,7 +43,7 @@ public class CartServiceImpl implements CartService {
 
     @Override
     public void addCart(Long productId) {
-        User user = ownerChecker.initThisUser(userRepository);
+        User user = userUtil.initThisUser(userRepository);
         Product product = productsRepository.findById(productId)
                 .orElseThrow(() -> new NotFoundException(Product.class, "id", productId));
         Cart cart = cartRepository.findByUserIdAndProductId(user.getId(), productId).orElse(null);
@@ -92,25 +93,23 @@ public class CartServiceImpl implements CartService {
                     .collect(Collectors.toMap(productIdFromCookie::get, productCountFromCookie::get));
         }
 
-        User user = ownerChecker.initThisUser(userRepository);
-
-        if (user != null) {
+        try {
+            User user = userUtil.initThisUser(userRepository);
             if (productIdAndCountFromCookie.size() > 0) {
                 productIdAndCountFromCookie.forEach(((productId, count) -> {
                     addCart(productId);
                     setCountProduct(productId, count);
                 }));
             }
-
             List<Cart> cart = cartRepository.findByUserId(user.getId());
             List<CartProductDto> cartProductDto = cartProductConverter.from(cart);
-
 
             return CartDto.builder()
                     .cartProductDto(cartProductDto)
                     .sumOfProducts(getSumOfProducts(cartProductDto, cart))
                     .build();
-        } else {
+
+        } catch (NotAcceptableException ex) {
             List<Integer> finalProductCountFromCookie = productCountFromCookie;
             List<Long> finalProductIdFromCookie = productIdFromCookie;
             List<Cart> cart = IntStream.range(0, productIdFromCookie.size())
@@ -134,14 +133,14 @@ public class CartServiceImpl implements CartService {
     @Transactional
     @Override
     public void deleteCart(Long productId) {
-        User user = ownerChecker.initThisUser(userRepository);
+        User user = userUtil.initThisUser(userRepository);
         cartRepository.deleteByUserIdAndProductId(user.getId(), productId);
     }
 
     @Transactional
     @Override
     public void setCountProduct(Long productId, Integer count) {
-        User user = ownerChecker.initThisUser(userRepository);
+        User user = userUtil.initThisUser(userRepository);
         Cart cart = cartRepository.findByUserIdAndProductId(user.getId(), productId)
                 .orElseThrow(() -> new NotFoundException(Product.class, "id", productId));
         Product product = productsRepository.findById(productId)

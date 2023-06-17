@@ -25,7 +25,7 @@ import ru.itis.master.party.dormdeals.repositories.ProductsRepository;
 import ru.itis.master.party.dormdeals.repositories.ShopsRepository;
 import ru.itis.master.party.dormdeals.repositories.UserRepository;
 import ru.itis.master.party.dormdeals.services.ShopsService;
-import ru.itis.master.party.dormdeals.utils.OwnerChecker;
+import ru.itis.master.party.dormdeals.utils.UserUtil;
 
 import java.util.List;
 
@@ -46,7 +46,7 @@ public class ShopsServiceImpl implements ShopsService {
 
     private final UserRepository userRepository;
 
-    private final OwnerChecker ownerChecker;
+    private final UserUtil userUtil;
 
     @Value("${default.page-size}")
     private int defaultPageSize;
@@ -94,7 +94,7 @@ public class ShopsServiceImpl implements ShopsService {
         Shop shop = shopsRepository.findById(shopId)
                 .orElseThrow(() -> new NotFoundException(Shop.class, "id", shopId));
 
-        ownerChecker.checkOwnerShop(shop.getOwner().getId(), ownerChecker.initThisUser(userRepository));
+        userUtil.checkShopOwner(shop.getOwner().getId(), userUtil.initThisUser(userRepository));
 
         if (!shop.getName().equals(newShopData.getName()) &&
                 shopsRepository.existsByName(newShopData.getName()))
@@ -114,10 +114,10 @@ public class ShopsServiceImpl implements ShopsService {
     @Override
     @Transactional
     public void deleteShop(Long shopId) {
-        ownerChecker.checkOwnerShop(
+        userUtil.checkShopOwner(
                 shopsRepository.findById(shopId).orElseThrow(() -> new NotFoundException(Shop.class, "id", shopId))
                         .getOwner().getId(),
-                ownerChecker.initThisUser(userRepository));
+                userUtil.initThisUser(userRepository));
 
         productsRepository.deleteAllByShopId(shopId);
         shopsRepository.deleteById(shopId);

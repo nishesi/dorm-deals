@@ -12,8 +12,8 @@ import java.util.Objects;
 
 
 @Component
-public class OwnerChecker {
-    public void checkOwnerShop(Long ownerShopId, User thisUser) {
+public class UserUtil {
+    public void checkShopOwner(Long ownerShopId, User thisUser) {
         if (!Objects.equals(thisUser.getId(), ownerShopId)) {
             throw new NotAcceptableException("Вы не являетесь владельцем данного магазина.");
         }
@@ -24,10 +24,10 @@ public class OwnerChecker {
             return userRepository.getByEmail(authentication.getName())
                     .orElseThrow(() -> new NotFoundException(User.class, "email", authentication.getName()));
         }
-        return null;
+        throw new NotAcceptableException("user not authenticated");
     }
 
-    public void checkOwnerOrder(Long ownerOrderId, User thisUser) {
+    public void checkOrderOwner(Long ownerOrderId, User thisUser) {
         if (!Objects.equals(thisUser.getId(), ownerOrderId)) {
             throw new NotAcceptableException("Вы не являетесь создателем данного заказа.");
         }

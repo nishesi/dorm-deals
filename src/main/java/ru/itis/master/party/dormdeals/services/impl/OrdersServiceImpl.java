@@ -20,7 +20,7 @@ import ru.itis.master.party.dormdeals.repositories.ProductsRepository;
 import ru.itis.master.party.dormdeals.repositories.ShopsRepository;
 import ru.itis.master.party.dormdeals.repositories.UserRepository;
 import ru.itis.master.party.dormdeals.services.OrdersService;
-import ru.itis.master.party.dormdeals.utils.OwnerChecker;
+import ru.itis.master.party.dormdeals.utils.UserUtil;
 
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -35,7 +35,7 @@ public class OrdersServiceImpl implements OrdersService {
     private final OrderProductsRepository orderProductsRepository;
     private final ShopsRepository shopsRepository;
     private final ProductsRepository productsRepository;
-    private final OwnerChecker ownerChecker;
+    private final UserUtil userUtil;
     private final UserRepository userRepository;
 
     @Override
@@ -70,12 +70,12 @@ public class OrdersServiceImpl implements OrdersService {
 
     @Override
     public OrderDto updateOrderState(Long id, Order.State state) {
-        ownerChecker.checkOwnerShop(
+        userUtil.checkShopOwner(
                 getOrder(id)
                         .getShop()
                         .getOwner()
                         .getId(),
-                ownerChecker.initThisUser(userRepository));
+                userUtil.initThisUser(userRepository));
 
         Order order = ordersRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException(Order.class, "id", id));
@@ -87,9 +87,9 @@ public class OrdersServiceImpl implements OrdersService {
     @Transactional
     @Override
     public void deleteOrder(Long id) {
-        ownerChecker.checkOwnerOrder(ordersRepository.findById(id)
+        userUtil.checkOrderOwner(ordersRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException(Order.class, "id", id))
-                .getUser().getId(), ownerChecker.initThisUser(userRepository));
+                .getUser().getId(), userUtil.initThisUser(userRepository));
         orderProductsRepository.deleteAllByOrderId(id);
         ordersRepository.deleteById(id);
     }
