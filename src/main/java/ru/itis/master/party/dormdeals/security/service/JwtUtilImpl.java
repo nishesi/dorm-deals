@@ -35,21 +35,23 @@ public class JwtUtilImpl implements JwtUtil {
     private String secret;
 
     @Override
-    public Map<String, String> generateTokens(String subject, List<String> authorities, String issuer) {
+    public Map<String, String> generateTokens(User user, String issuer) {
         Algorithm algorithm = Algorithm.HMAC256(secret.getBytes(StandardCharsets.UTF_8));
-
+        List<String> authorities = user.getAuthorities().stream().map(Enum::toString).toList();
 
         String accessToken = JWT.create()
-                .withSubject(subject)
+                .withSubject(user.getEmail())
                 .withExpiresAt(new Date(System.currentTimeMillis() + ACCESS_TOKEN_EXPIRATION.toMillis()))
                 .withClaim("authorities", authorities)
+                .withClaim("id", user.getId())
                 .withIssuer(issuer)
                 .sign(algorithm);
 
         String refreshToken = JWT.create()
-                .withSubject(subject)
+                .withSubject(user.getEmail())
                 .withExpiresAt(new Date(System.currentTimeMillis() + REFRESH_TOKEN_EXPIRATION.toMillis()))
                 .withClaim("authorities", authorities)
+                .withClaim("id", user.getId())
                 .withIssuer(issuer)
                 .sign(algorithm);
 
@@ -65,6 +67,7 @@ public class JwtUtilImpl implements JwtUtil {
 
         UserDetails userDetails = new UserDetailsImpl(
                 User.builder()
+                        .id(parsedToken.getId())
                         .authorities(authorities)
                         .email(parsedToken.getEmail())
                         .build());
@@ -95,11 +98,13 @@ public class JwtUtilImpl implements JwtUtil {
 
         DecodedJWT decodedJWT = verifier.verify(token);
 
+        Long id = decodedJWT.getClaim("id").asLong();
         String email = decodedJWT.getSubject();
         Date date = decodedJWT.getExpiresAt();
         List<String> authorities = decodedJWT.getClaim("authorities").asList(String.class);
 
         return ParsedToken.builder()
+                .id(id)
                 .authorities(authorities)
                 .expiresAt(date)
                 .email(email)
@@ -111,6 +116,7 @@ public class JwtUtilImpl implements JwtUtil {
     @NoArgsConstructor
     @Builder
     private static class ParsedToken {
+        private Long id;
         private String email;
         private Date expiresAt;
         private List<String> authorities;
