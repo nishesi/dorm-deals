@@ -14,7 +14,7 @@ import ru.itis.master.party.dormdeals.dto.ShopDto.UpdateShop;
 import ru.itis.master.party.dormdeals.dto.ShopWithProducts;
 import ru.itis.master.party.dormdeals.dto.converters.ProductConverter;
 import ru.itis.master.party.dormdeals.dto.converters.ShopConverter;
-import ru.itis.master.party.dormdeals.exceptions.NotCreateSecondShop;
+import ru.itis.master.party.dormdeals.exceptions.NotAcceptableException;
 import ru.itis.master.party.dormdeals.exceptions.NotFoundException;
 import ru.itis.master.party.dormdeals.models.Dormitory;
 import ru.itis.master.party.dormdeals.models.Product;
@@ -74,7 +74,7 @@ public class ShopsServiceImpl implements ShopsService {
                 new NotFoundException(User.class, "email", ownerEmail));
 
         if (shopsRepository.existsByOwnerId(thisUser.getId()))
-            throw new NotCreateSecondShop("Вы не можете иметь больше одного магазина");
+            throw new NotAcceptableException("Вы не можете иметь больше одного магазина");
 
         List<Dormitory> dormitories = dormitoryRepository.findByIdIn(newShop.getDormitoryIdList());
 

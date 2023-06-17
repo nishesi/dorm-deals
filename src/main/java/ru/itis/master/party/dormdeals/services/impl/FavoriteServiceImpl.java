@@ -6,7 +6,7 @@ import org.springframework.stereotype.Service;
 import org.webjars.NotFoundException;
 import ru.itis.master.party.dormdeals.dto.ProductDto.ProductDto;
 import ru.itis.master.party.dormdeals.dto.converters.ProductConverter;
-import ru.itis.master.party.dormdeals.exceptions.MostAddedProductsInFavouriteException;
+import ru.itis.master.party.dormdeals.exceptions.NotAcceptableException;
 import ru.itis.master.party.dormdeals.models.Product;
 import ru.itis.master.party.dormdeals.models.User;
 import ru.itis.master.party.dormdeals.repositories.ProductsRepository;
@@ -35,7 +35,7 @@ public class FavoriteServiceImpl implements FavoriteService {
 
 
         if (user.getFavorites().size() >= 25) {
-            throw new MostAddedProductsInFavouriteException("Максимум 25 товаров в избранном");
+            throw new NotAcceptableException("Максимум 25 товаров в избранном");
         }
 
         user.getFavorites().add(productsRepository.findById(productId).orElseThrow(() ->

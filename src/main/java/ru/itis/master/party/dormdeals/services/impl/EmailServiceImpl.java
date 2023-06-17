@@ -2,7 +2,7 @@ package ru.itis.master.party.dormdeals.services.impl;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
-import ru.itis.master.party.dormdeals.exceptions.NotAllowedException;
+import ru.itis.master.party.dormdeals.exceptions.NotAcceptableException;
 import ru.itis.master.party.dormdeals.models.User;
 import ru.itis.master.party.dormdeals.repositories.UserRepository;
 import ru.itis.master.party.dormdeals.services.EmailService;
@@ -16,9 +16,9 @@ public class EmailServiceImpl implements EmailService {
         User user = userRepository.getByHashForConfirm(hashForConfirm).orElseThrow();
 
         if (user.getState() != User.State.NOT_CONFIRMED)
-            throw new NotAllowedException("account " + user.getEmail() + " can't be confirmed");
+            throw new NotAcceptableException("account " + user.getEmail() + " can't be confirmed");
         if (!user.getHashForConfirm().equals(hashForConfirm))
-            throw new NotAllowedException("code " + hashForConfirm + " not valid");
+            throw new NotAcceptableException("code " + hashForConfirm + " not valid");
 
         user.setState(User.State.ACTIVE);
 
