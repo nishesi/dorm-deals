@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import ru.itis.master.party.dormdeals.dto.CartDto;
 import ru.itis.master.party.dormdeals.dto.ExceptionDto;
 import ru.itis.master.party.dormdeals.dto.ProductDto.ProductDto;
+import ru.itis.master.party.dormdeals.security.details.UserDetailsImpl;
 
 import java.util.List;
 
@@ -80,7 +81,9 @@ public interface PersonalUserControllerApi {
     ResponseEntity<?> addCartProduct(
             @Parameter(description = "Индентификатор товара")
             @PathVariable("product-id")
-            Long productId);
+            Long productId,
+            @Parameter(hidden = true)
+            UserDetailsImpl userDetails);
 
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Корзина",
@@ -92,7 +95,9 @@ public interface PersonalUserControllerApi {
     @GetMapping("/cart")
     ResponseEntity<CartDto> getCart(
             @RequestHeader(value = "Cookie", required = false)
-            String cookieHeader);
+            String cookieHeader,
+            @Parameter(hidden = true)
+            UserDetailsImpl userDetails);
 
 //    @PutMapping("/cart/{product-id}/inactive")
 //    ResponseEntity<?> inactiveProduct(@Parameter(name = "Индентификатор товара") @PathVariable("product-id") Long productId);
@@ -111,7 +116,9 @@ public interface PersonalUserControllerApi {
     ResponseEntity<?> deleteCartProduct(
             @Parameter(description = "Индентификатор товара")
             @PathVariable("product-id")
-            Long productId);
+            Long productId,
+            @Parameter(hidden = true)
+            UserDetailsImpl userDetails);
 
     @Operation(summary = "Обновление количества товара в корзине")
     @ApiResponses(value = {
@@ -130,5 +137,7 @@ public interface PersonalUserControllerApi {
             Long productId,
             @Parameter(description = "Количество товара в корзине")
             @PathVariable("count")
-            Integer count);
+            Integer count,
+            @Parameter(hidden = true)
+            UserDetailsImpl userDetails);
 }
