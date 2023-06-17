@@ -24,7 +24,7 @@ public class PersonalUserController implements PersonalUserControllerApi {
     private final CartService cartService;
 
     @Override
-    public ResponseEntity<?> addFavoriteProduct(Long productId) {
+    public ResponseEntity<?> addFavouriteProduct(Long productId) {
         favoriteService.addFavorite(productId);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
@@ -35,7 +35,7 @@ public class PersonalUserController implements PersonalUserControllerApi {
     }
 
     @Override
-    public ResponseEntity<?> deleteFavoriteProduct(Long productId) {
+    public ResponseEntity<?> deleteFavouriteProduct(Long productId) {
         favoriteService.deleteFavorite(productId);
         return ResponseEntity.accepted().build();
     }

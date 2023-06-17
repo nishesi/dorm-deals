@@ -15,7 +15,6 @@ import ru.itis.master.party.dormdeals.services.ProductService;
 
 @RestController
 @RequiredArgsConstructor
-
 public class ProductController implements ProductApi {
 
     private final ProductService productService;
@@ -57,6 +56,4 @@ public class ProductController implements ProductApi {
         productService.returnInSell(productId);
         return ResponseEntity.accepted().build();
     }
-
-
 }
