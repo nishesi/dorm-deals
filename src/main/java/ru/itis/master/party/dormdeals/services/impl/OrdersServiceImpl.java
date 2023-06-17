@@ -20,7 +20,6 @@ import ru.itis.master.party.dormdeals.repositories.ProductsRepository;
 import ru.itis.master.party.dormdeals.repositories.ShopsRepository;
 import ru.itis.master.party.dormdeals.repositories.UserRepository;
 import ru.itis.master.party.dormdeals.services.OrdersService;
-import ru.itis.master.party.dormdeals.utils.GetOrThrow;
 import ru.itis.master.party.dormdeals.utils.OwnerChecker;
 
 import java.time.ZoneId;
@@ -38,20 +37,20 @@ public class OrdersServiceImpl implements OrdersService {
     private final ProductsRepository productsRepository;
     private final OwnerChecker ownerChecker;
     private final UserRepository userRepository;
-    private final GetOrThrow getOrThrow;
 
     @Override
     public OrderDto getOrder(Long id) {
-        return orderConverter.from(getOrThrow.getOrderOrThrow(id, ordersRepository));
+        return orderConverter.from(ordersRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException(Order.class, "id", id)));
     }
 
     @Override
     public OrderDto createOrder(String userEmail, NewOrder newOrder) {
-        User user = userRepository.getByEmail(userEmail).orElseThrow(() ->
-                new NotFoundException("user with email <" + userEmail + "> not found"));
+        User user = userRepository.getByEmail(userEmail)
+                .orElseThrow(() -> new NotFoundException(User.class, "email", userEmail));
 
-        Shop shop = shopsRepository.findById(newOrder.getShopId()).orElseThrow(() ->
-                new NotFoundException("shop with id <" + newOrder.getShopId() + "> not found"));
+        Shop shop = shopsRepository.findById(newOrder.getShopId())
+                .orElseThrow(() -> new NotFoundException(Shop.class, "id", newOrder.getShopId()));
 
         ZonedDateTime orderTime = ZonedDateTime.now(ZoneId.of("Europe/Moscow"));
 
@@ -78,7 +77,8 @@ public class OrdersServiceImpl implements OrdersService {
                         .getId(),
                 ownerChecker.initThisUser(userRepository));
 
-        Order order = getOrThrow.getOrderOrThrow(id, ordersRepository);
+        Order order = ordersRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException(Order.class, "id", id));
         order.setState(state);
 
         return orderConverter.from(ordersRepository.save(order));
@@ -87,7 +87,8 @@ public class OrdersServiceImpl implements OrdersService {
     @Transactional
     @Override
     public void deleteOrder(Long id) {
-        ownerChecker.checkOwnerOrder(getOrThrow.getOrderOrThrow(id, ordersRepository)
+        ownerChecker.checkOwnerOrder(ordersRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException(Order.class, "id", id))
                 .getUser().getId(), ownerChecker.initThisUser(userRepository));
         orderProductsRepository.deleteAllByOrderId(id);
         ordersRepository.deleteById(id);
@@ -100,8 +101,8 @@ public class OrdersServiceImpl implements OrdersService {
 
         for (CartProductDto cartProductDto : cartProductDtoList) {
             Long productId = cartProductDto.getId();
-            Product product = getOrThrow
-                    .getProductOrThrow(productId, productsRepository);
+            Product product = productsRepository.findById(productId)
+                    .orElseThrow(() -> new NotFoundException(Product.class, "id", productId));
             Long shopId = product.getShop().getId();
 
             if (!shopsIdSet.contains(shopId)) {
@@ -118,12 +119,11 @@ public class OrdersServiceImpl implements OrdersService {
 
             OrderDto orderDto = orderMap.get(product.getShop().getId());
 
+            Long id = orderDto.getId();
             OrderProduct orderProduct = OrderProduct.builder()
                     .product(product)
-                    .order(getOrThrow
-                            .getOrderOrThrow(
-                                    orderDto.getId(),
-                                    ordersRepository))
+                    .order(ordersRepository.findById(id)
+                            .orElseThrow(() -> new NotFoundException(Order.class, "id", id)))
                     .count(cartProductDto.getCount())
                     .build();
 
@@ -140,7 +140,8 @@ public class OrdersServiceImpl implements OrdersService {
 
     @Override
     public OrderWithProducts getAllProductsThisOrder(Long orderId) {
-        Order order = getOrThrow.getOrderOrThrow(orderId, ordersRepository);
+        Order order = ordersRepository.findById(orderId)
+                .orElseThrow(() -> new NotFoundException(Order.class, "id", orderId));
 
         List<OrderProduct> orderProductList = orderProductsRepository.findAllByOrderId(orderId);
 
@@ -151,7 +152,8 @@ public class OrdersServiceImpl implements OrdersService {
     }
 
     private void updateOrderPrice(Long id, float price) {
-        Order order = getOrThrow.getOrderOrThrow(id, ordersRepository);
+        Order order = ordersRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException(Order.class, "id", id));
         order.setPrice(price);
 
         ordersRepository.save(order);

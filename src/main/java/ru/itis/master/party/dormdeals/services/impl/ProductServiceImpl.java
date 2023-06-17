@@ -13,11 +13,11 @@ import ru.itis.master.party.dormdeals.dto.converters.ProductConverter;
 import ru.itis.master.party.dormdeals.exceptions.NotFoundException;
 import ru.itis.master.party.dormdeals.models.Product;
 import ru.itis.master.party.dormdeals.models.Shop;
+import ru.itis.master.party.dormdeals.models.User;
 import ru.itis.master.party.dormdeals.repositories.ProductsRepository;
 import ru.itis.master.party.dormdeals.repositories.ShopsRepository;
 import ru.itis.master.party.dormdeals.repositories.UserRepository;
 import ru.itis.master.party.dormdeals.services.ProductService;
-import ru.itis.master.party.dormdeals.utils.GetOrThrow;
 import ru.itis.master.party.dormdeals.utils.OwnerChecker;
 
 
@@ -29,7 +29,6 @@ public class ProductServiceImpl implements ProductService {
     private final ShopsRepository shopsRepository;
     private final UserRepository userRepository;
     private final OwnerChecker ownerChecker;
-    private final GetOrThrow getOrThrow;
 
     @Value("${default.page-size}")
     private int defaultPageSize;
@@ -47,8 +46,9 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public ProductDto addProduct(NewProduct newProduct) {
-        Shop shop = shopsRepository.findShopByOwnerId(ownerChecker.initThisUser(userRepository).getId()).orElseThrow(
-                () -> new NotFoundException("Магазин не найден"));
+        User user = ownerChecker.initThisUser(userRepository);
+        Shop shop = shopsRepository.findShopByOwnerId(user.getId())
+                .orElseThrow(() -> new NotFoundException(Shop.class, "ownerId", user.getId()));
 
         Product product = Product.builder()
                 .name(newProduct.getName())
@@ -67,13 +67,15 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public ProductDto getProduct(Long productId) {
-        Product product = getOrThrow.getProductOrThrow(productId, productsRepository);
+        Product product = productsRepository.findById(productId)
+                .orElseThrow(() -> new NotFoundException(Product.class, "id", productId));
         return productConverter.from(product);
     }
 
     @Override
     public ProductDto updateProduct(Long productId, UpdateProduct updatedProduct) {
-        Product productForUpdate = getOrThrow.getProductOrThrow(productId, productsRepository);
+        Product productForUpdate = productsRepository.findById(productId)
+                .orElseThrow(() -> new NotFoundException(Product.class, "id", productId));
         ownerChecker.checkOwnerShop(productForUpdate.getShop().getOwner().getId(), ownerChecker.initThisUser(userRepository));
 
         productForUpdate.setName(updatedProduct.getName());
@@ -88,7 +90,8 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public void deleteProduct(Long productId) {
-        Product productForDelete = getOrThrow.getProductOrThrow(productId, productsRepository);
+        Product productForDelete = productsRepository.findById(productId)
+                .orElseThrow(() -> new NotFoundException(Product.class, "id", productId));
 
         ownerChecker.checkOwnerShop(productForDelete.getShop().getOwner().getId(), ownerChecker.initThisUser(userRepository));
 
@@ -110,7 +113,8 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public void returnInSell(Long productId) {
-        Product productForReturn = getOrThrow.getProductOrThrow(productId, productsRepository);
+        Product productForReturn = productsRepository.findById(productId)
+                .orElseThrow(() -> new NotFoundException(Product.class, "id", productId));
 
         ownerChecker.checkOwnerShop(productForReturn.getShop().getOwner().getId(), ownerChecker.initThisUser(userRepository));
 

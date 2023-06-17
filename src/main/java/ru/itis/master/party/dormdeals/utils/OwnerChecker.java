@@ -21,7 +21,8 @@ public class OwnerChecker {
     public User initThisUser(UserRepository userRepository) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication != null && authentication.isAuthenticated() && !authentication.getPrincipal().equals("anonymousUser")) {
-            return userRepository.getByEmail(authentication.getName()).orElseThrow(() -> new NotFoundException("Пользователь не найден"));
+            return userRepository.getByEmail(authentication.getName())
+                    .orElseThrow(() -> new NotFoundException(User.class, "email", authentication.getName()));
         }
         return null;
     }

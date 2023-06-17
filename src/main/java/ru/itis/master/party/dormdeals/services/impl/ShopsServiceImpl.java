@@ -25,7 +25,6 @@ import ru.itis.master.party.dormdeals.repositories.ProductsRepository;
 import ru.itis.master.party.dormdeals.repositories.ShopsRepository;
 import ru.itis.master.party.dormdeals.repositories.UserRepository;
 import ru.itis.master.party.dormdeals.services.ShopsService;
-import ru.itis.master.party.dormdeals.utils.GetOrThrow;
 import ru.itis.master.party.dormdeals.utils.OwnerChecker;
 
 import java.util.List;
@@ -49,14 +48,13 @@ public class ShopsServiceImpl implements ShopsService {
 
     private final OwnerChecker ownerChecker;
 
-    private final GetOrThrow getOrThrow;
-
     @Value("${default.page-size}")
     private int defaultPageSize;
 
     @Override
     public ShopDto getShop(Long shopId) {
-        return shopConverter.from(getOrThrow.getShopOrThrow(shopId, shopsRepository));
+        return shopConverter.from(shopsRepository.findById(shopId)
+                .orElseThrow(() -> new NotFoundException(Shop.class, "id", shopId)));
     }
 
     @Override
@@ -73,7 +71,7 @@ public class ShopsServiceImpl implements ShopsService {
     @Override
     public ShopDto createShop(String ownerEmail, NewShop newShop) {
         User thisUser = userRepository.getByEmail(ownerEmail).orElseThrow(() ->
-                new NotFoundException("user with email <" + ownerEmail + "> not found"));
+                new NotFoundException(User.class, "email", ownerEmail));
 
         if (shopsRepository.existsByOwnerId(thisUser.getId()))
             throw new NotCreateSecondShop("Вы не можете иметь больше одного магазина");
@@ -93,7 +91,8 @@ public class ShopsServiceImpl implements ShopsService {
 
     @Override
     public ShopDto updateShop(Long shopId, UpdateShop newShopData) {
-        Shop shop = getOrThrow.getShopOrThrow(shopId, shopsRepository);
+        Shop shop = shopsRepository.findById(shopId)
+                .orElseThrow(() -> new NotFoundException(Shop.class, "id", shopId));
 
         ownerChecker.checkOwnerShop(shop.getOwner().getId(), ownerChecker.initThisUser(userRepository));
 
@@ -116,7 +115,8 @@ public class ShopsServiceImpl implements ShopsService {
     @Transactional
     public void deleteShop(Long shopId) {
         ownerChecker.checkOwnerShop(
-                getOrThrow.getShopOrThrow(shopId, shopsRepository).getOwner().getId(),
+                shopsRepository.findById(shopId).orElseThrow(() -> new NotFoundException(Shop.class, "id", shopId))
+                        .getOwner().getId(),
                 ownerChecker.initThisUser(userRepository));
 
         productsRepository.deleteAllByShopId(shopId);
@@ -125,7 +125,7 @@ public class ShopsServiceImpl implements ShopsService {
 
     @Override
     public ShopWithProducts getAllProductsThisShop(Long shopId, int page) {
-        Shop thisShop = getOrThrow.getShopOrThrow(shopId, shopsRepository);
+        Shop thisShop = shopsRepository.findById(shopId).orElseThrow(() -> new NotFoundException(Shop.class, "id", shopId));
         PageRequest pageRequest = PageRequest.of(page, defaultPageSize);
         Page<Product> productsPageTemp = productsRepository
                 .findAllByShopIdAndStateOrderById(shopId, Product.State.ACTIVE, pageRequest);
