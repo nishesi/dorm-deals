@@ -25,9 +25,9 @@ import ru.itis.master.party.dormdeals.repositories.ProductsRepository;
 import ru.itis.master.party.dormdeals.repositories.ShopsRepository;
 import ru.itis.master.party.dormdeals.repositories.UserRepository;
 import ru.itis.master.party.dormdeals.services.ShopsService;
-import ru.itis.master.party.dormdeals.utils.UserUtil;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -45,8 +45,6 @@ public class ShopsServiceImpl implements ShopsService {
     private final ShopsRepository shopsRepository;
 
     private final UserRepository userRepository;
-
-    private final UserUtil userUtil;
 
     @Value("${default.page-size}")
     private int defaultPageSize;
@@ -69,11 +67,11 @@ public class ShopsServiceImpl implements ShopsService {
     }
 
     @Override
-    public ShopDto createShop(String ownerEmail, NewShop newShop) {
-        User thisUser = userRepository.getByEmail(ownerEmail).orElseThrow(() ->
-                new NotFoundException(User.class, "email", ownerEmail));
+    public ShopDto createShop(long userId, NewShop newShop) {
+        User user = userRepository.findById(userId).orElseThrow(() ->
+                new NotFoundException(User.class, "email", userId));
 
-        if (shopsRepository.existsByOwnerId(thisUser.getId()))
+        if (shopsRepository.existsByOwnerId(user.getId()))
             throw new NotAcceptableException("Вы не можете иметь больше одного магазина");
 
         List<Dormitory> dormitories = dormitoryRepository.findByIdIn(newShop.getDormitoryIdList());
@@ -82,7 +80,7 @@ public class ShopsServiceImpl implements ShopsService {
                 .name(newShop.getName())
                 .description(newShop.getDescription())
                 .dormitories(dormitories)
-                .owner(thisUser)
+                .owner(user)
                 .build();
 
         shopsRepository.save(shop);
@@ -90,11 +88,12 @@ public class ShopsServiceImpl implements ShopsService {
     }
 
     @Override
-    public ShopDto updateShop(Long shopId, UpdateShop newShopData) {
+    public ShopDto updateShop(long userId, Long shopId, UpdateShop newShopData) {
         Shop shop = shopsRepository.findById(shopId)
                 .orElseThrow(() -> new NotFoundException(Shop.class, "id", shopId));
 
-        userUtil.checkShopOwner(shop.getOwner().getId(), userUtil.initThisUser(userRepository));
+        if (shop.getOwner().getId() != userId)
+            throw new NotAcceptableException("have not permission");
 
         if (!shop.getName().equals(newShopData.getName()) &&
                 shopsRepository.existsByName(newShopData.getName()))
@@ -113,14 +112,12 @@ public class ShopsServiceImpl implements ShopsService {
 
     @Override
     @Transactional
-    public void deleteShop(Long shopId) {
-        userUtil.checkShopOwner(
-                shopsRepository.findById(shopId).orElseThrow(() -> new NotFoundException(Shop.class, "id", shopId))
-                        .getOwner().getId(),
-                userUtil.initThisUser(userRepository));
-
-        productsRepository.deleteAllByShopId(shopId);
-        shopsRepository.deleteById(shopId);
+    public void deleteShop(long userId) {
+        Optional<Shop> shopOptional = shopsRepository.findShopByOwnerId(userId);
+        shopOptional.ifPresent(shop -> {
+            productsRepository.deleteAllByShopId(shop.getId());
+            shopsRepository.deleteById(shop.getId());
+        });
     }
 
     @Override

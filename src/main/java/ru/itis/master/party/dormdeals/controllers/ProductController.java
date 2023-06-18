@@ -5,12 +5,14 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.RestController;
 import ru.itis.master.party.dormdeals.controllers.api.ProductApi;
 import ru.itis.master.party.dormdeals.dto.ProductDto.NewProduct;
 import ru.itis.master.party.dormdeals.dto.ProductDto.ProductDto;
 import ru.itis.master.party.dormdeals.dto.ProductDto.ProductsPage;
 import ru.itis.master.party.dormdeals.dto.ProductDto.UpdateProduct;
+import ru.itis.master.party.dormdeals.security.details.UserDetailsImpl;
 import ru.itis.master.party.dormdeals.services.ProductService;
 
 @RestController
@@ -24,15 +26,18 @@ public class ProductController implements ProductApi {
 //        return ResponseEntity.ok(productService.getAllProductsByShop(page, shopId));
 //    }
 
+    //TODO сделать page Long и required = false и при пустом значении возвращать первую страницу
     @Override
     public ResponseEntity<ProductsPage> getAllProducts(int page) {
         return ResponseEntity.ok(productService.getAllProducts(page));
     }
 
     @Override
-    public ResponseEntity<ProductDto> addProduct(@Valid NewProduct newProduct) {
+    public ResponseEntity<ProductDto> addProduct(@Valid NewProduct newProduct,
+                                                 @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        long userId = userDetails.getUser().getId();
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(productService.addProduct(newProduct));
+                .body(productService.addProduct(userId, newProduct));
     }
 
     @Override
@@ -41,19 +46,25 @@ public class ProductController implements ProductApi {
     }
 
     @Override
-    public ResponseEntity<ProductDto> updateProduct(Long productId, @Valid UpdateProduct updatedProduct) {
-        return ResponseEntity.accepted().body(productService.updateProduct(productId, updatedProduct));
+    public ResponseEntity<ProductDto> updateProduct(Long productId, @Valid UpdateProduct updatedProduct,
+                                                    @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        long userId = userDetails.getUser().getId();
+        return ResponseEntity.accepted().body(productService.updateProduct(userId, productId, updatedProduct));
     }
 
     @Override
-    public ResponseEntity<?> deleteProduct(Long productId) {
-        productService.deleteProduct(productId);
+    public ResponseEntity<?> deleteProduct(Long productId,
+                                           @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        long userId = userDetails.getUser().getId();
+        productService.deleteProduct(userId, productId);
         return ResponseEntity.accepted().build();
     }
 
     @Override
-    public ResponseEntity<ProductDto> returnProductInSell(Long productId) {
-        productService.returnInSell(productId);
+    public ResponseEntity<ProductDto> returnProductInSell(Long productId,
+                                                          @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        long userId = userDetails.getUser().getId();
+        productService.returnInSell(userId, productId);
         return ResponseEntity.accepted().build();
     }
 }

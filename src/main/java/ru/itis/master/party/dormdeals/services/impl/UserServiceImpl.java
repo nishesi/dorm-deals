@@ -13,12 +13,10 @@ import ru.itis.master.party.dormdeals.exceptions.NotFoundException;
 import ru.itis.master.party.dormdeals.models.Authority;
 import ru.itis.master.party.dormdeals.models.User;
 import ru.itis.master.party.dormdeals.repositories.UserRepository;
-import ru.itis.master.party.dormdeals.security.service.JwtUtil;
 import ru.itis.master.party.dormdeals.services.UserService;
 import ru.itis.master.party.dormdeals.utils.EmailUtil;
 
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 
 @Service
@@ -31,7 +29,6 @@ public class UserServiceImpl implements UserService {
     private final UserConverter userConverter;
 
     private final EmailUtil emailUtil;
-    private final JwtUtil jwtUtil;
 
     @Transactional
     public String register(NewUserDto userDto) {
@@ -52,21 +49,23 @@ public class UserServiceImpl implements UserService {
         String confirmationUrl = "http://localhost/email/confirm?accept=" +
                 returnedUser.getHashForConfirm();
 
-        emailUtil.sendMail(userDto.getEmail(),
-                "confirm",
-                "confirmation-mail.ftlh",
-                Map.of("confirmationUrl", confirmationUrl));
+//        emailUtil.sendMail(userDto.getEmail(),
+//                "confirm",
+//                "confirmation-mail.ftlh",
+//                Map.of("confirmationUrl", confirmationUrl));
 
         return "Please, check your email to confirm account.";
     }
 
-    public UserDto getUser(String email) {
-        User user = getUserOrElseThrow(email);
+    public UserDto getUser(long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new NotFoundException(User.class, "id", userId));
         return userConverter.from(user);
     }
 
-    public UserDto updateUser(String email, UpdateUserDto userDto) {
-        User user = getUserOrElseThrow(email);
+    public UserDto updateUser(long userId, UpdateUserDto userDto) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new NotFoundException(User.class, "id", userId));
 
         user.setHashPassword(passwordEncoder.encode(userDto.getPassword()));
         user.setFirstName(userDto.getFirstName());
@@ -77,15 +76,17 @@ public class UserServiceImpl implements UserService {
         return userConverter.from(user);
     }
 
-    public void deleteUser(String email) {
-        User user = getUserOrElseThrow(email);
+    public void deleteUser(long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new NotFoundException(User.class, "id", userId));
+
         user.setState(User.State.DELETED);
         userRepository.save(user);
     }
 
-    private User getUserOrElseThrow(String email) {
-        return userRepository.getByEmail(email)
-                .orElseThrow(() -> new NotFoundException(User.class, "email", email));
+    private User getUserOrElseThrow(long userId) {
+        return userRepository.findById(userId)
+                .orElseThrow(() -> new NotFoundException(User.class, "id", userId));
     }
 
     @Transactional

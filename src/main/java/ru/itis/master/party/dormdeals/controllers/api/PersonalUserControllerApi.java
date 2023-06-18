@@ -2,21 +2,16 @@ package ru.itis.master.party.dormdeals.controllers.api;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 import ru.itis.master.party.dormdeals.dto.CartDto;
 import ru.itis.master.party.dormdeals.dto.ExceptionDto;
 import ru.itis.master.party.dormdeals.dto.ProductDto.ProductDto;
+import ru.itis.master.party.dormdeals.security.details.UserDetailsImpl;
 
 import java.util.List;
 
@@ -37,7 +32,9 @@ public interface PersonalUserControllerApi {
     ResponseEntity<?> addFavouriteProduct(
             @Parameter(description = "Идентификатор продукта")
             @PathVariable("product-id")
-            Long productId);
+            Long productId,
+            @Parameter(hidden = true)
+            UserDetailsImpl userDetails);
 
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Избранное",
@@ -48,7 +45,9 @@ public interface PersonalUserControllerApi {
             )
     })
     @GetMapping("/favourites")
-    ResponseEntity<List<ProductDto>> getFavorites();
+    ResponseEntity<List<ProductDto>> getFavorites(
+            @Parameter(hidden = true)
+            UserDetailsImpl userDetails);
 
     @Operation(summary = "Удаление товара из избранное")
     @ApiResponses(value = {
@@ -64,7 +63,9 @@ public interface PersonalUserControllerApi {
     ResponseEntity<?> deleteFavouriteProduct(
             @Parameter(description = "Идентификатор товара")
             @PathVariable("product-id")
-            Long productId);
+            Long productId,
+            @Parameter(hidden = true)
+            UserDetailsImpl userDetails);
 
     @Operation(summary = "Добавление товара в корзину")
     @ApiResponses(value = {
@@ -80,7 +81,9 @@ public interface PersonalUserControllerApi {
     ResponseEntity<?> addCartProduct(
             @Parameter(description = "Индентификатор товара")
             @PathVariable("product-id")
-            Long productId);
+            Long productId,
+            @Parameter(hidden = true)
+            UserDetailsImpl userDetails);
 
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Корзина",
@@ -92,7 +95,9 @@ public interface PersonalUserControllerApi {
     @GetMapping("/cart")
     ResponseEntity<CartDto> getCart(
             @RequestHeader(value = "Cookie", required = false)
-            String cookieHeader);
+            String cookieHeader,
+            @Parameter(hidden = true)
+            UserDetailsImpl userDetails);
 
 //    @PutMapping("/cart/{product-id}/inactive")
 //    ResponseEntity<?> inactiveProduct(@Parameter(name = "Индентификатор товара") @PathVariable("product-id") Long productId);
@@ -111,7 +116,9 @@ public interface PersonalUserControllerApi {
     ResponseEntity<?> deleteCartProduct(
             @Parameter(description = "Индентификатор товара")
             @PathVariable("product-id")
-            Long productId);
+            Long productId,
+            @Parameter(hidden = true)
+            UserDetailsImpl userDetails);
 
     @Operation(summary = "Обновление количества товара в корзине")
     @ApiResponses(value = {
@@ -130,5 +137,7 @@ public interface PersonalUserControllerApi {
             Long productId,
             @Parameter(description = "Количество товара в корзине")
             @PathVariable("count")
-            Integer count);
+            Integer count,
+            @Parameter(hidden = true)
+            UserDetailsImpl userDetails);
 }

@@ -14,9 +14,9 @@ import ru.itis.master.party.dormdeals.dto.ExceptionDto;
 import ru.itis.master.party.dormdeals.dto.OrderDto.OrderDto;
 import ru.itis.master.party.dormdeals.dto.OrderDto.OrderWithProducts;
 import ru.itis.master.party.dormdeals.dto.ProductDto.CartProductDto;
+import ru.itis.master.party.dormdeals.security.details.UserDetailsImpl;
 import ru.itis.master.party.dormdeals.validation.responses.ValidationErrorsDto;
 
-import java.security.Principal;
 import java.util.List;
 
 @Tags(value = {
@@ -42,10 +42,11 @@ public interface OrdersApi {
     })
     @PostMapping
     ResponseEntity<List<OrderDto>> createOrder(
-            Principal principal,
             @Parameter(description = "Список товаров с корзины")
             @RequestBody
-            List<CartProductDto> cartProductDtoList);
+            List<CartProductDto> cartProductDtoList,
+            @Parameter(hidden = true)
+            UserDetailsImpl userDetails);
 
     @Operation(summary = "Получение заказа")
     @ApiResponses(value = {

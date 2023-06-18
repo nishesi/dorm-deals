@@ -7,7 +7,6 @@ import org.springframework.stereotype.Service;
 import ru.itis.master.party.dormdeals.dto.CartDto;
 import ru.itis.master.party.dormdeals.dto.ProductDto.CartProductDto;
 import ru.itis.master.party.dormdeals.dto.converters.CartProductConverter;
-import ru.itis.master.party.dormdeals.exceptions.NotAcceptableException;
 import ru.itis.master.party.dormdeals.exceptions.NotEnoughException;
 import ru.itis.master.party.dormdeals.exceptions.NotFoundException;
 import ru.itis.master.party.dormdeals.models.Cart;
@@ -17,13 +16,11 @@ import ru.itis.master.party.dormdeals.repositories.CartRepository;
 import ru.itis.master.party.dormdeals.repositories.ProductsRepository;
 import ru.itis.master.party.dormdeals.repositories.UserRepository;
 import ru.itis.master.party.dormdeals.services.CartService;
-import ru.itis.master.party.dormdeals.utils.UserUtil;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -33,8 +30,6 @@ public class CartServiceImpl implements CartService {
 
     private final CartProductConverter cartProductConverter;
 
-    private final UserUtil userUtil;
-
     private final UserRepository userRepository;
 
     private final CartRepository cartRepository;
@@ -42,23 +37,15 @@ public class CartServiceImpl implements CartService {
     private final ProductsRepository productsRepository;
 
     @Override
-    public void addCart(Long productId) {
-        User user = userUtil.initThisUser(userRepository);
+    public void addCart(long userId, Long productId) {
         Product product = productsRepository.findById(productId)
                 .orElseThrow(() -> new NotFoundException(Product.class, "id", productId));
-        Cart cart = cartRepository.findByUserIdAndProductId(user.getId(), productId).orElse(null);
+        Optional<Cart> cartOptional = cartRepository.findByUserIdAndProductId(userId, productId);
 
         if (product.getState().equals(Product.State.ACTIVE)) {
-            if (cart != null && product.getCountInStorage() == cart.getCount()) {
-                throw new NotEnoughException(Product.class, cart.getCount(), (int) product.getCountInStorage());
-            }
-
-            if (cart != null && cart.getCount() >= 1) {
-                cart.setCount(cart.getCount() + 1);
-                cartRepository.save(cart);
-            } else {
+            if (cartOptional.isEmpty()) {
                 cartRepository.save(Cart.builder()
-                        .user(user)
+                        .user(userRepository.getReferenceById(userId))
                         .product(product)
                         .count(1)
                         .state(Cart.State.ACTIVE)
@@ -67,81 +54,78 @@ public class CartServiceImpl implements CartService {
         }
     }
 
-    //TODO ЭТО ПРОСТО КРИНЖА надо всё переделать, но зато щас работает)))
-    //TODO сделать проверку на количество в куках и количество на складе, но это мб будет делать фронт
+    //TODO сделать проверку на количество в куках и количество на складе
     @Override
     @Transactional
     public CartDto getCart(String cookieHeader) {
-        List<Long> productIdFromCookie = new ArrayList<>();
-        List<Integer> productCountFromCookie= new ArrayList<>();
-        Map<Long, Integer> productIdAndCountFromCookie = new HashMap<>();
+        Map<Long, Integer> productIdAndCount = getMapOfProductIdAndCount(cookieHeader);
+        List<Cart> cart = productIdAndCount.entrySet().stream()
+                .map(entry -> Cart.builder()
+                        .product(productsRepository.getReferenceById(entry.getKey()))
+                        .count(entry.getValue())
+                        .build())
+                .toList();
 
-        if (cookieHeader != null) {
-            List<Cookie> cookies = getCookieFromHeader(cookieHeader);
-
-            for (Cookie cookie : cookies) {
-                switch (cookie.getName()) {
-                    case "cart" -> productIdFromCookie = Arrays.stream(cookie.getValue().split("&"))
-                            .map(Long::parseLong).collect(Collectors.toList());
-                    case "count" -> productCountFromCookie = Arrays.stream(cookie.getValue().split("&"))
-                            .map(Integer::parseInt).collect(Collectors.toList());
-                }
-            }
-
-            productIdAndCountFromCookie = IntStream.range(0, productIdFromCookie.size())
-                    .boxed()
-                    .collect(Collectors.toMap(productIdFromCookie::get, productCountFromCookie::get));
-        }
-
-        try {
-            User user = userUtil.initThisUser(userRepository);
-            if (productIdAndCountFromCookie.size() > 0) {
-                productIdAndCountFromCookie.forEach(((productId, count) -> {
-                    addCart(productId);
-                    setCountProduct(productId, count);
-                }));
-            }
-            List<Cart> cart = cartRepository.findByUserId(user.getId());
-            List<CartProductDto> cartProductDto = cartProductConverter.from(cart);
-
-            return CartDto.builder()
-                    .cartProductDto(cartProductDto)
-                    .sumOfProducts(getSumOfProducts(cartProductDto, cart))
-                    .build();
-
-        } catch (NotAcceptableException ex) {
-            List<Integer> finalProductCountFromCookie = productCountFromCookie;
-            List<Long> finalProductIdFromCookie = productIdFromCookie;
-            List<Cart> cart = IntStream.range(0, productIdFromCookie.size())
-                    .mapToObj(i -> {
-                        Long productId = finalProductIdFromCookie.get(i);
-                        return Cart.builder()
-                                .product(productsRepository.findById(productId).orElseThrow(
-                                        () -> new NotFoundException(Product.class, "id", productId)))
-                                .count(finalProductCountFromCookie.get(i))
-                                .build();
-                    }).collect(Collectors.toList());
-            List<CartProductDto> cartProductDto = cartProductConverter.from(cart);
-
-            return CartDto.builder()
-                    .cartProductDto(cartProductDto)
-                    .sumOfProducts(getSumOfProducts(cartProductDto, cart))
-                    .build();
-        }
+        List<CartProductDto> cartProductDto = cartProductConverter.from(cart);
+        return CartDto.builder()
+                .cartProductDto(cartProductDto)
+                .sumOfProducts(getSumOfProducts(cartProductDto, cart))
+                .build();
     }
+
+    @Override
+    public CartDto getCart(long userId, String cookieHeader) {
+        Map<Long, Integer> productIdAndCount = getMapOfProductIdAndCount(cookieHeader);
+        if (productIdAndCount.size() > 0) {
+            productIdAndCount.forEach(((productId, count) -> {
+                addCart(userId, productId);
+                setCountProduct(userId, productId, count);
+            }));
+        }
+        List<Cart> cart = cartRepository.findByUserId(userId);
+        List<CartProductDto> cartProductDto = cartProductConverter.from(cart);
+
+        return CartDto.builder()
+                .cartProductDto(cartProductDto)
+                .sumOfProducts(getSumOfProducts(cartProductDto, cart))
+                .build();
+    }
+
+
+    //TODO обработать случаи когда длины списков не равны
+    private Map<Long, Integer> getMapOfProductIdAndCount(String cookieHeader) {
+        if (cookieHeader == null) {
+            return Map.of();
+        }
+        List<Cookie> cookies = getCookieFromHeader(cookieHeader);
+        List<Long> productIdFromCookie = List.of();
+        List<Integer> productCountFromCookie = List.of();
+
+        for (Cookie cookie : cookies) {
+            switch (cookie.getName()) {
+                case "cart" -> productIdFromCookie = Arrays.stream(cookie.getValue().split("&"))
+                        .map(Long::parseLong).collect(Collectors.toList());
+                case "count" -> productCountFromCookie = Arrays.stream(cookie.getValue().split("&"))
+                        .map(Integer::parseInt).collect(Collectors.toList());
+            }
+        }
+        return IntStream.range(0, productIdFromCookie.size())
+                .boxed()
+                .collect(Collectors.toMap(productIdFromCookie::get, productCountFromCookie::get));
+    }
+
 
     @Transactional
     @Override
-    public void deleteCart(Long productId) {
-        User user = userUtil.initThisUser(userRepository);
+    public void deleteCart(long userId, Long productId) {
+        User user = userRepository.getReferenceById(userId);
         cartRepository.deleteByUserIdAndProductId(user.getId(), productId);
     }
 
     @Transactional
     @Override
-    public void setCountProduct(Long productId, Integer count) {
-        User user = userUtil.initThisUser(userRepository);
-        Cart cart = cartRepository.findByUserIdAndProductId(user.getId(), productId)
+    public void setCountProduct(long userId, Long productId, Integer count) {
+        Cart cart = cartRepository.findByUserIdAndProductId(userId, productId)
                 .orElseThrow(() -> new NotFoundException(Product.class, "id", productId));
         Product product = productsRepository.findById(productId)
                 .orElseThrow(() -> new NotFoundException(Product.class, "id", productId));
@@ -149,7 +133,7 @@ public class CartServiceImpl implements CartService {
         if (count > product.getCountInStorage()) {
             throw new NotEnoughException(Product.class, count, (int) product.getCountInStorage());
         } else if (count == 0) {
-            deleteCart(productId);
+            deleteCart(userId, productId);
         } else {
             cart.setCount(count);
             cartRepository.save(cart);

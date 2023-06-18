@@ -45,10 +45,9 @@ public class OrdersServiceImpl implements OrdersService {
     }
 
     @Override
-    public OrderDto createOrder(String userEmail, NewOrder newOrder) {
-        User user = userRepository.getByEmail(userEmail)
-                .orElseThrow(() -> new NotFoundException(User.class, "email", userEmail));
-
+    public OrderDto createOrder(long userId, NewOrder newOrder) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new NotFoundException(User.class, "email", userId));
         Shop shop = shopsRepository.findById(newOrder.getShopId())
                 .orElseThrow(() -> new NotFoundException(Shop.class, "id", newOrder.getShopId()));
 
@@ -84,6 +83,7 @@ public class OrdersServiceImpl implements OrdersService {
         return orderConverter.from(ordersRepository.save(order));
     }
 
+    // TODO может ли пользователь удалять заказ?
     @Transactional
     @Override
     public void deleteOrder(Long id) {
@@ -95,7 +95,7 @@ public class OrdersServiceImpl implements OrdersService {
     }
 
     @Override
-    public List<OrderDto> createOrder(String userEmail, List<CartProductDto> cartProductDtoList) {
+    public List<OrderDto> createOrder(long userId, List<CartProductDto> cartProductDtoList) {
         Map<Long, OrderDto> orderMap = new HashMap<>(); // shopId -> orderDto
         Set<Long> shopsIdSet = new HashSet<>();
 
@@ -113,7 +113,7 @@ public class OrdersServiceImpl implements OrdersService {
                                 .getShop().getId())
                         .build();
 
-                OrderDto orderDto = createOrder(userEmail, newOrder);
+                OrderDto orderDto = createOrder(userId, newOrder);
                 orderMap.put(shopId, orderDto);
             }
 
