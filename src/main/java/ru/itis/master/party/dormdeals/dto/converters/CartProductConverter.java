@@ -28,6 +28,7 @@ public class CartProductConverter {
                 .name(cart.getProduct().getName())
                 .price(cart.getProduct().getPrice())
                 .count(cart.getCount())
+                .state(cart.getState())
                 .countInStorage(cart.getProduct().getCountInStorage())
                 .coverImageUrl(url)
                 .build();

@@ -81,13 +81,9 @@ public interface PersonalUserControllerApi {
     ResponseEntity<List<CartProductDto>> getCart(
             @Parameter(hidden = true)
             UserDetailsImpl userDetails,
-            @RequestParam(value = "id") List<Long> productsId);
-
-//    @PutMapping("/cart/{product-id}/inactive")
-//    ResponseEntity<?> inactiveProduct(@Parameter(name = "Индентификатор товара") @PathVariable("product-id") Long productId);
+            @RequestParam(value = "id", required = false) List<Long> productsId);
 
 
-    //TODO: openApi
     @PostMapping("/cart/synchronization")
     ResponseEntity<?> cartSynchronization(@AuthenticationPrincipal UserDetailsImpl userDetails,
                                           @RequestBody List<CartCookie> cartsCookies);

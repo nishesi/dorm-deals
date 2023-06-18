@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import ru.itis.master.party.dormdeals.models.Cart;
 
 @Data
 @Builder
@@ -27,6 +28,8 @@ public class CartProductDto {
 
     @Schema(description = "количество на складе", example = "13")
     private short countInStorage;
+    @Schema(description = "состояние товара в корзине", example = "ACTIVE")
+    private Cart.State state;
 
     @Schema(description = "url фото товара", example = "http://resource/161346356")
     private String coverImageUrl;

@@ -2,6 +2,7 @@ package ru.itis.master.party.dormdeals.services.impl;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.itis.master.party.dormdeals.dto.CartCookie;
 import ru.itis.master.party.dormdeals.dto.ProductDto.CartProductDto;
 import ru.itis.master.party.dormdeals.dto.converters.CartProductConverter;
@@ -33,21 +34,26 @@ public class CartServiceImpl implements CartService {
     @Override
     public void cartSynchronization(long userId, List<CartCookie> cartsCookie) {
         List<Cart> carts = cartRepository.findByUserId(userId);
-        cartsCookie.forEach(
-                cartCookie -> {
-                    Cart cart = findCartByIdAndCookieId(carts, cartCookie.getId());
-                    if (cart != null) {
-                        if (!cart.getCount().equals(cartCookie.getCount())) {
-                            cart.setCount(cartCookie.getCount());
+
+        if (cartsCookie.size() == 0) {
+            cartRepository.deleteAll(carts);
+        } else {
+            cartsCookie.forEach(
+                    cartCookie -> {
+                        Cart cart = findCartByIdAndCookieId(carts, cartCookie.getId());
+                        if (cart != null) {
+                            if (!cart.getCount().equals(cartCookie.getCount())) {
+                                cart.setCount(cartCookie.getCount());
+                            }
+                            if (!cart.getState().equals(getStateFromCookie(cartCookie))) {
+                                cart.setState(getStateFromCookie(cartCookie));
+                            }
+                        } else {
+                            carts.add(createNewCart(userId, cartCookie));
                         }
-                        if (!cart.getState().equals(getStateFromCookie(cartCookie))) {
-                            cart.setState(getStateFromCookie(cartCookie));
-                        }
-                    } else {
-                        carts.add(createNewCart(userId, cartCookie));
-                    }
-                });
-        cartRepository.saveAll(carts);
+                    });
+            cartRepository.saveAll(carts);
+        }
     }
 
 

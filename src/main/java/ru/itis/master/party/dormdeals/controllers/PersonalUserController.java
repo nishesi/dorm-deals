@@ -58,7 +58,6 @@ public class PersonalUserController implements PersonalUserControllerApi {
     @Override
     public ResponseEntity<?> cartSynchronization(@AuthenticationPrincipal UserDetailsImpl userDetails,
                                                  List<CartCookie> cartsCookie) {
-
         cartService.cartSynchronization(userDetails.getUser().getId(), cartsCookie);
 
         return ResponseEntity.accepted().build();
