@@ -3,12 +3,14 @@ package ru.itis.master.party.dormdeals.controllers;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.RestController;
 import ru.itis.master.party.dormdeals.controllers.api.OrdersApi;
 import ru.itis.master.party.dormdeals.dto.OrderDto.OrderDto;
 import ru.itis.master.party.dormdeals.dto.OrderDto.OrderWithProducts;
 import ru.itis.master.party.dormdeals.dto.ProductDto.CartProductDto;
 import ru.itis.master.party.dormdeals.models.Order;
+import ru.itis.master.party.dormdeals.security.details.UserDetailsImpl;
 import ru.itis.master.party.dormdeals.services.OrdersService;
 
 import java.security.Principal;
@@ -20,9 +22,11 @@ public class OrdersController implements OrdersApi {
     private final OrdersService ordersService;
 
     @Override
-    public ResponseEntity<List<OrderDto>> createOrder(Principal principal, List<CartProductDto> cartProductDtoList) {
+    public ResponseEntity<List<OrderDto>> createOrder(List<CartProductDto> cartProductDtoList,
+                                                      @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        long userId = userDetails.getUser().getId();
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(ordersService.createOrder(principal.getName(), cartProductDtoList));
+                .body(ordersService.createOrder(userId, cartProductDtoList));
     }
 
     @Override

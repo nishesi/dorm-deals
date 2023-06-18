@@ -11,13 +11,13 @@ import java.util.List;
 public interface OrdersService {
     OrderDto getOrder(Long id);
 
-    OrderDto createOrder(String userEmail, NewOrder newOrder);
+    OrderDto createOrder(long userId, NewOrder newOrder);
 
     OrderDto updateOrderState(Long id, Order.State state);
 
     void deleteOrder(Long id);
 
-    List<OrderDto> createOrder(String userEmail, List<CartProductDto> cartProductDtoList);
+    List<OrderDto> createOrder(long userId, List<CartProductDto> cartProductDtoList);
 
     OrderWithProducts getAllProductsThisOrder(Long orderId);
 }
