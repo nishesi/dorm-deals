@@ -19,7 +19,7 @@ import ru.itis.master.party.dormdeals.repositories.OrdersRepository;
 import ru.itis.master.party.dormdeals.repositories.ProductsRepository;
 import ru.itis.master.party.dormdeals.repositories.ShopsRepository;
 import ru.itis.master.party.dormdeals.repositories.UserRepository;
-import ru.itis.master.party.dormdeals.services.OrdersService;
+import ru.itis.master.party.dormdeals.services.OrderService;
 import ru.itis.master.party.dormdeals.utils.UserUtil;
 
 import java.time.ZoneId;
@@ -29,7 +29,7 @@ import java.util.*;
 
 @Service
 @RequiredArgsConstructor
-public class OrdersServiceImpl implements OrdersService {
+public class OrderServiceImpl implements OrderService {
     private final OrderConverter orderConverter;
     private final OrdersRepository ordersRepository;
     private final OrderProductsRepository orderProductsRepository;

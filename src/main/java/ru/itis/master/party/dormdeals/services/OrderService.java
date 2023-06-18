@@ -8,7 +8,7 @@ import ru.itis.master.party.dormdeals.models.Order;
 
 import java.util.List;
 
-public interface OrdersService {
+public interface OrderService {
     OrderDto getOrder(Long id);
 
     OrderDto createOrder(long userId, NewOrder newOrder);

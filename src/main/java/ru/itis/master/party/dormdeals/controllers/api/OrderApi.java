@@ -23,7 +23,7 @@ import java.util.List;
         @Tag(name = "Orders")
 })
 @RequestMapping("/orders")
-public interface OrdersApi {
+public interface OrderApi {
 
     @Operation(summary = "Заказ(ы) товаров из корзины")
     @ApiResponses(value = {
