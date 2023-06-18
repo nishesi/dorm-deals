@@ -4,6 +4,7 @@ import jakarta.servlet.http.Cookie;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import ru.itis.master.party.dormdeals.dto.CartCookie;
 import ru.itis.master.party.dormdeals.dto.CartDto;
 import ru.itis.master.party.dormdeals.dto.ProductDto.CartProductDto;
 import ru.itis.master.party.dormdeals.dto.converters.CartProductConverter;
@@ -115,29 +116,25 @@ public class CartServiceImpl implements CartService {
     }
 
 
-    @Transactional
-    @Override
-    public void deleteCart(long userId, Long productId) {
-        User user = userRepository.getReferenceById(userId);
-        cartRepository.deleteByUserIdAndProductId(user.getId(), productId);
-    }
 
-    @Transactional
     @Override
-    public void setCountProduct(long userId, Long productId, Integer count) {
-        Cart cart = cartRepository.findByUserIdAndProductId(userId, productId)
-                .orElseThrow(() -> new NotFoundException(Product.class, "id", productId));
-        Product product = productsRepository.findById(productId)
-                .orElseThrow(() -> new NotFoundException(Product.class, "id", productId));
-
-        if (count > product.getCountInStorage()) {
-            throw new NotEnoughException(Product.class, count, (int) product.getCountInStorage());
-        } else if (count == 0) {
-            deleteCart(userId, productId);
-        } else {
-            cart.setCount(count);
-            cartRepository.save(cart);
-        }
+    public void cartSynchronization(long userId, List<CartCookie> cartsCookie) {
+        List<Cart> carts = cartRepository.findByUserId(userId);
+        cartsCookie.forEach(
+                cartCookie -> {
+                    Cart cart = findCartByIdAndCookieId(carts, cartCookie.getId());
+                    if (cart != null) {
+                        if (!cart.getCount().equals(cartCookie.getCount())) {
+                            cart.setCount(cartCookie.getCount());
+                        }
+                        if (!cart.getState().equals(getStateFromCookie(cartCookie))) {
+                            cart.setState(getStateFromCookie(cartCookie));
+                        }
+                    } else {
+                        carts.add(createNewCart(userId, cartCookie));
+                    }
+                });
+        cartRepository.saveAll(carts);
     }
 
     private Double getSumOfProducts(List<CartProductDto> cartProductDto, List<Cart> cart) {
@@ -154,6 +151,29 @@ public class CartServiceImpl implements CartService {
         return Arrays.stream(cookieHeader.split(";\\s*"))
                 .map(s -> new Cookie(s.split("=", 2)[0], s.split("=", 2)[1]))
                 .collect(Collectors.toList());
+    }
+
+    private Cart.State getStateFromCookie(CartCookie cartCookie) {
+        if (cartCookie.getStateProduct()) {
+            return Cart.State.ACTIVE;
+        }
+        return Cart.State.INACTIVE;
+    }
+
+    private Cart findCartByIdAndCookieId(List<Cart> carts, long cartId) {
+        return carts.stream()
+                .filter(cart -> cart.getId().equals(cartId))
+                .findFirst()
+                .orElse(null);
+    }
+
+    private Cart createNewCart(long userId, CartCookie cartCookies) {
+        return Cart.builder()
+                .user(userRepository.getReferenceById(userId))
+                .product(productsRepository.getReferenceById(cartCookies.getId()))
+                .count(cartCookies.getCount())
+                .state(getStateFromCookie(cartCookies))
+                .build();
     }
 
 }

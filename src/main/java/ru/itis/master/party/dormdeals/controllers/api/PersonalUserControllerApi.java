@@ -7,7 +7,9 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import ru.itis.master.party.dormdeals.dto.CartCookie;
 import ru.itis.master.party.dormdeals.dto.CartDto;
 import ru.itis.master.party.dormdeals.dto.ExceptionDto;
 import ru.itis.master.party.dormdeals.dto.ProductDto.ProductDto;
@@ -28,8 +30,8 @@ public interface PersonalUserControllerApi {
                     }
             )
     })
-    @PutMapping("/favourites/{product-id}")
-    ResponseEntity<?> addFavouriteProduct(
+    @PutMapping("/favorites/{product-id}")
+    ResponseEntity<?> addFavoriteProduct(
             @Parameter(description = "Идентификатор продукта")
             @PathVariable("product-id")
             Long productId,
@@ -44,7 +46,7 @@ public interface PersonalUserControllerApi {
                     }
             )
     })
-    @GetMapping("/favourites")
+    @GetMapping("/favorites")
     ResponseEntity<List<ProductDto>> getFavorites(
             @Parameter(hidden = true)
             UserDetailsImpl userDetails);
@@ -59,8 +61,8 @@ public interface PersonalUserControllerApi {
                     }
             )
     })
-    @DeleteMapping("/favourites/{product-id}")
-    ResponseEntity<?> deleteFavouriteProduct(
+    @DeleteMapping("/favorites/{product-id}")
+    ResponseEntity<?> deleteFavoriteProduct(
             @Parameter(description = "Идентификатор товара")
             @PathVariable("product-id")
             Long productId,
@@ -94,50 +96,17 @@ public interface PersonalUserControllerApi {
     })
     @GetMapping("/cart")
     ResponseEntity<CartDto> getCart(
-            @RequestHeader(value = "Cookie", required = false)
-            String cookieHeader,
             @Parameter(hidden = true)
-            UserDetailsImpl userDetails);
+            UserDetailsImpl userDetails,
+            @RequestParam(value = "id") List<Long> productsId);
 
 //    @PutMapping("/cart/{product-id}/inactive")
 //    ResponseEntity<?> inactiveProduct(@Parameter(name = "Индентификатор товара") @PathVariable("product-id") Long productId);
 
-    @Operation(summary = "Удаление товара из корзины")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "202", description = "Товар удален из корзины"),
-            @ApiResponse(responseCode = "404", description = "Сведения об ошибке",
-                    content = {
-                            @Content(mediaType = "application/json",
-                                    schema = @Schema(implementation = ExceptionDto.class))
-                    }
-            )
-    })
-    @DeleteMapping("/cart/{product-id}")
-    ResponseEntity<?> deleteCartProduct(
-            @Parameter(description = "Индентификатор товара")
-            @PathVariable("product-id")
-            Long productId,
-            @Parameter(hidden = true)
-            UserDetailsImpl userDetails);
 
-    @Operation(summary = "Обновление количества товара в корзине")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "202", description = "Количество обновлено"),
-            @ApiResponse(responseCode = "404", description = "Сведения об ошибке",
-                    content = {
-                            @Content(mediaType = "application/json",
-                                    schema = @Schema(implementation = ExceptionDto.class))
-                    }
-            )
-    })
-    @PutMapping("/cart/{product-id}/{count}")
-    ResponseEntity<?> setCountProductInCart(
-            @Parameter(description = "Индентификатор товара")
-            @PathVariable("product-id")
-            Long productId,
-            @Parameter(description = "Количество товара в корзине")
-            @PathVariable("count")
-            Integer count,
-            @Parameter(hidden = true)
-            UserDetailsImpl userDetails);
+    //TODO: openApi
+    @PostMapping("/cart/synchronization")
+    ResponseEntity<?> cartSynchronization(@AuthenticationPrincipal UserDetailsImpl userDetails,
+                                          @RequestBody List<CartCookie> cartsCookies);
+
 }

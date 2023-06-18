@@ -5,8 +5,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import ru.itis.master.party.dormdeals.controllers.api.PersonalUserControllerApi;
+import ru.itis.master.party.dormdeals.dto.CartCookie;
 import ru.itis.master.party.dormdeals.dto.CartDto;
 import ru.itis.master.party.dormdeals.dto.ProductDto.ProductDto;
 import ru.itis.master.party.dormdeals.security.details.UserDetailsImpl;
@@ -23,7 +25,7 @@ public class PersonalUserController implements PersonalUserControllerApi {
     private final CartService cartService;
 
     @Override
-    public ResponseEntity<?> addFavouriteProduct(Long productId, @AuthenticationPrincipal UserDetailsImpl userDetails) {
+    public ResponseEntity<?> addFavoriteProduct(Long productId, @AuthenticationPrincipal UserDetailsImpl userDetails) {
         long userId = userDetails.getUser().getId();
         favoriteService.addFavorite(userId, productId);
         return ResponseEntity.status(HttpStatus.CREATED).build();
@@ -36,7 +38,7 @@ public class PersonalUserController implements PersonalUserControllerApi {
     }
 
     @Override
-    public ResponseEntity<?> deleteFavouriteProduct(Long productId, @AuthenticationPrincipal UserDetailsImpl userDetails) {
+    public ResponseEntity<?> deleteFavoriteProduct(Long productId, @AuthenticationPrincipal UserDetailsImpl userDetails) {
         long userId = userDetails.getUser().getId();
         favoriteService.deleteFavorite(userId, productId);
         return ResponseEntity.accepted().build();
@@ -48,39 +50,26 @@ public class PersonalUserController implements PersonalUserControllerApi {
             cartService.addCart(userDetails.getUser().getId(), productId);
             return ResponseEntity.status(HttpStatus.CREATED).build();
         } else {
-            //TODO сделать что то с добавление товара в корзину для неавторизованного юзера
             throw new RuntimeException("not realized");
         }
     }
 
     @Override
-    public ResponseEntity<CartDto> getCart(String cookieHeader,
-                                           @AuthenticationPrincipal UserDetailsImpl userDetails) {
+    public ResponseEntity<CartDto> getCart(@AuthenticationPrincipal UserDetailsImpl userDetails,
+                                           List<Long> productsId) {
         CartDto carts = userDetails != null
-                ? cartService.getCart(userDetails.getUser().getId(), cookieHeader)
-                : cartService.getCart(cookieHeader);
+                ? cartService.getCart(userDetails.getUser().getId(), productsId)
+                : cartService.getCart(productsId);
         return ResponseEntity.ok(carts);
     }
 
-    @Override
-    public ResponseEntity<?> deleteCartProduct(Long productId,
-                                               @AuthenticationPrincipal UserDetailsImpl userDetails) {
-        if (userDetails != null) {
-            long userId = userDetails.getUser().getId();
-            cartService.deleteCart(userId, productId);
-            return ResponseEntity.accepted().build();
-        }
-        throw new RuntimeException("Not implemented");
-    }
 
     @Override
-    public ResponseEntity<?> setCountProductInCart(Long productId, Integer count,
-                                                   @AuthenticationPrincipal UserDetailsImpl userDetails) {
-        if (userDetails != null) {
-            long userId = userDetails.getUser().getId();
-            cartService.setCountProduct(userId, productId, count);
-            return ResponseEntity.accepted().build();
-        }
-        throw new RuntimeException("Not implemented");
+    public ResponseEntity<?> cartSynchronization(@AuthenticationPrincipal UserDetailsImpl userDetails,
+                                                 List<CartCookie> cartsCookie) {
+
+        cartService.cartSynchronization(userDetails.getUser().getId(), cartsCookie);
+
+        return ResponseEntity.accepted().build();
     }
 }
