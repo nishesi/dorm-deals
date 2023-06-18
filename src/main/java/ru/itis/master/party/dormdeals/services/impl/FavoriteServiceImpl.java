@@ -3,16 +3,15 @@ package ru.itis.master.party.dormdeals.services.impl;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.webjars.NotFoundException;
 import ru.itis.master.party.dormdeals.dto.ProductDto.ProductDto;
 import ru.itis.master.party.dormdeals.dto.converters.ProductConverter;
 import ru.itis.master.party.dormdeals.exceptions.NotAcceptableException;
+import ru.itis.master.party.dormdeals.exceptions.NotFoundException;
 import ru.itis.master.party.dormdeals.models.Product;
 import ru.itis.master.party.dormdeals.models.User;
 import ru.itis.master.party.dormdeals.repositories.ProductsRepository;
 import ru.itis.master.party.dormdeals.repositories.UserRepository;
 import ru.itis.master.party.dormdeals.services.FavoriteService;
-import ru.itis.master.party.dormdeals.utils.UserUtil;
 
 import java.util.List;
 
@@ -26,36 +25,35 @@ public class FavoriteServiceImpl implements FavoriteService {
 
     private final UserRepository userRepository;
 
-    private final UserUtil userUtil;
-
     @Override
-    public void addFavorite(Long productId) {
-        User user = userUtil.initThisUser(userRepository);
+    public void addFavorite(long userId, Long productId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new NotFoundException(User.class, "id", userId));
 
         if (user.getFavorites().size() >= 25) {
             throw new NotAcceptableException("Максимум 25 товаров в избранном");
         }
-
-        user.getFavorites().add(productsRepository.findById(productId)
-                .orElseThrow(() -> new NotFoundException("not found")));
+        user.getFavorites().add(productsRepository.getReferenceById(productId));
 
         userRepository.save(user);
     }
 
     @Override
-    public List<ProductDto> getFavorites() {
-        User user = userUtil.initThisUser(userRepository);
+    public List<ProductDto> getFavorites(long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new NotFoundException(User.class, "id", userId));
+
         List<Product> products = user.getFavorites();
         return productConverter.from(products);
     }
 
     @Transactional
     @Override
-    public void deleteFavorite(Long productId) {
-        User user = userUtil.initThisUser(userRepository);
+    public void deleteFavorite(long userId, Long productId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new NotFoundException(User.class, "id", userId));
 
-        user.getFavorites().remove(productsRepository.findById(productId)
-                .orElseThrow(() -> new NotFoundException("not found")));
+        user.getFavorites().remove(productsRepository.getReferenceById(productId));
 
         userRepository.save(user);
     }

@@ -23,19 +23,22 @@ public class PersonalUserController implements PersonalUserControllerApi {
     private final CartService cartService;
 
     @Override
-    public ResponseEntity<?> addFavouriteProduct(Long productId) {
-        favoriteService.addFavorite(productId);
+    public ResponseEntity<?> addFavouriteProduct(Long productId, @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        long userId = userDetails.getUser().getId();
+        favoriteService.addFavorite(userId, productId);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
     @Override
-    public ResponseEntity<List<ProductDto>> getFavorites() {
-        return ResponseEntity.ok(favoriteService.getFavorites());
+    public ResponseEntity<List<ProductDto>> getFavorites(@AuthenticationPrincipal UserDetailsImpl userDetails) {
+        long userId = userDetails.getUser().getId();
+        return ResponseEntity.ok(favoriteService.getFavorites(userId));
     }
 
     @Override
-    public ResponseEntity<?> deleteFavouriteProduct(Long productId) {
-        favoriteService.deleteFavorite(productId);
+    public ResponseEntity<?> deleteFavouriteProduct(Long productId, @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        long userId = userDetails.getUser().getId();
+        favoriteService.deleteFavorite(userId, productId);
         return ResponseEntity.accepted().build();
     }
 
