@@ -8,15 +8,15 @@ import ru.itis.master.party.dormdeals.dto.ProductDto.UpdateProduct;
 public interface ProductService {
     ProductsPage getAllProducts(int page);
 
-    ProductDto addProduct(NewProduct newProduct);
+    ProductDto addProduct(long userId, NewProduct newProduct);
 
     ProductDto getProduct(Long productId);
 
-    ProductDto updateProduct(Long productId, UpdateProduct updatedProduct);
+    ProductDto updateProduct(long userId, Long productId, UpdateProduct updatedProduct);
 
-    void deleteProduct(Long productId);
+    void deleteProduct(long userId, Long productId);
 
 //    ProductsPage getAllProductsByShop(int page, Long shopId);
 
-    void returnInSell(Long productId);
+    void returnInSell(long userId, Long productId);
 }

@@ -16,6 +16,7 @@ import ru.itis.master.party.dormdeals.dto.ProductDto.NewProduct;
 import ru.itis.master.party.dormdeals.dto.ProductDto.ProductDto;
 import ru.itis.master.party.dormdeals.dto.ProductDto.ProductsPage;
 import ru.itis.master.party.dormdeals.dto.ProductDto.UpdateProduct;
+import ru.itis.master.party.dormdeals.security.details.UserDetailsImpl;
 import ru.itis.master.party.dormdeals.validation.responses.ValidationErrorsDto;
 
 @Tags(value = {
@@ -69,7 +70,9 @@ public interface ProductApi {
     ResponseEntity<ProductDto> addProduct(
             @Parameter(description = "Данные нового товара")
             @RequestBody @Valid
-            NewProduct newProduct);
+            NewProduct newProduct,
+            @Parameter(hidden = true)
+            UserDetailsImpl userDetails);
 
     @Operation(summary = "Получение товара")
     @ApiResponses(value = {
@@ -119,7 +122,9 @@ public interface ProductApi {
             @PathVariable("product-id")
             Long productId,
             @RequestBody
-            UpdateProduct updatedProduct);
+            UpdateProduct updatedProduct,
+            @Parameter(hidden = true)
+            UserDetailsImpl userDetails);
 
     @Operation(summary = "Удаление товара")
     @ApiResponses(value = {
@@ -135,7 +140,9 @@ public interface ProductApi {
     ResponseEntity<?> deleteProduct(
             @Parameter(description = "Удаление товара", example = "1")
             @PathVariable("product-id")
-            Long productId);
+            Long productId,
+            @Parameter(hidden = true)
+            UserDetailsImpl userDetails);
 
     @Operation(summary = "Возврат товара в продажу")
     @ApiResponses(value = {
@@ -151,5 +158,7 @@ public interface ProductApi {
     ResponseEntity<ProductDto> returnProductInSell(
             @Parameter(description = "Возвращение товара в продажу", example = "1")
             @PathVariable("product-id")
-            Long productId);
+            Long productId,
+            @Parameter(hidden = true)
+            UserDetailsImpl userDetails);
 }

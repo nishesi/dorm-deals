@@ -10,15 +10,13 @@ import ru.itis.master.party.dormdeals.dto.ProductDto.ProductDto;
 import ru.itis.master.party.dormdeals.dto.ProductDto.ProductsPage;
 import ru.itis.master.party.dormdeals.dto.ProductDto.UpdateProduct;
 import ru.itis.master.party.dormdeals.dto.converters.ProductConverter;
+import ru.itis.master.party.dormdeals.exceptions.NotAcceptableException;
 import ru.itis.master.party.dormdeals.exceptions.NotFoundException;
 import ru.itis.master.party.dormdeals.models.Product;
 import ru.itis.master.party.dormdeals.models.Shop;
-import ru.itis.master.party.dormdeals.models.User;
 import ru.itis.master.party.dormdeals.repositories.ProductsRepository;
 import ru.itis.master.party.dormdeals.repositories.ShopsRepository;
-import ru.itis.master.party.dormdeals.repositories.UserRepository;
 import ru.itis.master.party.dormdeals.services.ProductService;
-import ru.itis.master.party.dormdeals.utils.UserUtil;
 
 
 @Service
@@ -27,8 +25,6 @@ public class ProductServiceImpl implements ProductService {
     private final ProductConverter productConverter;
     private final ProductsRepository productsRepository;
     private final ShopsRepository shopsRepository;
-    private final UserRepository userRepository;
-    private final UserUtil userUtil;
 
     @Value("${default.page-size}")
     private int defaultPageSize;
@@ -45,10 +41,9 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public ProductDto addProduct(NewProduct newProduct) {
-        User user = userUtil.initThisUser(userRepository);
-        Shop shop = shopsRepository.findShopByOwnerId(user.getId())
-                .orElseThrow(() -> new NotFoundException(Shop.class, "ownerId", user.getId()));
+    public ProductDto addProduct(long userId, NewProduct newProduct) {
+        Shop shop = shopsRepository.findShopByOwnerId(userId)
+                .orElseThrow(() -> new NotFoundException(Shop.class, "ownerId", userId));
 
         Product product = Product.builder()
                 .name(newProduct.getName())
@@ -73,31 +68,34 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public ProductDto updateProduct(Long productId, UpdateProduct updatedProduct) {
-        Product productForUpdate = productsRepository.findById(productId)
+    public ProductDto updateProduct(long userId, Long productId, UpdateProduct updatedProduct) {
+        Product product = productsRepository.findById(productId)
                 .orElseThrow(() -> new NotFoundException(Product.class, "id", productId));
-        userUtil.checkShopOwner(productForUpdate.getShop().getOwner().getId(), userUtil.initThisUser(userRepository));
 
-        productForUpdate.setName(updatedProduct.getName());
-        productForUpdate.setDescription(updatedProduct.getDescription());
-        productForUpdate.setPrice(updatedProduct.getPrice());
-        productForUpdate.setCountInStorage(updatedProduct.getCountInStorage());
+        if (product.getShop().getOwner().getId() != userId)
+            throw new NotAcceptableException("have not permission");
 
-        productsRepository.save(productForUpdate);
+        product.setName(updatedProduct.getName());
+        product.setDescription(updatedProduct.getDescription());
+        product.setPrice(updatedProduct.getPrice());
+        product.setCountInStorage(updatedProduct.getCountInStorage());
 
-        return productConverter.from(productForUpdate);
+        productsRepository.save(product);
+
+        return productConverter.from(product);
     }
 
     @Override
-    public void deleteProduct(Long productId) {
-        Product productForDelete = productsRepository.findById(productId)
+    public void deleteProduct(long userId, Long productId) {
+        Product product = productsRepository.findById(productId)
                 .orElseThrow(() -> new NotFoundException(Product.class, "id", productId));
 
-        userUtil.checkShopOwner(productForDelete.getShop().getOwner().getId(), userUtil.initThisUser(userRepository));
+        if (product.getShop().getOwner().getId() != userId)
+            throw new NotAcceptableException("have not permission");
 
 
-        productForDelete.setState(Product.State.DELETED);
-        productsRepository.save(productForDelete);
+        product.setState(Product.State.DELETED);
+        productsRepository.save(product);
     }
 
 //    @Override
@@ -112,14 +110,14 @@ public class ProductServiceImpl implements ProductService {
 //    }
 
     @Override
-    public void returnInSell(Long productId) {
-        Product productForReturn = productsRepository.findById(productId)
+    public void returnInSell(long userId, Long productId) {
+        Product product = productsRepository.findById(productId)
                 .orElseThrow(() -> new NotFoundException(Product.class, "id", productId));
 
-        userUtil.checkShopOwner(productForReturn.getShop().getOwner().getId(), userUtil.initThisUser(userRepository));
+        if (product.getShop().getOwner().getId() != userId)
+            throw new NotAcceptableException("have not permission");
 
-        productForReturn.setState(Product.State.ACTIVE);
-        productsRepository.save(productForReturn);
+        product.setState(Product.State.ACTIVE);
+        productsRepository.save(product);
     }
-
 }
