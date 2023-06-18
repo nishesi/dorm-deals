@@ -5,15 +5,15 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import ru.itis.master.party.dormdeals.controllers.api.PersonalUserControllerApi;
 import ru.itis.master.party.dormdeals.dto.CartCookie;
-import ru.itis.master.party.dormdeals.dto.CartDto;
+import ru.itis.master.party.dormdeals.dto.ProductDto.CartProductDto;
 import ru.itis.master.party.dormdeals.dto.ProductDto.ProductDto;
 import ru.itis.master.party.dormdeals.security.details.UserDetailsImpl;
 import ru.itis.master.party.dormdeals.services.CartService;
 import ru.itis.master.party.dormdeals.services.FavoriteService;
+import ru.itis.master.party.dormdeals.services.ProductService;
 
 import java.util.List;
 
@@ -23,6 +23,7 @@ import java.util.List;
 public class PersonalUserController implements PersonalUserControllerApi {
     private final FavoriteService favoriteService;
     private final CartService cartService;
+    private final ProductService productService;
 
     @Override
     public ResponseEntity<?> addFavoriteProduct(Long productId, @AuthenticationPrincipal UserDetailsImpl userDetails) {
@@ -45,21 +46,11 @@ public class PersonalUserController implements PersonalUserControllerApi {
     }
 
     @Override
-    public ResponseEntity<?> addCartProduct(Long productId, @AuthenticationPrincipal UserDetailsImpl userDetails) {
-        if (userDetails != null) {
-            cartService.addCart(userDetails.getUser().getId(), productId);
-            return ResponseEntity.status(HttpStatus.CREATED).build();
-        } else {
-            throw new RuntimeException("not realized");
-        }
-    }
-
-    @Override
-    public ResponseEntity<CartDto> getCart(@AuthenticationPrincipal UserDetailsImpl userDetails,
-                                           List<Long> productsId) {
-        CartDto carts = userDetails != null
-                ? cartService.getCart(userDetails.getUser().getId(), productsId)
-                : cartService.getCart(productsId);
+    public ResponseEntity<List<CartProductDto>> getCart(@AuthenticationPrincipal UserDetailsImpl userDetails,
+                                                       List<Long> productsId) {
+        List<CartProductDto> carts = userDetails != null
+                ? cartService.getCart(userDetails.getUser().getId())
+                : productService.getCartProducts(productsId);
         return ResponseEntity.ok(carts);
     }
 

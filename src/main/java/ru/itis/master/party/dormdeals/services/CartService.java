@@ -1,16 +1,12 @@
 package ru.itis.master.party.dormdeals.services;
 
 import ru.itis.master.party.dormdeals.dto.CartCookie;
-import ru.itis.master.party.dormdeals.dto.CartDto;
+import ru.itis.master.party.dormdeals.dto.ProductDto.CartProductDto;
 
 import java.util.List;
 
 public interface CartService {
-    void addCart(long userId, Long productId);
-
-    CartDto getCart(List<Long> productsId);
-
-    CartDto getCart(long userId, List<Long> productsId);
+    List<CartProductDto> getCart(long userId);
 
     void cartSynchronization(long userId, List<CartCookie> cartsCookie);
 }

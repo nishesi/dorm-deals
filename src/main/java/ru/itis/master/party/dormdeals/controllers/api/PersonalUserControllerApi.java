@@ -10,8 +10,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import ru.itis.master.party.dormdeals.dto.CartCookie;
-import ru.itis.master.party.dormdeals.dto.CartDto;
 import ru.itis.master.party.dormdeals.dto.ExceptionDto;
+import ru.itis.master.party.dormdeals.dto.ProductDto.CartProductDto;
 import ru.itis.master.party.dormdeals.dto.ProductDto.ProductDto;
 import ru.itis.master.party.dormdeals.security.details.UserDetailsImpl;
 
@@ -69,33 +69,16 @@ public interface PersonalUserControllerApi {
             @Parameter(hidden = true)
             UserDetailsImpl userDetails);
 
-    @Operation(summary = "Добавление товара в корзину")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "202", description = "Товар добавлен в корзину"),
-            @ApiResponse(responseCode = "404", description = "Сведения об ошибке",
-                    content = {
-                            @Content(mediaType = "application/json",
-                                    schema = @Schema(implementation = ExceptionDto.class))
-                    }
-            )
-    })
-    @PutMapping("/cart/{product-id}")
-    ResponseEntity<?> addCartProduct(
-            @Parameter(description = "Индентификатор товара")
-            @PathVariable("product-id")
-            Long productId,
-            @Parameter(hidden = true)
-            UserDetailsImpl userDetails);
 
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Корзина",
                     content = {
-                            @Content(mediaType = "application/json", schema = @Schema(implementation = CartDto.class))
+                            @Content(mediaType = "application/json", schema = @Schema(implementation = CartProductDto.class))
                     }
             )
     })
     @GetMapping("/cart")
-    ResponseEntity<CartDto> getCart(
+    ResponseEntity<List<CartProductDto>> getCart(
             @Parameter(hidden = true)
             UserDetailsImpl userDetails,
             @RequestParam(value = "id") List<Long> productsId);
