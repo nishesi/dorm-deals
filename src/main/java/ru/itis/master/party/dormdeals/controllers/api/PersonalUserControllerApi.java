@@ -83,9 +83,13 @@ public interface PersonalUserControllerApi {
             UserDetailsImpl userDetails,
             @RequestParam(value = "id", required = false) List<Long> productsId);
 
-
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "202", description = "Корзина синхронизирована"),
+            //TODO: сделать ошибку и сюда ее бахнуть
+            @ApiResponse(responseCode = "500", description = "Товара нет на складе")
+    })
     @PostMapping("/cart/synchronization")
     ResponseEntity<?> cartSynchronization(@AuthenticationPrincipal UserDetailsImpl userDetails,
-                                          @RequestBody List<CartCookie> cartsCookies);
+                                          @Parameter(description = "Список товаров из куки") @RequestBody List<CartCookie> cartsCookies);
 
 }
