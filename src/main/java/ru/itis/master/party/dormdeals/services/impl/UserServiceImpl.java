@@ -57,13 +57,15 @@ public class UserServiceImpl implements UserService {
         return "Please, check your email to confirm account.";
     }
 
-    public UserDto getUser(String email) {
-        User user = getUserOrElseThrow(email);
+    public UserDto getUser(long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new NotFoundException(User.class, "id", userId));
         return userConverter.from(user);
     }
 
-    public UserDto updateUser(String email, UpdateUserDto userDto) {
-        User user = getUserOrElseThrow(email);
+    public UserDto updateUser(long userId, UpdateUserDto userDto) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new NotFoundException(User.class, "id", userId));
 
         user.setHashPassword(passwordEncoder.encode(userDto.getPassword()));
         user.setFirstName(userDto.getFirstName());
@@ -74,15 +76,17 @@ public class UserServiceImpl implements UserService {
         return userConverter.from(user);
     }
 
-    public void deleteUser(String email) {
-        User user = getUserOrElseThrow(email);
+    public void deleteUser(long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new NotFoundException(User.class, "id", userId));
+
         user.setState(User.State.DELETED);
         userRepository.save(user);
     }
 
-    private User getUserOrElseThrow(String email) {
-        return userRepository.getByEmail(email)
-                .orElseThrow(() -> new NotFoundException(User.class, "email", email));
+    private User getUserOrElseThrow(long userId) {
+        return userRepository.findById(userId)
+                .orElseThrow(() -> new NotFoundException(User.class, "id", userId));
     }
 
     @Transactional

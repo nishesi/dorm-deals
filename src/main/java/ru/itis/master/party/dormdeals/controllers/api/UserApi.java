@@ -1,6 +1,7 @@
 package ru.itis.master.party.dormdeals.controllers.api;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -8,20 +9,14 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import io.swagger.v3.oas.annotations.tags.Tags;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 import ru.itis.master.party.dormdeals.dto.ExceptionDto;
 import ru.itis.master.party.dormdeals.dto.MessageDto;
 import ru.itis.master.party.dormdeals.dto.UserDto.NewUserDto;
 import ru.itis.master.party.dormdeals.dto.UserDto.UpdateUserDto;
 import ru.itis.master.party.dormdeals.dto.UserDto.UserDto;
+import ru.itis.master.party.dormdeals.security.details.UserDetailsImpl;
 import ru.itis.master.party.dormdeals.validation.responses.ValidationErrorsDto;
-
-import java.security.Principal;
 
 @Tags(value = {
         @Tag(name = "Users")
@@ -73,7 +68,8 @@ public interface UserApi {
     })
     @GetMapping
     UserDto getUser(
-            Principal principal);
+            @Parameter(hidden = true)
+            UserDetailsImpl userDetails);
 
     @Operation(summary = "обновление информации о пользователе")
     @ApiResponses(value = {
@@ -98,9 +94,10 @@ public interface UserApi {
     })
     @PutMapping
     UserDto updateUser(
-            Principal principal,
             @RequestBody
-            UpdateUserDto userDto);
+            UpdateUserDto userDto,
+            @Parameter(hidden = true)
+            UserDetailsImpl userDetails);
 
     @Operation(summary = "удаление пользователя")
     @ApiResponses(value = {
@@ -114,5 +111,6 @@ public interface UserApi {
     })
     @DeleteMapping
     ResponseEntity<?> deleteUser(
-            Principal principal);
+            @Parameter(hidden = true)
+            UserDetailsImpl userDetails);
 }
