@@ -13,12 +13,10 @@ import ru.itis.master.party.dormdeals.exceptions.NotFoundException;
 import ru.itis.master.party.dormdeals.models.Authority;
 import ru.itis.master.party.dormdeals.models.User;
 import ru.itis.master.party.dormdeals.repositories.UserRepository;
-import ru.itis.master.party.dormdeals.security.service.JwtUtil;
 import ru.itis.master.party.dormdeals.services.UserService;
 import ru.itis.master.party.dormdeals.utils.EmailUtil;
 
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 
 @Service
@@ -31,7 +29,6 @@ public class UserServiceImpl implements UserService {
     private final UserConverter userConverter;
 
     private final EmailUtil emailUtil;
-    private final JwtUtil jwtUtil;
 
     @Transactional
     public String register(NewUserDto userDto) {
@@ -52,10 +49,10 @@ public class UserServiceImpl implements UserService {
         String confirmationUrl = "http://localhost/email/confirm?accept=" +
                 returnedUser.getHashForConfirm();
 
-        emailUtil.sendMail(userDto.getEmail(),
-                "confirm",
-                "confirmation-mail.ftlh",
-                Map.of("confirmationUrl", confirmationUrl));
+//        emailUtil.sendMail(userDto.getEmail(),
+//                "confirm",
+//                "confirmation-mail.ftlh",
+//                Map.of("confirmationUrl", confirmationUrl));
 
         return "Please, check your email to confirm account.";
     }

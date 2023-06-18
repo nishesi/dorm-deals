@@ -48,7 +48,6 @@ public class OrdersServiceImpl implements OrdersService {
     public OrderDto createOrder(String userEmail, NewOrder newOrder) {
         User user = userRepository.getByEmail(userEmail)
                 .orElseThrow(() -> new NotFoundException(User.class, "email", userEmail));
-
         Shop shop = shopsRepository.findById(newOrder.getShopId())
                 .orElseThrow(() -> new NotFoundException(Shop.class, "id", newOrder.getShopId()));
 
