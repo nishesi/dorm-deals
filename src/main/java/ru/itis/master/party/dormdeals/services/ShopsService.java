@@ -12,11 +12,11 @@ public interface ShopsService {
 
     ShopsPage getAllShops(int page);
 
-    ShopDto createShop(String ownerEmail, NewShop newShop);
+    ShopDto createShop(long userId, NewShop newShop);
 
-    ShopDto updateShop(Long id, UpdateShop updateShop);
+    ShopDto updateShop(long userId, Long id, UpdateShop updateShop);
 
-    void deleteShop(Long id);
+    void deleteShop(long userId);
 
     ShopWithProducts getAllProductsThisShop(Long shopId, int page);
 }

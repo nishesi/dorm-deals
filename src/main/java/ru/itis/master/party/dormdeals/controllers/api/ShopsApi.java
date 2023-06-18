@@ -9,23 +9,15 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import io.swagger.v3.oas.annotations.tags.Tags;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 import ru.itis.master.party.dormdeals.dto.ExceptionDto;
 import ru.itis.master.party.dormdeals.dto.ShopDto.NewShop;
 import ru.itis.master.party.dormdeals.dto.ShopDto.ShopDto;
 import ru.itis.master.party.dormdeals.dto.ShopDto.ShopsPage;
 import ru.itis.master.party.dormdeals.dto.ShopDto.UpdateShop;
 import ru.itis.master.party.dormdeals.dto.ShopWithProducts;
+import ru.itis.master.party.dormdeals.security.details.UserDetailsImpl;
 import ru.itis.master.party.dormdeals.validation.responses.ValidationErrorsDto;
-
-import java.security.Principal;
 
 @Tags(value = {
         @Tag(name = "Shops")
@@ -64,9 +56,10 @@ public interface ShopsApi {
     })
     @PostMapping
     ResponseEntity<ShopDto> createShop(
-            Principal principal,
             @RequestBody
-            NewShop newShop);
+            NewShop newShop,
+            @Parameter(hidden = true)
+            UserDetailsImpl userDetails);
 
     @Operation(summary = "Получение магазина")
     @ApiResponses(value = {
@@ -116,7 +109,9 @@ public interface ShopsApi {
             @PathVariable("shop-id")
             Long shopId,
             @RequestBody
-            UpdateShop updateShop);
+            UpdateShop updateShop,
+            @Parameter(hidden = true)
+            UserDetailsImpl userDetails);
 
     @Operation(summary = "Удаление магазина")
     @ApiResponses(value = {
@@ -128,11 +123,10 @@ public interface ShopsApi {
                     }
             )
     })
-    @DeleteMapping("/{shop-id}")
+    @DeleteMapping
     ResponseEntity<?> deleteShop(
-            @Parameter(description = "Идентификатор магазина", example = "1")
-            @PathVariable("shop-id")
-            Long shopId);
+            @Parameter(hidden = true)
+            UserDetailsImpl userDetails);
 
     @Operation(summary = "Получение главной страницы магазина с его товарами постранично")
     @ApiResponses(value = {
