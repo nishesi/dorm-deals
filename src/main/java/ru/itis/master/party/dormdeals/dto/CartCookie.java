@@ -16,7 +16,7 @@ public class CartCookie {
     @Schema(description = "Идентификатор товара из корзины в куки", example = "1")
     private Long id;
     @Schema(description = "Количество товара из корзины в куки", example = "10")
-    private Integer count;
+    private int count;
     @Schema(description = "Состояние товара в корзине из куки", example = "true")
     private Boolean stateProduct;
 }

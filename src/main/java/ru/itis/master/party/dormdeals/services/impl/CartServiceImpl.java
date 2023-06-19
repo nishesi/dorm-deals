@@ -6,7 +6,9 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.itis.master.party.dormdeals.dto.CartCookie;
 import ru.itis.master.party.dormdeals.dto.ProductDto.CartProductDto;
 import ru.itis.master.party.dormdeals.dto.converters.CartProductConverter;
+import ru.itis.master.party.dormdeals.exceptions.NotEnoughException;
 import ru.itis.master.party.dormdeals.models.Cart;
+import ru.itis.master.party.dormdeals.models.CartProduct;
 import ru.itis.master.party.dormdeals.repositories.CartRepository;
 import ru.itis.master.party.dormdeals.repositories.ProductsRepository;
 import ru.itis.master.party.dormdeals.repositories.UserRepository;
@@ -17,7 +19,6 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class CartServiceImpl implements CartService {
-
     private final CartProductConverter cartProductConverter;
 
     private final UserRepository userRepository;
@@ -28,52 +29,57 @@ public class CartServiceImpl implements CartService {
 
     @Override
     public List<CartProductDto> getCart(long userId) {
-        return cartProductConverter.from(cartRepository.findByUserId(userId), Cart.class);
+        return cartProductConverter.listFromCartProduct(cartRepository.findByUserId(userId).getProductsInCart());
     }
 
     @Override
     public void cartSynchronization(long userId, List<CartCookie> cartsCookie) {
-        List<Cart> carts = cartRepository.findByUserId(userId);
+        Cart cart = cartRepository.findByUserId(userId);
 
         if (cartsCookie.size() == 0) {
-            cartRepository.deleteAll(carts);
-        } else {
-            cartsCookie.forEach(
-                    cartCookie -> {
-                        Cart cart = findCartByIdAndCookieId(carts, cartCookie.getId());
-                        if (cart != null) {
-                            if (!cart.getCount().equals(cartCookie.getCount())) {
-                                cart.setCount(cartCookie.getCount());
+            cart.getProductsInCart().clear();
+            cartRepository.save(cart);
+            return;
+        }
+
+        cartsCookie.forEach(
+                cartCookie -> {
+                    CartProduct cartProduct = findCartProductsByIdAndCookieId(cart, cartCookie.getId());
+                    if (cartProduct != null) {
+                        if (!cartProduct.getCount().equals(cartCookie.getCount())) {
+                            if (cartProduct.getProduct().getCountInStorage() < cartCookie.getCount()) {
+                                throw new NotEnoughException(Cart.class, cartProduct.getProduct().getId(), cartCookie.getCount(), cartProduct.getProduct().getCountInStorage());
                             }
-                            if (!cart.getState().equals(getStateFromCookie(cartCookie))) {
-                                cart.setState(getStateFromCookie(cartCookie));
-                            }
-                        } else {
-                            carts.add(createNewCart(userId, cartCookie));
+                            cartProduct.setCount(cartCookie.getCount());
                         }
-                    });
-            cartRepository.saveAll(carts);
-        }
+                        if (!cartProduct.getState().equals(getStateFromCookie(cartCookie))) {
+                            cartProduct.setState(getStateFromCookie(cartCookie));
+                        }
+                    } else {
+//                        cart.getProductsInCart().add(createProductInCart(cartCookie));
+                        cart.addProductToCart(createProductInCart(cartCookie));
+                    }
+                });
+        cartRepository.save(cart);
     }
 
 
-    private Cart.State getStateFromCookie(CartCookie cartCookie) {
+    private CartProduct.State getStateFromCookie(CartCookie cartCookie) {
         if (cartCookie.getStateProduct()) {
-            return Cart.State.ACTIVE;
+            return CartProduct.State.ACTIVE;
         }
-        return Cart.State.INACTIVE;
+        return CartProduct.State.INACTIVE;
     }
 
-    private Cart findCartByIdAndCookieId(List<Cart> carts, Long cartId) {
-        return carts.stream()
-                .filter(cart -> cart.getId().equals(cartId))
+    private CartProduct findCartProductsByIdAndCookieId(Cart cart, Long productId) {
+        return cart.getProductsInCart().stream()
+                .filter(productCart -> productCart.getProduct().getId().equals(productId))
                 .findFirst()
                 .orElse(null);
     }
 
-    private Cart createNewCart(long userId, CartCookie cartCookies) {
-        return Cart.builder()
-                .user(userRepository.getReferenceById(userId))
+    private CartProduct createProductInCart(CartCookie cartCookies) {
+        return CartProduct.builder()
                 .product(productsRepository.getReferenceById(cartCookies.getId()))
                 .count(cartCookies.getCount())
                 .state(getStateFromCookie(cartCookies))

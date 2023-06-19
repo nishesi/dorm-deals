@@ -125,6 +125,6 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public List<CartProductDto> getCartProducts(List<Long> productsId) {
-        return cartProductConverter.from(productsRepository.findAllById(productsId), Product.class);
+        return cartProductConverter.listFromProduct(productsRepository.findAllById(productsId));
     }
 }

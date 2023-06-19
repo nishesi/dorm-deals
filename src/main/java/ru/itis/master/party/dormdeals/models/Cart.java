@@ -7,6 +7,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
+import java.util.List;
 
 
 @Entity
@@ -15,20 +17,26 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class Cart {
-    public enum State {
-        ACTIVE,
-        INACTIVE
-    }
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
-    @ManyToOne()
-    @JoinColumn(name = "product_id")
-    private Product product;
-    private Integer count;
-    @Enumerated(value = EnumType.STRING)
-    private State state;
+
+    @OneToMany(
+            mappedBy = "cart",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true,
+            fetch = FetchType.EAGER
+    )
+    private List<CartProduct> productsInCart = new ArrayList<>();
+
+
+    public void addProductToCart(CartProduct cartProduct) {
+        cartProduct.setCart(this);
+        productsInCart.add(cartProduct);
+    }
+
 }
