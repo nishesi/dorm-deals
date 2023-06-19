@@ -2,6 +2,9 @@ package ru.itis.master.party.dormdeals.controllers;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -12,7 +15,9 @@ import ru.itis.master.party.dormdeals.dto.ShopDto.ShopDto;
 import ru.itis.master.party.dormdeals.dto.ShopDto.ShopsPage;
 import ru.itis.master.party.dormdeals.dto.ShopDto.UpdateShop;
 import ru.itis.master.party.dormdeals.dto.ShopWithProducts;
+import ru.itis.master.party.dormdeals.dto.orders.OrderDto;
 import ru.itis.master.party.dormdeals.security.details.UserDetailsImpl;
+import ru.itis.master.party.dormdeals.services.OrderService;
 import ru.itis.master.party.dormdeals.services.ShopsService;
 
 @RestController
@@ -20,6 +25,7 @@ import ru.itis.master.party.dormdeals.services.ShopsService;
 public class ShopsController implements ShopsApi {
 
     private final ShopsService shopsService;
+    private final OrderService orderService;
 
     @Override
     public ResponseEntity<ShopsPage> getAllShops(int page) {
@@ -56,5 +62,13 @@ public class ShopsController implements ShopsApi {
     @Override
     public ResponseEntity<ShopWithProducts> getAllProductsThisShop(Long shopId, int page) {
         return ResponseEntity.ok().body(shopsService.getAllProductsThisShop(shopId, page));
+    }
+
+    @Override
+    public ResponseEntity<Page<OrderDto>> getShopOrders(Long shopId, Integer pageInd, Integer pageSize,
+                                                        @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        Pageable pageable = PageRequest.of(pageInd, pageSize);
+        Page<OrderDto> shopOrders = orderService.getShopOrders(shopId, pageable);
+        return ResponseEntity.ok(shopOrders);
     }
 }

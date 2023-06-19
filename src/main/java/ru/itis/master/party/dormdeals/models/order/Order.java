@@ -27,7 +27,7 @@ public class Order {
 
     @DateTimeFormat(pattern = "dd-MM-yyyy hh-mm-ss XX")
     @Temporal(TemporalType.TIMESTAMP)
-    private ZonedDateTime orderTime;
+    private ZonedDateTime addedDate;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "shop_id")

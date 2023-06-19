@@ -2,19 +2,21 @@ package ru.itis.master.party.dormdeals.services.impl;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import ru.itis.master.party.dormdeals.dto.orders.OrderDto;
 import ru.itis.master.party.dormdeals.dto.converters.OrderConverter;
 import ru.itis.master.party.dormdeals.dto.orders.NewOrderDto;
 import ru.itis.master.party.dormdeals.dto.orders.NewOrderMessageDto;
+import ru.itis.master.party.dormdeals.dto.orders.OrderDto;
 import ru.itis.master.party.dormdeals.exceptions.NotAcceptableException;
 import ru.itis.master.party.dormdeals.exceptions.NotEnoughException;
 import ru.itis.master.party.dormdeals.exceptions.NotFoundException;
+import ru.itis.master.party.dormdeals.models.Product;
 import ru.itis.master.party.dormdeals.models.order.Order;
 import ru.itis.master.party.dormdeals.models.order.OrderMessage;
 import ru.itis.master.party.dormdeals.models.order.OrderProduct;
-import ru.itis.master.party.dormdeals.models.Product;
-import ru.itis.master.party.dormdeals.repositories.OrdersRepository;
+import ru.itis.master.party.dormdeals.repositories.OrderRepository;
 import ru.itis.master.party.dormdeals.repositories.ProductsRepository;
 import ru.itis.master.party.dormdeals.repositories.ShopRepository;
 import ru.itis.master.party.dormdeals.repositories.UserRepository;
@@ -31,15 +33,16 @@ import static ru.itis.master.party.dormdeals.models.order.Order.State.*;
 @RequiredArgsConstructor
 public class OrderServiceImpl implements OrderService {
     private final ProductsRepository productsRepository;
-    private final OrdersRepository ordersRepository;
+    private final OrderRepository orderRepository;
     private final ShopRepository shopRepository;
     private final UserRepository userRepository;
     private final OrderConverter orderConverter;
 
     @Override
     public OrderDto getOrder(Long id) {
-        return orderConverter.from(ordersRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException(Order.class, "id", id)));
+        Order order = orderRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException(Order.class, "id", id));
+        return orderConverter.from(order);
     }
 
     @Override
@@ -80,20 +83,20 @@ public class OrderServiceImpl implements OrderService {
                     priceSum = (float) ((int) (priceSum * 100)) / 100;
                     return Order.builder()
                             .user(userRepository.getReferenceById(userId))
-                            .orderTime(time)
+                            .addedDate(time)
                             .shop(shopRepository.getReferenceById(entry.getKey()))
                             .price(priceSum)
                             .state(Order.State.IN_PROCESSING)
                             .products(entry.getValue())
                             .build();
                 }).toList();
-        ordersRepository.saveAll(orders);
+        orderRepository.saveAll(orders);
     }
 
     @Override
     @Transactional
     public void updateOrderState(long userId, Long orderId, Order.State state) {
-        Order order = ordersRepository.findById(orderId)
+        Order order = orderRepository.findById(orderId)
                 .orElseThrow(() -> new NotFoundException(Order.class, "id", orderId));
 
         // Is costumer wants to update status?
@@ -121,7 +124,7 @@ public class OrderServiceImpl implements OrderService {
     @Override
     @Transactional
     public void addOrderMessage(long userId, Long orderId, NewOrderMessageDto orderMessage) {
-        Order order = ordersRepository.findById(orderId)
+        Order order = orderRepository.findById(orderId)
                 .orElseThrow(() -> new NotFoundException(Order.class, "id", orderId));
 
         // throw if message adder not consumer and not seller
@@ -138,5 +141,17 @@ public class OrderServiceImpl implements OrderService {
                 .build();
 
         order.getMessages().add(message);
+    }
+
+    @Override
+    public Page<OrderDto> getShopOrders(long shopId, Pageable pageable) {
+        Page<Order> orders = orderRepository.findAllByShopId(shopId, pageable);
+        return orderConverter.from(orders);
+    }
+
+    @Override
+    public Page<OrderDto> getUserOrders(long userId, Pageable pageable) {
+        Page<Order> orders = orderRepository.findAllByUserId(userId, pageable);
+        return orderConverter.from(orders);
     }
 }

@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import ru.itis.master.party.dormdeals.dto.ProductDto.ProductsPage;
 import ru.itis.master.party.dormdeals.dto.ShopDto.NewShop;
@@ -14,15 +15,17 @@ import ru.itis.master.party.dormdeals.dto.ShopDto.UpdateShop;
 import ru.itis.master.party.dormdeals.dto.ShopWithProducts;
 import ru.itis.master.party.dormdeals.dto.converters.ProductConverter;
 import ru.itis.master.party.dormdeals.dto.converters.ShopConverter;
+import ru.itis.master.party.dormdeals.dto.orders.OrderDto;
 import ru.itis.master.party.dormdeals.exceptions.NotAcceptableException;
 import ru.itis.master.party.dormdeals.exceptions.NotFoundException;
 import ru.itis.master.party.dormdeals.models.Dormitory;
 import ru.itis.master.party.dormdeals.models.Product;
 import ru.itis.master.party.dormdeals.models.Shop;
 import ru.itis.master.party.dormdeals.models.User;
+import ru.itis.master.party.dormdeals.models.order.Order;
 import ru.itis.master.party.dormdeals.repositories.DormitoryRepository;
 import ru.itis.master.party.dormdeals.repositories.ProductsRepository;
-import ru.itis.master.party.dormdeals.repositories.ShopsRepository;
+import ru.itis.master.party.dormdeals.repositories.ShopRepository;
 import ru.itis.master.party.dormdeals.repositories.UserRepository;
 import ru.itis.master.party.dormdeals.services.ShopsService;
 
@@ -42,7 +45,7 @@ public class ShopsServiceImpl implements ShopsService {
 
     private final ProductsRepository productsRepository;
 
-    private final ShopsRepository shopsRepository;
+    private final ShopRepository shopRepository;
 
     private final UserRepository userRepository;
 
@@ -51,14 +54,14 @@ public class ShopsServiceImpl implements ShopsService {
 
     @Override
     public ShopDto getShop(Long shopId) {
-        return shopConverter.from(shopsRepository.findById(shopId)
+        return shopConverter.from(shopRepository.findById(shopId)
                 .orElseThrow(() -> new NotFoundException(Shop.class, "id", shopId)));
     }
 
     @Override
     public ShopsPage getAllShops(int page) {
         PageRequest pageRequest = PageRequest.of(page, defaultPageSize);
-        Page<Shop> shopsPage = shopsRepository.findAllByOrderByIdAsc(pageRequest);
+        Page<Shop> shopsPage = shopRepository.findAllByOrderByIdAsc(pageRequest);
 
         return ShopsPage.builder()
                 .shops(shopConverter.from(shopsPage.getContent()))
@@ -71,7 +74,7 @@ public class ShopsServiceImpl implements ShopsService {
         User user = userRepository.findById(userId).orElseThrow(() ->
                 new NotFoundException(User.class, "email", userId));
 
-        if (shopsRepository.existsByOwnerId(user.getId()))
+        if (shopRepository.existsByOwnerId(user.getId()))
             throw new NotAcceptableException("Вы не можете иметь больше одного магазина");
 
         List<Dormitory> dormitories = dormitoryRepository.findByIdIn(newShop.getDormitoryIdList());
@@ -83,20 +86,20 @@ public class ShopsServiceImpl implements ShopsService {
                 .owner(user)
                 .build();
 
-        shopsRepository.save(shop);
+        shopRepository.save(shop);
         return shopConverter.from(shop);
     }
 
     @Override
     public ShopDto updateShop(long userId, Long shopId, UpdateShop newShopData) {
-        Shop shop = shopsRepository.findById(shopId)
+        Shop shop = shopRepository.findById(shopId)
                 .orElseThrow(() -> new NotFoundException(Shop.class, "id", shopId));
 
         if (shop.getOwner().getId() != userId)
             throw new NotAcceptableException("have not permission");
 
         if (!shop.getName().equals(newShopData.getName()) &&
-                shopsRepository.existsByName(newShopData.getName()))
+                shopRepository.existsByName(newShopData.getName()))
             throw new IllegalArgumentException("shop with name <" + newShopData.getName() + "> already exists");
 
         List<Dormitory> dormitories = dormitoryRepository.findByIdIn(newShopData.getDormitoryIdList());
@@ -105,7 +108,7 @@ public class ShopsServiceImpl implements ShopsService {
         shop.setDescription(newShopData.getDescription());
         shop.setDormitories(dormitories);
 
-        shopsRepository.save(shop);
+        shopRepository.save(shop);
 
         return shopConverter.from(shop);
     }
@@ -113,16 +116,16 @@ public class ShopsServiceImpl implements ShopsService {
     @Override
     @Transactional
     public void deleteShop(long userId) {
-        Optional<Shop> shopOptional = shopsRepository.findShopByOwnerId(userId);
+        Optional<Shop> shopOptional = shopRepository.findShopByOwnerId(userId);
         shopOptional.ifPresent(shop -> {
             productsRepository.deleteAllByShopId(shop.getId());
-            shopsRepository.deleteById(shop.getId());
+            shopRepository.deleteById(shop.getId());
         });
     }
 
     @Override
     public ShopWithProducts getAllProductsThisShop(Long shopId, int page) {
-        Shop thisShop = shopsRepository.findById(shopId).orElseThrow(() -> new NotFoundException(Shop.class, "id", shopId));
+        Shop thisShop = shopRepository.findById(shopId).orElseThrow(() -> new NotFoundException(Shop.class, "id", shopId));
         PageRequest pageRequest = PageRequest.of(page, defaultPageSize);
         Page<Product> productsPageTemp = productsRepository
                 .findAllByShopIdAndStateOrderById(shopId, Product.State.ACTIVE, pageRequest);

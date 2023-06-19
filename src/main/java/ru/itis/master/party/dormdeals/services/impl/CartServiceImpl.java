@@ -131,7 +131,7 @@ public class CartServiceImpl implements CartService {
                 .orElseThrow(() -> new NotFoundException(Product.class, "id", productId));
 
         if (count > product.getCountInStorage()) {
-            throw new NotEnoughException(Product.class, count, (int) product.getCountInStorage());
+            throw new NotEnoughException(Product.class, productId, count, (int) product.getCountInStorage());
         } else if (count == 0) {
             deleteCart(userId, productId);
         } else {
