@@ -3,40 +3,38 @@ package ru.itis.master.party.dormdeals.services.impl;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import ru.itis.master.party.dormdeals.dto.OrderDto.NewOrder;
-import ru.itis.master.party.dormdeals.dto.OrderDto.OrderDto;
-import ru.itis.master.party.dormdeals.dto.OrderDto.OrderWithProducts;
-import ru.itis.master.party.dormdeals.dto.ProductDto.CartProductDto;
+import ru.itis.master.party.dormdeals.dto.orders.OrderDto;
 import ru.itis.master.party.dormdeals.dto.converters.OrderConverter;
+import ru.itis.master.party.dormdeals.dto.orders.NewOrderDto;
+import ru.itis.master.party.dormdeals.dto.orders.NewOrderMessageDto;
+import ru.itis.master.party.dormdeals.exceptions.NotAcceptableException;
+import ru.itis.master.party.dormdeals.exceptions.NotEnoughException;
 import ru.itis.master.party.dormdeals.exceptions.NotFoundException;
-import ru.itis.master.party.dormdeals.models.Order;
-import ru.itis.master.party.dormdeals.models.OrderProduct;
+import ru.itis.master.party.dormdeals.models.order.Order;
+import ru.itis.master.party.dormdeals.models.order.OrderMessage;
+import ru.itis.master.party.dormdeals.models.order.OrderProduct;
 import ru.itis.master.party.dormdeals.models.Product;
-import ru.itis.master.party.dormdeals.models.Shop;
-import ru.itis.master.party.dormdeals.models.User;
-import ru.itis.master.party.dormdeals.repositories.OrderProductsRepository;
 import ru.itis.master.party.dormdeals.repositories.OrdersRepository;
 import ru.itis.master.party.dormdeals.repositories.ProductsRepository;
-import ru.itis.master.party.dormdeals.repositories.ShopsRepository;
+import ru.itis.master.party.dormdeals.repositories.ShopRepository;
 import ru.itis.master.party.dormdeals.repositories.UserRepository;
 import ru.itis.master.party.dormdeals.services.OrderService;
-import ru.itis.master.party.dormdeals.utils.UserUtil;
 
-import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.*;
+import java.util.stream.Collectors;
+
+import static ru.itis.master.party.dormdeals.models.order.Order.State.*;
 
 
 @Service
 @RequiredArgsConstructor
 public class OrderServiceImpl implements OrderService {
-    private final OrderConverter orderConverter;
-    private final OrdersRepository ordersRepository;
-    private final OrderProductsRepository orderProductsRepository;
-    private final ShopsRepository shopsRepository;
     private final ProductsRepository productsRepository;
-    private final UserUtil userUtil;
+    private final OrdersRepository ordersRepository;
+    private final ShopRepository shopRepository;
     private final UserRepository userRepository;
+    private final OrderConverter orderConverter;
 
     @Override
     public OrderDto getOrder(Long id) {
@@ -45,117 +43,100 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public OrderDto createOrder(long userId, NewOrder newOrder) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new NotFoundException(User.class, "email", userId));
-        Shop shop = shopsRepository.findById(newOrder.getShopId())
-                .orElseThrow(() -> new NotFoundException(Shop.class, "id", newOrder.getShopId()));
-
-        ZonedDateTime orderTime = ZonedDateTime.now(ZoneId.of("Europe/Moscow"));
-
-        Order order = Order.builder()
-                .user(user)
-                .shop(shop)
-                .orderTime(orderTime)
-                .userComment(newOrder.getUserComment())
-                .price(0)
-                .state(Order.State.IN_PROCESSING)
-                .build();
-
-        ordersRepository.save(order);
-
-        return orderConverter.from(order);
-    }
-
-    @Override
-    public OrderDto updateOrderState(Long id, Order.State state) {
-        userUtil.checkShopOwner(
-                getOrder(id)
-                        .getShop()
-                        .getOwner()
-                        .getId(),
-                userUtil.initThisUser(userRepository));
-
-        Order order = ordersRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException(Order.class, "id", id));
-        order.setState(state);
-
-        return orderConverter.from(ordersRepository.save(order));
-    }
-
-    // TODO может ли пользователь удалять заказ?
     @Transactional
-    @Override
-    public void deleteOrder(Long id) {
-        userUtil.checkOrderOwner(ordersRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException(Order.class, "id", id))
-                .getUser().getId(), userUtil.initThisUser(userRepository));
-        orderProductsRepository.deleteAllByOrderId(id);
-        ordersRepository.deleteById(id);
-    }
+    public void createOrder(long userId, NewOrderDto newOrderDto) {
+        Map<Long, Integer> productIdAndCount = newOrderDto.getProducts().stream().collect(Collectors.toMap(
+                NewOrderDto.OrderProduct::getProductId,
+                NewOrderDto.OrderProduct::getCount));
 
-    @Override
-    public List<OrderDto> createOrder(long userId, List<CartProductDto> cartProductDtoList) {
-        Map<Long, OrderDto> orderMap = new HashMap<>(); // shopId -> orderDto
-        Set<Long> shopsIdSet = new HashSet<>();
+        List<Product> products = productsRepository.findAllById(productIdAndCount.keySet());
 
-        for (CartProductDto cartProductDto : cartProductDtoList) {
-            Long productId = cartProductDto.getId();
-            Product product = productsRepository.findById(productId)
-                    .orElseThrow(() -> new NotFoundException(Product.class, "id", productId));
-            Long shopId = product.getShop().getId();
-
-            if (!shopsIdSet.contains(shopId)) {
-                shopsIdSet.add(shopId);
-
-                NewOrder newOrder = NewOrder.builder()
-                        .shopId(product
-                                .getShop().getId())
-                        .build();
-
-                OrderDto orderDto = createOrder(userId, newOrder);
-                orderMap.put(shopId, orderDto);
+        // check that required counts less or equal then count in storage
+        products.forEach(product -> {
+            if (product.getCountInStorage() < productIdAndCount.get(product.getId())) {
+                throw new NotEnoughException(Product.class, product.getId(),
+                        productIdAndCount.get(product.getId()), (int) product.getCountInStorage());
             }
+        });
 
-            OrderDto orderDto = orderMap.get(product.getShop().getId());
-
-            Long id = orderDto.getId();
-            OrderProduct orderProduct = OrderProduct.builder()
+        // group products by shopId
+        Map<Long, List<OrderProduct>> shopIdAndOrderProduct = new HashMap<>();
+        for (Product product : products) {
+            List<OrderProduct> list = shopIdAndOrderProduct.computeIfAbsent(product.getShop().getId(), k -> new ArrayList<>());
+            list.add(OrderProduct.builder()
                     .product(product)
-                    .order(ordersRepository.findById(id)
-                            .orElseThrow(() -> new NotFoundException(Order.class, "id", id)))
-                    .count(cartProductDto.getCount())
-                    .build();
-
-            orderDto.setPrice(orderDto.getPrice() + orderProduct.getProduct().getPrice() * orderProduct.getCount());
-            orderProductsRepository.save(orderProduct);
+                    .count(productIdAndCount.get(product.getId()))
+                    .price(product.getPrice())
+                    .build());
         }
 
-        for (OrderDto orderDto : orderMap.values()) {
-            updateOrderPrice(orderDto.getId(), orderDto.getPrice());
-        }
-
-        return new ArrayList<>(orderMap.values());
+        // create orders for each shop
+        ZonedDateTime time = ZonedDateTime.now();
+        List<Order> orders = shopIdAndOrderProduct.entrySet().stream()
+                .map(entry -> {
+                    float priceSum = (float) entry.getValue().stream()
+                            .mapToDouble(product -> product.getPrice() * product.getCount())
+                            .sum();
+                    priceSum = (float) ((int) (priceSum * 100)) / 100;
+                    return Order.builder()
+                            .user(userRepository.getReferenceById(userId))
+                            .orderTime(time)
+                            .shop(shopRepository.getReferenceById(entry.getKey()))
+                            .price(priceSum)
+                            .state(Order.State.IN_PROCESSING)
+                            .products(entry.getValue())
+                            .build();
+                }).toList();
+        ordersRepository.saveAll(orders);
     }
 
     @Override
-    public OrderWithProducts getAllProductsThisOrder(Long orderId) {
+    @Transactional
+    public void updateOrderState(long userId, Long orderId, Order.State state) {
         Order order = ordersRepository.findById(orderId)
                 .orElseThrow(() -> new NotFoundException(Order.class, "id", orderId));
 
-        List<OrderProduct> orderProductList = orderProductsRepository.findAllByOrderId(orderId);
+        // Is costumer wants to update status?
+        if (Objects.equals(userId, order.getUser().getId())) {
 
-        return OrderWithProducts.builder()
-                .order(order)
-                .orderProducts(orderProductList)
-                .build();
+            // requirements to cancel order
+            if (state == CANCELLED && order.getState().index() < CONFIRMED.index()) {
+                order.setState(CANCELLED);
+            }
+
+            // Is shop owner wants to update status?
+        } else if (Objects.equals(userId, order.getShop().getOwner().getId())) {
+
+            if (state.index() > order.getState().index()) {
+                order.setState(state);
+            } else if (state == CANCELLED && order.getState() != DELIVERED) {
+                order.setState(CANCELLED);
+            }
+
+        } else {
+            throw new NotAcceptableException("Have not permission");
+        }
     }
 
-    private void updateOrderPrice(Long id, float price) {
-        Order order = ordersRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException(Order.class, "id", id));
-        order.setPrice(price);
+    @Override
+    @Transactional
+    public void addOrderMessage(long userId, Long orderId, NewOrderMessageDto orderMessage) {
+        Order order = ordersRepository.findById(orderId)
+                .orElseThrow(() -> new NotFoundException(Order.class, "id", orderId));
 
-        ordersRepository.save(order);
+        // throw if message adder not consumer and not seller
+        if (!Objects.equals(userId, order.getUser().getId()) &&
+                !Objects.equals(userId, order.getShop().getOwner().getId())) {
+            throw new NotAcceptableException("have not permission");
+        }
+
+        OrderMessage message = OrderMessage.builder()
+                .order(order)
+                .user(userRepository.getReferenceById(userId))
+                .message(orderMessage.getMessage())
+                .addedDate(ZonedDateTime.now())
+                .build();
+
+        order.getMessages().add(message);
     }
 }

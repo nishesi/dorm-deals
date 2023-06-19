@@ -1,13 +1,13 @@
-package ru.itis.master.party.dormdeals.models;
+package ru.itis.master.party.dormdeals.models.order;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.springframework.format.annotation.DateTimeFormat;
+import ru.itis.master.party.dormdeals.models.Shop;
+import ru.itis.master.party.dormdeals.models.User;
 
 import java.time.ZonedDateTime;
+import java.util.List;
 
 
 @Data
@@ -17,13 +17,6 @@ import java.time.ZonedDateTime;
 @Table(name = "orders")
 @Entity
 public class Order {
-    public enum State {
-        IN_PROCESSING,
-        CONFIRMED,
-        IN_DELIVERY,
-        DELIVERED
-    }
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -36,15 +29,33 @@ public class Order {
     @Temporal(TemporalType.TIMESTAMP)
     private ZonedDateTime orderTime;
 
-    @Column
-    private String userComment;
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "shop_id")
     private Shop shop;
 
+    @Column
     private float price;
 
     @Enumerated(value = EnumType.STRING)
     private State state;
+
+    @OneToMany(mappedBy = "order_id")
+    private List<OrderProduct> products;
+
+    @OneToMany(mappedBy = "order_id")
+    private List<OrderMessage> messages;
+
+    @RequiredArgsConstructor
+    public enum State {
+        CANCELLED(-1),
+        IN_PROCESSING(1),
+        CONFIRMED(2),
+        DELIVERED(3);
+
+        private final int index;
+
+        public int index() {
+            return index;
+        }
+    }
 }

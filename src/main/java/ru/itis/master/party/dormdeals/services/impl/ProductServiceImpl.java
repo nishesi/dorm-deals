@@ -15,7 +15,7 @@ import ru.itis.master.party.dormdeals.exceptions.NotFoundException;
 import ru.itis.master.party.dormdeals.models.Product;
 import ru.itis.master.party.dormdeals.models.Shop;
 import ru.itis.master.party.dormdeals.repositories.ProductsRepository;
-import ru.itis.master.party.dormdeals.repositories.ShopsRepository;
+import ru.itis.master.party.dormdeals.repositories.ShopRepository;
 import ru.itis.master.party.dormdeals.services.ProductService;
 
 
@@ -24,7 +24,7 @@ import ru.itis.master.party.dormdeals.services.ProductService;
 public class ProductServiceImpl implements ProductService {
     private final ProductConverter productConverter;
     private final ProductsRepository productsRepository;
-    private final ShopsRepository shopsRepository;
+    private final ShopRepository shopRepository;
 
     @Value("${default.page-size}")
     private int defaultPageSize;
@@ -42,7 +42,7 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public ProductDto addProduct(long userId, NewProduct newProduct) {
-        Shop shop = shopsRepository.findShopByOwnerId(userId)
+        Shop shop = shopRepository.findShopByOwnerId(userId)
                 .orElseThrow(() -> new NotFoundException(Shop.class, "ownerId", userId));
 
         Product product = Product.builder()

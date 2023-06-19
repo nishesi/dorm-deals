@@ -1,31 +1,44 @@
 package ru.itis.master.party.dormdeals.controllers;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import ru.itis.master.party.dormdeals.controllers.api.OrderApi;
-import ru.itis.master.party.dormdeals.dto.OrderDto.OrderDto;
-import ru.itis.master.party.dormdeals.dto.OrderDto.OrderWithProducts;
-import ru.itis.master.party.dormdeals.dto.ProductDto.CartProductDto;
-import ru.itis.master.party.dormdeals.models.Order;
+import ru.itis.master.party.dormdeals.dto.orders.OrderDto;
+import ru.itis.master.party.dormdeals.dto.orders.NewOrderDto;
+import ru.itis.master.party.dormdeals.dto.orders.NewOrderMessageDto;
+import ru.itis.master.party.dormdeals.models.order.Order;
 import ru.itis.master.party.dormdeals.security.details.UserDetailsImpl;
 import ru.itis.master.party.dormdeals.services.OrderService;
 
-import java.util.List;
-
+@RequestMapping("/orders")
 @RestController
 @RequiredArgsConstructor
 public class OrderController implements OrderApi {
     private final OrderService orderService;
 
     @Override
-    public ResponseEntity<List<OrderDto>> createOrder(List<CartProductDto> cartProductDtoList,
-                                                      @AuthenticationPrincipal UserDetailsImpl userDetails) {
+    @PostMapping
+    public ResponseEntity<?> createOrder(@Valid NewOrderDto newOrderDto,
+                                         @AuthenticationPrincipal UserDetailsImpl userDetails) {
         long userId = userDetails.getUser().getId();
-        return ResponseEntity.status(HttpStatus.CREATED)
-                .body(orderService.createOrder(userId, cartProductDtoList));
+        orderService.createOrder(userId, newOrderDto);
+        return ResponseEntity.status(HttpStatus.CREATED).build();
+    }
+
+    @Override
+    public ResponseEntity<OrderDto> updateOrderState(
+            Long orderId,
+            Order.State state,
+            @AuthenticationPrincipal UserDetailsImpl userDetails
+    ) {
+        orderService.updateOrderState(userDetails.getUser().getId(), orderId, state);
+        return ResponseEntity.accepted().build();
     }
 
     @Override
@@ -34,28 +47,12 @@ public class OrderController implements OrderApi {
     }
 
     @Override
-    public ResponseEntity<OrderDto> updateOrderStateToConfirmed(Long orderId) {
-        return ResponseEntity.accepted().body(orderService.updateOrderState(orderId, Order.State.CONFIRMED));
-    }
-
-    @Override
-    public ResponseEntity<OrderDto> updateOrderStateToInDelivery(Long orderId) {
-        return ResponseEntity.accepted().body(orderService.updateOrderState(orderId, Order.State.IN_DELIVERY));
-    }
-
-    @Override
-    public ResponseEntity<OrderDto> updateOrderStateToDelivered(Long orderId) {
-        return ResponseEntity.accepted().body(orderService.updateOrderState(orderId, Order.State.DELIVERED));
-    }
-
-    @Override
-    public ResponseEntity<?> deleteOrder(Long orderId) {
-        orderService.deleteOrder(orderId);
-        return ResponseEntity.accepted().build();
-    }
-
-    @Override
-    public ResponseEntity<OrderWithProducts> getAllProductsThisOrder(Long orderId) {
-        return ResponseEntity.ok().body(orderService.getAllProductsThisOrder(orderId));
+    public ResponseEntity<?> addMessage(
+            Long orderId,
+            @Valid NewOrderMessageDto newOrderMessageDto,
+            @AuthenticationPrincipal UserDetailsImpl userDetails
+    ) {
+        orderService.addOrderMessage(userDetails.getUser().getId(), orderId, newOrderMessageDto);
+        return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 }

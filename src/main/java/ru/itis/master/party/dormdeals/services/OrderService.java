@@ -1,23 +1,14 @@
 package ru.itis.master.party.dormdeals.services;
 
-import ru.itis.master.party.dormdeals.dto.OrderDto.NewOrder;
-import ru.itis.master.party.dormdeals.dto.OrderDto.OrderDto;
-import ru.itis.master.party.dormdeals.dto.OrderDto.OrderWithProducts;
-import ru.itis.master.party.dormdeals.dto.ProductDto.CartProductDto;
-import ru.itis.master.party.dormdeals.models.Order;
-
-import java.util.List;
+import ru.itis.master.party.dormdeals.dto.orders.OrderDto;
+import ru.itis.master.party.dormdeals.dto.orders.NewOrderDto;
+import ru.itis.master.party.dormdeals.dto.orders.NewOrderMessageDto;
+import ru.itis.master.party.dormdeals.models.order.Order;
 
 public interface OrderService {
+    void createOrder(long userId, NewOrderDto newOrderDto);
+
     OrderDto getOrder(Long id);
-
-    OrderDto createOrder(long userId, NewOrder newOrder);
-
-    OrderDto updateOrderState(Long id, Order.State state);
-
-    void deleteOrder(Long id);
-
-    List<OrderDto> createOrder(long userId, List<CartProductDto> cartProductDtoList);
-
-    OrderWithProducts getAllProductsThisOrder(Long orderId);
+    void updateOrderState(long userId, Long orderId, Order.State state);
+    void addOrderMessage(long userId, Long orderId, NewOrderMessageDto orderMessage);
 }

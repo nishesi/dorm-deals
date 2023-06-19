@@ -8,6 +8,7 @@ import lombok.Getter;
 @AllArgsConstructor
 public class NotEnoughException extends RuntimeException {
     private Class<?> element;
+    private Object id;
     private Integer required;
     private Integer available;
 

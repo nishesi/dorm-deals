@@ -1,4 +1,4 @@
-package ru.itis.master.party.dormdeals.dto.OrderDto;
+package ru.itis.master.party.dormdeals.dto.orders;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
@@ -10,6 +10,7 @@ import ru.itis.master.party.dormdeals.dto.ShopDto.ShopDto;
 import ru.itis.master.party.dormdeals.dto.UserDto.UserDto;
 
 import java.time.ZonedDateTime;
+import java.util.List;
 
 @Data
 @Builder
@@ -24,16 +25,19 @@ public class OrderDto {
     @Schema(description = "Заказчик")
     private UserDto user;
 
+    @Schema(description = "Магазин")
+    private ShopDto shop;
+
+    @Schema(description = "информация о содержимом заказа")
+    private List<OrderProductDto> orderProducts;
+
+    @Schema(description = "история переписки закзачика и продавца")
+    private List<OrderMessageDto> orderMessages;
+
     @Schema(description = "Время заказа", example = "16-03-2023 21:40")
     @DateTimeFormat(pattern = "dd-MM-yyyy hh-mm-ss XX")
-    private ZonedDateTime orderTime;
-
-    @Schema(description = "Комментарий от заказчика", example = "Хочу оставить вам чаевые =)")
-    private String userComment;
+    private ZonedDateTime addedDate;
 
     @Schema(description = "Стоимость заказа")
     private float price;
-
-    @Schema(description = "Магазин")
-    private ShopDto shop;
 }

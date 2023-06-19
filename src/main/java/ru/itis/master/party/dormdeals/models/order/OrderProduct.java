@@ -1,10 +1,12 @@
-package ru.itis.master.party.dormdeals.models;
+package ru.itis.master.party.dormdeals.models.order;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import ru.itis.master.party.dormdeals.models.Product;
+import ru.itis.master.party.dormdeals.models.order.Order;
 
 @Table(name = "order_products")
 @Entity
@@ -24,6 +26,8 @@ public class OrderProduct {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "product_id")
     private Product product;
+
+    private float price;
 
     private Integer count;
 }
