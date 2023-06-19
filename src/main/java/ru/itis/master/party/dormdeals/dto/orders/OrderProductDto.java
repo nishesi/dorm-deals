@@ -13,5 +13,4 @@ import ru.itis.master.party.dormdeals.dto.ProductDto.ProductDto;
 public class OrderProductDto {
     private ProductDto productDto;
     private Integer count;
-
 }
