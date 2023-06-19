@@ -8,6 +8,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 
@@ -38,5 +39,8 @@ public class Cart {
         cartProduct.setCart(this);
         productsInCart.add(cartProduct);
     }
+//    public void retainAll(Collection<Long> ids) {
+//        productsInCart.removeIf(cartProduct -> !ids.contains(cartProduct.getProduct().getId()));
+//    }
 
 }

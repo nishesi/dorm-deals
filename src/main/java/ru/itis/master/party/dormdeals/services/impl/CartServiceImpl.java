@@ -2,7 +2,6 @@ package ru.itis.master.party.dormdeals.services.impl;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import ru.itis.master.party.dormdeals.dto.CartCookie;
 import ru.itis.master.party.dormdeals.dto.ProductDto.CartProductDto;
 import ru.itis.master.party.dormdeals.dto.converters.CartProductConverter;
@@ -11,18 +10,17 @@ import ru.itis.master.party.dormdeals.models.Cart;
 import ru.itis.master.party.dormdeals.models.CartProduct;
 import ru.itis.master.party.dormdeals.repositories.CartRepository;
 import ru.itis.master.party.dormdeals.repositories.ProductsRepository;
-import ru.itis.master.party.dormdeals.repositories.UserRepository;
 import ru.itis.master.party.dormdeals.services.CartService;
 
 import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class CartServiceImpl implements CartService {
     private final CartProductConverter cartProductConverter;
-
-    private final UserRepository userRepository;
-
     private final CartRepository cartRepository;
 
     private final ProductsRepository productsRepository;
@@ -42,27 +40,37 @@ public class CartServiceImpl implements CartService {
             return;
         }
 
-        cartsCookie.forEach(
-                cartCookie -> {
-                    CartProduct cartProduct = findCartProductsByIdAndCookieId(cart, cartCookie.getId());
-                    if (cartProduct != null) {
-                        if (!cartProduct.getCount().equals(cartCookie.getCount())) {
-                            if (cartProduct.getProduct().getCountInStorage() < cartCookie.getCount()) {
-                                throw new NotEnoughException(Cart.class, cartProduct.getProduct().getId(), cartCookie.getCount(), cartProduct.getProduct().getCountInStorage());
-                            }
-                            cartProduct.setCount(cartCookie.getCount());
-                        }
-                        if (!cartProduct.getState().equals(getStateFromCookie(cartCookie))) {
-                            cartProduct.setState(getStateFromCookie(cartCookie));
-                        }
-                    } else {
-//                        cart.getProductsInCart().add(createProductInCart(cartCookie));
-                        cart.addProductToCart(createProductInCart(cartCookie));
-                    }
-                });
+        Map<Long, CartProduct> cartProductMap = createCartProductMap(cart.getProductsInCart());
+
+        cart.getProductsInCart().removeIf(cartProduct ->
+                cartsCookie.stream().noneMatch(cartCookie ->
+                        cartCookie.getId().equals(cartProduct.getProduct().getId())));
+
+        for (CartCookie cartCookie : cartsCookie) {
+            CartProduct cartProduct = cartProductMap.get(cartCookie.getId());
+            if (cartProduct != null) {
+                updateCartProduct(cartProduct, cartCookie);
+            } else {
+                cart.addProductToCart(createProductInCart(cartCookie));
+            }
+        }
+
         cartRepository.save(cart);
     }
 
+    private void updateCartProduct(CartProduct cartProduct, CartCookie cartCookie) {
+        if (!cartProduct.getCount().equals(cartCookie.getCount())) {
+            int countInStorage = cartProduct.getProduct().getCountInStorage();
+            if (countInStorage < cartCookie.getCount()) {
+                throw new NotEnoughException(Cart.class, cartProduct.getProduct().getId(), cartCookie.getCount(), countInStorage);
+            }
+            cartProduct.setCount(cartCookie.getCount());
+        }
+        CartProduct.State cartCookieState = getStateFromCookie(cartCookie);
+        if (!cartProduct.getState().equals(cartCookieState)) {
+            cartProduct.setState(cartCookieState);
+        }
+    }
 
     private CartProduct.State getStateFromCookie(CartCookie cartCookie) {
         if (cartCookie.getStateProduct()) {
@@ -71,30 +79,17 @@ public class CartServiceImpl implements CartService {
         return CartProduct.State.INACTIVE;
     }
 
-    private CartProduct findCartProductsByIdAndCookieId(Cart cart, Long productId) {
-        return cart.getProductsInCart().stream()
-                .filter(productCart -> productCart.getProduct().getId().equals(productId))
-                .findFirst()
-                .orElse(null);
-    }
-
-    private CartProduct createProductInCart(CartCookie cartCookies) {
+    private CartProduct createProductInCart(CartCookie cartCookie) {
         return CartProduct.builder()
-                .product(productsRepository.getReferenceById(cartCookies.getId()))
-                .count(cartCookies.getCount())
-                .state(getStateFromCookie(cartCookies))
+                .product(productsRepository.getReferenceById(cartCookie.getId()))
+                .count(cartCookie.getCount())
+                .state(getStateFromCookie(cartCookie))
                 .build();
     }
 
-
-//    private Double getSumOfProducts(List<CartProductDto> cartProductDto, List<Cart> cart) {
-//        return cart.stream()
-//                .mapToDouble(c -> cartProductDto.stream()
-//                        .filter(cp -> cp.getName().equals(c.getProduct().getName()))
-//                        .findFirst()
-//                        .map(CartProductDto::getPrice)
-//                        .orElse(0.0F) * c.getCount())
-//                .reduce(0.0, Double::sum);
-//    }
-
+    private Map<Long, CartProduct> createCartProductMap(List<CartProduct> cartProducts) {
+        return cartProducts.stream()
+                .collect(Collectors.toMap(cartProduct -> cartProduct.getProduct().getId(),
+                        Function.identity()));
+    }
 }

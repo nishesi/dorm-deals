@@ -7,6 +7,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.Objects;
+
 @Entity
 @Table(name = "product_cart")
 @Data
@@ -36,5 +38,4 @@ public class CartProduct {
 
     @Enumerated(EnumType.STRING)
     private State state;
-
 }

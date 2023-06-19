@@ -100,9 +100,9 @@ public class OrdersServiceImpl implements OrdersService {
         Set<Long> shopsIdSet = new HashSet<>();
 
         for (CartProductDto cartProductDto : cartProductDtoList) {
-//            Long productId = cartProductDto.getId();
-            Product product = productsRepository.findById(1L)
-                    .orElseThrow(() -> new NotFoundException(Product.class, "id", 1L));
+            Long productId = cartProductDto.getProductDto().getId();
+            Product product = productsRepository.findById(productId)
+                    .orElseThrow(() -> new NotFoundException(Product.class, "id", productId));
             Long shopId = product.getShop().getId();
 
             if (!shopsIdSet.contains(shopId)) {
