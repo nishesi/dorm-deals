@@ -55,10 +55,16 @@ public class OrderServiceImpl implements OrderService {
         List<Product> products = productsRepository.findAllById(productIdAndCount.keySet());
 
         // check that required counts less or equal then count in storage
+        // and minus required count
         products.forEach(product -> {
-            if (product.getCountInStorage() < productIdAndCount.get(product.getId())) {
+            int required = productIdAndCount.get(product.getId());
+            int available = product.getCountInStorage();
+
+            if (available < required) {
                 throw new NotEnoughException(Product.class, product.getId(),
-                        productIdAndCount.get(product.getId()), (int) product.getCountInStorage());
+                        required, available);
+            } else {
+                product.setCountInStorage((short) (available - required));
             }
         });
 
@@ -90,7 +96,9 @@ public class OrderServiceImpl implements OrderService {
                             .products(entry.getValue())
                             .build();
                 }).toList();
-        orderRepository.saveAll(orders);
+
+        orders = orderRepository.saveAll(orders);
+        orders.forEach(order -> order.getProducts().forEach(product -> product.setOrder(order)));
     }
 
     @Override

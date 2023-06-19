@@ -39,10 +39,10 @@ public class Order {
     @Enumerated(value = EnumType.STRING)
     private State state;
 
-    @OneToMany(mappedBy = "order_id")
+    @OneToMany(mappedBy = "order", cascade = {CascadeType.ALL})
     private List<OrderProduct> products;
 
-    @OneToMany(mappedBy = "order_id")
+    @OneToMany(mappedBy = "order", cascade = {CascadeType.ALL})
     private List<OrderMessage> messages;
 
     @RequiredArgsConstructor

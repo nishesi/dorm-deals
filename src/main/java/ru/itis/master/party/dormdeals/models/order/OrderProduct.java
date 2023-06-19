@@ -6,7 +6,6 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import ru.itis.master.party.dormdeals.models.Product;
-import ru.itis.master.party.dormdeals.models.order.Order;
 
 @Table(name = "order_products")
 @Entity
@@ -19,11 +18,11 @@ public class OrderProduct {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "order_id")
     private Order order;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "product_id")
     private Product product;
 

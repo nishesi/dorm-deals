@@ -67,6 +67,10 @@ public class SecurityConfig {
 
                                 .requestMatchers("/", "/home").permitAll()
 
+                                // orders
+
+                                .requestMatchers("/orders/**").authenticated()
+
                                 // development
 
                                 .requestMatchers("/swagger-ui.html", "/swagger-ui/**", "/v3/**").permitAll()
