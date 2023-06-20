@@ -11,7 +11,7 @@ import ru.itis.master.party.dormdeals.models.Product;
 import ru.itis.master.party.dormdeals.models.Shop;
 import ru.itis.master.party.dormdeals.models.User;
 import ru.itis.master.party.dormdeals.repositories.ProductsRepository;
-import ru.itis.master.party.dormdeals.repositories.ShopsRepository;
+import ru.itis.master.party.dormdeals.repositories.ShopRepository;
 import ru.itis.master.party.dormdeals.repositories.UserRepository;
 import ru.itis.master.party.dormdeals.services.ResourceService;
 
@@ -27,7 +27,7 @@ import java.util.List;
 public class ResourceServiceImpl implements ResourceService {
     private final UserRepository userRepository;
     private final ProductsRepository productsRepository;
-    private final ShopsRepository shopsRepository;
+    private final ShopRepository shopRepository;
     private final Tika tika;
     @Value("${storage.path}")
     private String storagePath;
@@ -47,9 +47,9 @@ public class ResourceServiceImpl implements ResourceService {
 
 
         if (dtoType.equals(File.FileDtoType.SHOP)) {
-            Shop shop = shopsRepository.findById(id).orElseThrow();
+            Shop shop = shopRepository.findById(id).orElseThrow();
             shop.setResource(fileNameWithExtension);
-            shopsRepository.save(shop);
+            shopRepository.save(shop);
 
         } else if (dtoType.equals(File.FileDtoType.USER)) {
             User user = userRepository.findById(id).orElseThrow();
@@ -83,7 +83,7 @@ public class ResourceServiceImpl implements ResourceService {
     @Override
     public String getFileName(String dtoType, Long id) {
         return switch (dtoType) {
-            case "shop" -> shopsRepository.getResourceById(id);
+            case "shop" -> shopRepository.getResourceById(id);
             case "user" -> userRepository.getResourceById(id);
             default -> null;
         };

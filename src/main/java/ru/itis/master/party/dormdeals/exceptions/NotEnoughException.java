@@ -9,8 +9,8 @@ import lombok.Getter;
 public class NotEnoughException extends RuntimeException {
     private Class<?> element;
     private Object id;
-    private int required;
-    private int available;
+    private Integer required;
+    private Integer available;
 
     @Override
     public String getMessage() {

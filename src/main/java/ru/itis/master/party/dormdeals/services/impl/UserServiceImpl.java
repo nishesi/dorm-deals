@@ -3,16 +3,22 @@ package ru.itis.master.party.dormdeals.services.impl;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.codec.digest.DigestUtils;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import ru.itis.master.party.dormdeals.dto.UserDto.NewUserDto;
 import ru.itis.master.party.dormdeals.dto.UserDto.UpdateUserDto;
 import ru.itis.master.party.dormdeals.dto.UserDto.UserDto;
+import ru.itis.master.party.dormdeals.dto.converters.OrderConverter;
 import ru.itis.master.party.dormdeals.dto.converters.UserConverter;
+import ru.itis.master.party.dormdeals.dto.orders.OrderDto;
 import ru.itis.master.party.dormdeals.exceptions.NotFoundException;
 import ru.itis.master.party.dormdeals.models.Authority;
 import ru.itis.master.party.dormdeals.models.Cart;
 import ru.itis.master.party.dormdeals.models.User;
+import ru.itis.master.party.dormdeals.models.order.Order;
+import ru.itis.master.party.dormdeals.repositories.OrderRepository;
 import ru.itis.master.party.dormdeals.repositories.CartRepository;
 import ru.itis.master.party.dormdeals.repositories.UserRepository;
 import ru.itis.master.party.dormdeals.services.UserService;
@@ -24,13 +30,11 @@ import java.util.UUID;
 @Service
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
-
-    private final PasswordEncoder passwordEncoder;
-
+    private final OrderRepository orderRepository;
     private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
     private final UserConverter userConverter;
-
-    private final EmailUtil emailUtil;
+    private final OrderConverter orderConverter;
 
     @Transactional
     public String register(NewUserDto userDto) {
@@ -84,11 +88,6 @@ public class UserServiceImpl implements UserService {
 
         user.setState(User.State.DELETED);
         userRepository.save(user);
-    }
-
-    private User getUserOrElseThrow(long userId) {
-        return userRepository.findById(userId)
-                .orElseThrow(() -> new NotFoundException(User.class, "id", userId));
     }
 
     @Transactional

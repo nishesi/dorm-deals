@@ -1,6 +1,7 @@
 package ru.itis.master.party.dormdeals;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import freemarker.template.Configuration;
 import org.apache.tika.Tika;
 import org.springframework.beans.factory.annotation.Value;
@@ -30,7 +31,9 @@ public class DormDealsApplication {
 
     @Bean
     ObjectMapper objectMapper() {
-        return new ObjectMapper();
+        ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.registerModule(new JavaTimeModule());
+        return objectMapper;
     }
 
     @Bean

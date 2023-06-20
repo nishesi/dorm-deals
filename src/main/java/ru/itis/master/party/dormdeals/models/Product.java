@@ -1,6 +1,5 @@
 package ru.itis.master.party.dormdeals.models;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.*;
@@ -8,18 +7,18 @@ import lombok.*;
 import java.util.ArrayList;
 import java.util.List;
 
+@NamedEntityGraph(name = "product-shop",
+        attributeNodes = @NamedAttributeNode(value = "shop", subgraph = "shop-subgraph"),
+        subgraphs = {
+                @NamedSubgraph(name = "shop-subgraph", attributeNodes = {})
+        }
+)
 @Entity
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 public class Product {
-
-    public enum State {
-        ACTIVE,
-        NOT_AVAILABLE,
-        DELETED
-    }
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -30,11 +29,12 @@ public class Product {
 
     @Column(length = 1000)
     private String description;
+
     private String category;
+
     @Column(columnDefinition = "numeric(7, 2)", nullable = false)
     private float price;
 
-    //TODO: реализовать проверку на ноль после заказа, если ноль то переводить состояние в "NOT_AVAILABLE"
     @Column(columnDefinition = "smallint check (count_in_storage >= 0)", nullable = false)
     private int countInStorage;
 
@@ -47,15 +47,19 @@ public class Product {
     private List<String> resources = new ArrayList<>();
 
     @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable (name="favorites",
-            joinColumns=@JoinColumn (name="product_id"),
-            inverseJoinColumns=@JoinColumn(name="user_id"))
-
+    @JoinTable(name = "favorites",
+            joinColumns = @JoinColumn(name = "product_id"),
+            inverseJoinColumns = @JoinColumn(name = "user_id"))
     @ToString.Exclude
-    @JsonIgnore
     private List<User> users = new ArrayList<>();
 
     @Enumerated(value = EnumType.STRING)
     private State state;
+
+    public enum State {
+        ACTIVE,
+        NOT_AVAILABLE,
+        DELETED
+    }
 }
 

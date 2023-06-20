@@ -1,12 +1,18 @@
 package ru.itis.master.party.dormdeals.dto.converters;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Component;
-import ru.itis.master.party.dormdeals.dto.OrderDto.OrderDto;
-import ru.itis.master.party.dormdeals.models.Order;
+import ru.itis.master.party.dormdeals.dto.ShopDto.ShopDto;
+import ru.itis.master.party.dormdeals.dto.UserDto.UserDto;
+import ru.itis.master.party.dormdeals.dto.orders.OrderDto;
+import ru.itis.master.party.dormdeals.dto.orders.OrderMessageDto;
+import ru.itis.master.party.dormdeals.models.Shop;
+import ru.itis.master.party.dormdeals.models.User;
+import ru.itis.master.party.dormdeals.models.order.Order;
+import ru.itis.master.party.dormdeals.models.order.OrderMessage;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Component
 @RequiredArgsConstructor
@@ -14,24 +20,50 @@ public class OrderConverter {
 
     private final UserConverter userConverter;
 
-    private final ShopConverter shopConverter;
-
     public OrderDto from(Order order) {
         return OrderDto.builder()
                 .id(order.getId())
                 .user(userConverter.from(order.getUser()))
-                .orderTime(order.getOrderTime())
-                .userComment(order.getUserComment())
-                .shop(shopConverter.from(order.getShop()))
+                .shop(from(order.getShop()))
+                .orderMessages(from(order.getMessages()))
+                .addedDate(order.getAddedDate())
                 .price(order.getPrice())
                 .build();
     }
 
-    public List<OrderDto> from(List<Order> orders) {
-        return orders
-                .stream()
-                .map(this::from)
-                .collect(Collectors.toList());
+    public Page<OrderDto> from(Page<Order> orders) {
+        return orders.map(order -> OrderDto.builder()
+                .id(order.getId())
+                .user(from(order.getUser()))
+                .shop(from(order.getShop()))
+                .addedDate(order.getAddedDate())
+                .price(order.getPrice())
+                .build());
     }
 
+    private ShopDto from(Shop shop) {
+        return ShopDto.builder()
+                .id(shop.getId())
+                .name(shop.getName())
+                .build();
+    }
+
+    private UserDto from(User user) {
+        return UserDto.builder()
+                .email(user.getEmail())
+                .firstName(user.getFirstName())
+                .lastName(user.getLastName())
+                .telephone(user.getTelephone())
+                .build();
+    }
+
+    private List<OrderMessageDto> from(List<OrderMessage> orderMessages) {
+        return orderMessages.stream()
+                .map(orderMessage -> OrderMessageDto.builder()
+                        .addedDate(orderMessage.getAddedDate())
+                        .userId(orderMessage.getUser().getId())
+                        .message(orderMessage.getMessage())
+                        .build())
+                .toList();
+    }
 }

@@ -2,6 +2,9 @@ package ru.itis.master.party.dormdeals.controllers;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.RestController;
@@ -10,7 +13,9 @@ import ru.itis.master.party.dormdeals.dto.MessageDto;
 import ru.itis.master.party.dormdeals.dto.UserDto.NewUserDto;
 import ru.itis.master.party.dormdeals.dto.UserDto.UpdateUserDto;
 import ru.itis.master.party.dormdeals.dto.UserDto.UserDto;
+import ru.itis.master.party.dormdeals.dto.orders.OrderDto;
 import ru.itis.master.party.dormdeals.security.details.UserDetailsImpl;
+import ru.itis.master.party.dormdeals.services.OrderService;
 import ru.itis.master.party.dormdeals.services.UserService;
 
 @RestController
@@ -18,6 +23,7 @@ import ru.itis.master.party.dormdeals.services.UserService;
 public class UserController implements UserApi {
 
     private final UserService userService;
+    private final OrderService orderService;
 
     @Override
     public ResponseEntity<?> addUser(@Valid NewUserDto userDto) {
@@ -39,5 +45,13 @@ public class UserController implements UserApi {
     public ResponseEntity<?> deleteUser(@AuthenticationPrincipal UserDetailsImpl userDetails) {
         userService.deleteUser(userDetails.getUser().getId());
         return ResponseEntity.accepted().build();
+    }
+
+    @Override
+    public ResponseEntity<Page<OrderDto>> getUserOrders(Integer pageInd, Integer pageSize,
+                                                        @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        Pageable pageable = PageRequest.of(pageInd, pageSize);
+        Page<OrderDto> userOrders = orderService.getUserOrders(userDetails.getUser().getId(), pageable);
+        return ResponseEntity.ok(userOrders);
     }
 }
