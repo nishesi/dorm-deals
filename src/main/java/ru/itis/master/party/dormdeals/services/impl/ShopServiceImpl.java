@@ -5,7 +5,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import ru.itis.master.party.dormdeals.dto.ProductDto.ProductsPage;
 import ru.itis.master.party.dormdeals.dto.ShopDto.NewShop;
@@ -15,19 +14,17 @@ import ru.itis.master.party.dormdeals.dto.ShopDto.UpdateShop;
 import ru.itis.master.party.dormdeals.dto.ShopWithProducts;
 import ru.itis.master.party.dormdeals.dto.converters.ProductConverter;
 import ru.itis.master.party.dormdeals.dto.converters.ShopConverter;
-import ru.itis.master.party.dormdeals.dto.orders.OrderDto;
 import ru.itis.master.party.dormdeals.exceptions.NotAcceptableException;
 import ru.itis.master.party.dormdeals.exceptions.NotFoundException;
 import ru.itis.master.party.dormdeals.models.Dormitory;
 import ru.itis.master.party.dormdeals.models.Product;
 import ru.itis.master.party.dormdeals.models.Shop;
 import ru.itis.master.party.dormdeals.models.User;
-import ru.itis.master.party.dormdeals.models.order.Order;
 import ru.itis.master.party.dormdeals.repositories.DormitoryRepository;
-import ru.itis.master.party.dormdeals.repositories.ProductsRepository;
+import ru.itis.master.party.dormdeals.repositories.ProductRepository;
 import ru.itis.master.party.dormdeals.repositories.ShopRepository;
 import ru.itis.master.party.dormdeals.repositories.UserRepository;
-import ru.itis.master.party.dormdeals.services.ShopsService;
+import ru.itis.master.party.dormdeals.services.ShopService;
 
 import java.util.List;
 import java.util.Optional;
@@ -35,7 +32,7 @@ import java.util.Optional;
 @Service
 @RequiredArgsConstructor
 
-public class ShopsServiceImpl implements ShopsService {
+public class ShopServiceImpl implements ShopService {
 
     private final ShopConverter shopConverter;
 
@@ -43,7 +40,7 @@ public class ShopsServiceImpl implements ShopsService {
 
     private final DormitoryRepository dormitoryRepository;
 
-    private final ProductsRepository productsRepository;
+    private final ProductRepository productRepository;
 
     private final ShopRepository shopRepository;
 
@@ -118,7 +115,7 @@ public class ShopsServiceImpl implements ShopsService {
     public void deleteShop(long userId) {
         Optional<Shop> shopOptional = shopRepository.findShopByOwnerId(userId);
         shopOptional.ifPresent(shop -> {
-            productsRepository.deleteAllByShopId(shop.getId());
+            productRepository.deleteAllByShopId(shop.getId());
             shopRepository.deleteById(shop.getId());
         });
     }
@@ -127,7 +124,7 @@ public class ShopsServiceImpl implements ShopsService {
     public ShopWithProducts getAllProductsThisShop(Long shopId, int page) {
         Shop thisShop = shopRepository.findById(shopId).orElseThrow(() -> new NotFoundException(Shop.class, "id", shopId));
         PageRequest pageRequest = PageRequest.of(page, defaultPageSize);
-        Page<Product> productsPageTemp = productsRepository
+        Page<Product> productsPageTemp = productRepository
                 .findAllByShopIdAndStateOrderById(shopId, Product.State.ACTIVE, pageRequest);
         ProductsPage productsPage = ProductsPage.builder()
                 .products(productConverter.from(productsPageTemp.getContent()))

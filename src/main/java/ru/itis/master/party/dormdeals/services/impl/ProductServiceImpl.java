@@ -11,8 +11,8 @@ import ru.itis.master.party.dormdeals.exceptions.NotAcceptableException;
 import ru.itis.master.party.dormdeals.exceptions.NotFoundException;
 import ru.itis.master.party.dormdeals.models.Product;
 import ru.itis.master.party.dormdeals.models.Shop;
-import ru.itis.master.party.dormdeals.repositories.ProductsRepository;
-import ru.itis.master.party.dormdeals.repositories.ShopsRepository;
+import ru.itis.master.party.dormdeals.repositories.ProductRepository;
+import ru.itis.master.party.dormdeals.repositories.ShopRepository;
 import ru.itis.master.party.dormdeals.services.ProductService;
 import ru.itis.master.party.dormdeals.dto.converters.CartProductConverter;
 
@@ -24,8 +24,8 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ProductServiceImpl implements ProductService {
     private final ProductConverter productConverter;
-    private final ProductsRepository productsRepository;
-    private final ShopsRepository shopsRepository;
+    private final ProductRepository productRepository;
+    private final ShopRepository shopRepository;
     private final CartProductConverter cartProductConverter;
 
     @Value("${default.page-size}")
@@ -34,7 +34,7 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public ProductsPage getAllProducts(int page) {
         PageRequest pageRequest = PageRequest.of(page, defaultPageSize);
-        Page<Product> productsPage = productsRepository.findAllByStateOrderById(Product.State.ACTIVE, pageRequest);
+        Page<Product> productsPage = productRepository.findAllByStateOrderById(Product.State.ACTIVE, pageRequest);
 
         return ProductsPage.builder()
                 .products(productConverter.from(productsPage.getContent()))
@@ -44,7 +44,7 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public ProductDto addProduct(long userId, NewProduct newProduct) {
-        Shop shop = shopsRepository.findShopByOwnerId(userId)
+        Shop shop = shopRepository.findShopByOwnerId(userId)
                 .orElseThrow(() -> new NotFoundException(Shop.class, "ownerId", userId));
 
         Product product = Product.builder()
@@ -57,21 +57,21 @@ public class ProductServiceImpl implements ProductService {
                 .state(Product.State.ACTIVE)
                 .build();
 
-        productsRepository.save(product);
+        productRepository.save(product);
 
         return productConverter.from(product);
     }
 
     @Override
     public ProductDto getProduct(Long productId) {
-        Product product = productsRepository.findById(productId)
+        Product product = productRepository.findById(productId)
                 .orElseThrow(() -> new NotFoundException(Product.class, "id", productId));
         return productConverter.from(product);
     }
 
     @Override
     public ProductDto updateProduct(long userId, Long productId, UpdateProduct updatedProduct) {
-        Product product = productsRepository.findById(productId)
+        Product product = productRepository.findById(productId)
                 .orElseThrow(() -> new NotFoundException(Product.class, "id", productId));
 
         if (product.getShop().getOwner().getId() != userId)
@@ -82,14 +82,14 @@ public class ProductServiceImpl implements ProductService {
         product.setPrice(updatedProduct.getPrice());
         product.setCountInStorage(updatedProduct.getCountInStorage());
 
-        productsRepository.save(product);
+        productRepository.save(product);
 
         return productConverter.from(product);
     }
 
     @Override
     public void deleteProduct(long userId, Long productId) {
-        Product product = productsRepository.findById(productId)
+        Product product = productRepository.findById(productId)
                 .orElseThrow(() -> new NotFoundException(Product.class, "id", productId));
 
         if (product.getShop().getOwner().getId() != userId)
@@ -97,13 +97,13 @@ public class ProductServiceImpl implements ProductService {
 
 
         product.setState(Product.State.DELETED);
-        productsRepository.save(product);
+        productRepository.save(product);
     }
 
 //    @Override
 //    public ProductsPage getAllProductsByShop(int page, Long shopId) {
 //        PageRequest pageRequest = PageRequest.of(page, defaultPageSize);
-//        Page<Product> productsPage = productsRepository.findAllByShopIdAndStateOrderById(shopId, Product.State.ACTIVE, pageRequest);
+//        Page<Product> productsPage = productRepository.findAllByShopIdAndStateOrderById(shopId, Product.State.ACTIVE, pageRequest);
 //
 //        return ProductsPage.builder()
 //                .products(from(productsPage.getContent()))
@@ -113,18 +113,18 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public void returnInSell(long userId, Long productId) {
-        Product product = productsRepository.findById(productId)
+        Product product = productRepository.findById(productId)
                 .orElseThrow(() -> new NotFoundException(Product.class, "id", productId));
 
         if (product.getShop().getOwner().getId() != userId)
             throw new NotAcceptableException("have not permission");
 
         product.setState(Product.State.ACTIVE);
-        productsRepository.save(product);
+        productRepository.save(product);
     }
 
     @Override
     public List<CartProductDto> getCartProducts(List<Long> productsId) {
-        return cartProductConverter.listFromProduct(productsRepository.findAllById(productsId));
+        return cartProductConverter.listFromProduct(productRepository.findAllById(productsId));
     }
 }

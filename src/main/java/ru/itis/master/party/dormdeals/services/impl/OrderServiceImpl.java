@@ -18,7 +18,7 @@ import ru.itis.master.party.dormdeals.models.order.Order;
 import ru.itis.master.party.dormdeals.models.order.OrderMessage;
 import ru.itis.master.party.dormdeals.models.order.OrderProduct;
 import ru.itis.master.party.dormdeals.repositories.OrderRepository;
-import ru.itis.master.party.dormdeals.repositories.ProductsRepository;
+import ru.itis.master.party.dormdeals.repositories.ProductRepository;
 import ru.itis.master.party.dormdeals.repositories.ShopRepository;
 import ru.itis.master.party.dormdeals.repositories.UserRepository;
 import ru.itis.master.party.dormdeals.services.OrderService;
@@ -35,7 +35,7 @@ import static ru.itis.master.party.dormdeals.models.order.Order.State.*;
 @Service
 @RequiredArgsConstructor
 public class OrderServiceImpl implements OrderService {
-    private final ProductsRepository productsRepository;
+    private final ProductRepository productRepository;
     private final OrderRepository orderRepository;
     private final ShopRepository shopRepository;
     private final UserRepository userRepository;
@@ -76,7 +76,7 @@ public class OrderServiceImpl implements OrderService {
                 NewOrderDto.OrderProduct::getProductId,
                 NewOrderDto.OrderProduct::getCount));
 
-        List<Product> products = productsRepository.findAllProductWithShopByIdIn(productIdAndCount.keySet());
+        List<Product> products = productRepository.findAllProductWithShopByIdIn(productIdAndCount.keySet());
 
         // group products by shopId
         Map<Long, List<OrderProduct>> shopIdAndOrderProducts = new HashMap<>();

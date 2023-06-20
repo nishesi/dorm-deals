@@ -9,7 +9,7 @@ import ru.itis.master.party.dormdeals.exceptions.NotEnoughException;
 import ru.itis.master.party.dormdeals.models.Cart;
 import ru.itis.master.party.dormdeals.models.CartProduct;
 import ru.itis.master.party.dormdeals.repositories.CartRepository;
-import ru.itis.master.party.dormdeals.repositories.ProductsRepository;
+import ru.itis.master.party.dormdeals.repositories.ProductRepository;
 import ru.itis.master.party.dormdeals.services.CartService;
 
 import java.util.List;
@@ -23,7 +23,7 @@ public class CartServiceImpl implements CartService {
     private final CartProductConverter cartProductConverter;
     private final CartRepository cartRepository;
 
-    private final ProductsRepository productsRepository;
+    private final ProductRepository productRepository;
 
     @Override
     public List<CartProductDto> getCart(long userId) {
@@ -81,7 +81,7 @@ public class CartServiceImpl implements CartService {
 
     private CartProduct createProductInCart(CartCookie cartCookie) {
         return CartProduct.builder()
-                .product(productsRepository.getReferenceById(cartCookie.getId()))
+                .product(productRepository.getReferenceById(cartCookie.getId()))
                 .count(cartCookie.getCount())
                 .state(getStateFromCookie(cartCookie))
                 .build();

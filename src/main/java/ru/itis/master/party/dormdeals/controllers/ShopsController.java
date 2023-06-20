@@ -18,19 +18,19 @@ import ru.itis.master.party.dormdeals.dto.ShopWithProducts;
 import ru.itis.master.party.dormdeals.dto.orders.OrderDto;
 import ru.itis.master.party.dormdeals.security.details.UserDetailsImpl;
 import ru.itis.master.party.dormdeals.services.OrderService;
-import ru.itis.master.party.dormdeals.services.ShopsService;
+import ru.itis.master.party.dormdeals.services.ShopService;
 
 @RestController
 @RequiredArgsConstructor
 public class ShopsController implements ShopsApi {
 
-    private final ShopsService shopsService;
+    private final ShopService shopService;
     private final OrderService orderService;
 
     @Override
     public ResponseEntity<ShopsPage> getAllShops(int page) {
         return ResponseEntity
-                .ok(shopsService.getAllShops(page));
+                .ok(shopService.getAllShops(page));
     }
 
     @Override
@@ -38,30 +38,30 @@ public class ShopsController implements ShopsApi {
                                               @AuthenticationPrincipal UserDetailsImpl userDetails) {
         long userId = userDetails.getUser().getId();
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(shopsService.createShop(userId, newShop));
+                .body(shopService.createShop(userId, newShop));
     }
 
     @Override
     public ResponseEntity<ShopDto> getShop(Long shopId) {
-        return ResponseEntity.ok(shopsService.getShop(shopId));
+        return ResponseEntity.ok(shopService.getShop(shopId));
     }
 
     @Override
     public ResponseEntity<ShopDto> updateShop(Long shopId, @Valid UpdateShop updateShop,
                                               @AuthenticationPrincipal UserDetailsImpl userDetails) {
         long userId = userDetails.getUser().getId();
-        return ResponseEntity.accepted().body(shopsService.updateShop(userId, shopId, updateShop));
+        return ResponseEntity.accepted().body(shopService.updateShop(userId, shopId, updateShop));
     }
 
     @Override
     public ResponseEntity<?> deleteShop(@AuthenticationPrincipal UserDetailsImpl userDetails) {
-        shopsService.deleteShop(userDetails.getUser().getId());
+        shopService.deleteShop(userDetails.getUser().getId());
         return ResponseEntity.accepted().build();
     }
 
     @Override
     public ResponseEntity<ShopWithProducts> getAllProductsThisShop(Long shopId, int page) {
-        return ResponseEntity.ok().body(shopsService.getAllProductsThisShop(shopId, page));
+        return ResponseEntity.ok().body(shopService.getAllProductsThisShop(shopId, page));
     }
 
     @Override

@@ -10,7 +10,7 @@ import ru.itis.master.party.dormdeals.models.Product;
 import java.util.Collection;
 import java.util.List;
 
-public interface ProductsRepository extends JpaRepository<Product, Long> {
+public interface ProductRepository extends JpaRepository<Product, Long> {
     Page<Product> findAllByStateOrderById(Product.State state, Pageable pageable);
 
     Page<Product> findAllByShopIdAndStateOrderById(Long shopId, Product.State state, Pageable pageable);

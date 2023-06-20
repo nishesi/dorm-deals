@@ -7,9 +7,8 @@ import ru.itis.master.party.dormdeals.dto.ProductDto.ProductDto;
 import ru.itis.master.party.dormdeals.dto.converters.ProductConverter;
 import ru.itis.master.party.dormdeals.exceptions.NotAcceptableException;
 import ru.itis.master.party.dormdeals.exceptions.NotFoundException;
-import ru.itis.master.party.dormdeals.models.Product;
 import ru.itis.master.party.dormdeals.models.User;
-import ru.itis.master.party.dormdeals.repositories.ProductsRepository;
+import ru.itis.master.party.dormdeals.repositories.ProductRepository;
 import ru.itis.master.party.dormdeals.repositories.UserRepository;
 import ru.itis.master.party.dormdeals.services.FavoriteService;
 
@@ -21,7 +20,7 @@ public class FavoriteServiceImpl implements FavoriteService {
 
     private final ProductConverter productConverter;
 
-    private final ProductsRepository productsRepository;
+    private final ProductRepository productRepository;
 
     private final UserRepository userRepository;
 
@@ -34,7 +33,7 @@ public class FavoriteServiceImpl implements FavoriteService {
             throw new NotAcceptableException("Максимум 25 товаров в избранном");
         }
 
-        user.getFavorites().add(productsRepository.getReferenceById(productId));
+        user.getFavorites().add(productRepository.getReferenceById(productId));
 
         userRepository.save(user);
     }

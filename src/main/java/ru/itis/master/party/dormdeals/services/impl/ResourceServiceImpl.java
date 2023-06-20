@@ -10,7 +10,7 @@ import ru.itis.master.party.dormdeals.models.File;
 import ru.itis.master.party.dormdeals.models.Product;
 import ru.itis.master.party.dormdeals.models.Shop;
 import ru.itis.master.party.dormdeals.models.User;
-import ru.itis.master.party.dormdeals.repositories.ProductsRepository;
+import ru.itis.master.party.dormdeals.repositories.ProductRepository;
 import ru.itis.master.party.dormdeals.repositories.ShopRepository;
 import ru.itis.master.party.dormdeals.repositories.UserRepository;
 import ru.itis.master.party.dormdeals.services.ResourceService;
@@ -26,7 +26,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ResourceServiceImpl implements ResourceService {
     private final UserRepository userRepository;
-    private final ProductsRepository productsRepository;
+    private final ProductRepository productRepository;
     private final ShopRepository shopRepository;
     private final Tika tika;
     @Value("${storage.path}")
@@ -75,9 +75,9 @@ public class ResourceServiceImpl implements ResourceService {
                 e.printStackTrace();
             }
         }
-        Product product = productsRepository.findById(id).orElseThrow();
+        Product product = productRepository.findById(id).orElseThrow();
         product.setResources(fileNames);
-        productsRepository.save(product);
+        productRepository.save(product);
     }
 
     @Override
@@ -91,7 +91,7 @@ public class ResourceServiceImpl implements ResourceService {
 
     @Override
     public String getFileName(Long id, Integer numberResource) {
-        return productsRepository.getResourceById(id)
+        return productRepository.getResourceById(id)
                 .stream()
                 .filter(resource -> {
                     String[] parts = resource.split("-");

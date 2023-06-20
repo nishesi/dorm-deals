@@ -6,7 +6,7 @@ import ru.itis.master.party.dormdeals.dto.ShopDto.ShopsPage;
 import ru.itis.master.party.dormdeals.dto.ShopDto.UpdateShop;
 import ru.itis.master.party.dormdeals.dto.ShopWithProducts;
 
-public interface ShopsService {
+public interface ShopService {
 
     ShopDto getShop(Long id);
 
