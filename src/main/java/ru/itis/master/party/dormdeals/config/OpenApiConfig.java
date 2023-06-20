@@ -1,4 +1,4 @@
-package ru.itis.master.party.dormdeals.controllers.config;
+package ru.itis.master.party.dormdeals.config;
 
 import io.swagger.v3.oas.models.*;
 import io.swagger.v3.oas.models.info.Info;

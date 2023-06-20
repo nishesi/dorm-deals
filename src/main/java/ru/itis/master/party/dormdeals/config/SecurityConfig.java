@@ -1,4 +1,4 @@
-package ru.itis.master.party.dormdeals.security;
+package ru.itis.master.party.dormdeals.config;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;

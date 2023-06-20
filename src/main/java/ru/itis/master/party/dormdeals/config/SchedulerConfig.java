@@ -1,4 +1,4 @@
-package ru.itis.master.party.dormdeals.scheduling;
+package ru.itis.master.party.dormdeals.config;
 
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Configuration;

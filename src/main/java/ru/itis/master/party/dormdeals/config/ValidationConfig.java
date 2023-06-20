@@ -1,4 +1,4 @@
-package ru.itis.master.party.dormdeals.validation.config;
+package ru.itis.master.party.dormdeals.config;
 
 
 import org.springframework.context.MessageSource;
