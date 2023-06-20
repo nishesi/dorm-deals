@@ -33,6 +33,7 @@ public class FavoriteServiceImpl implements FavoriteService {
         if (user.getFavorites().size() >= 25) {
             throw new NotAcceptableException("Максимум 25 товаров в избранном");
         }
+
         user.getFavorites().add(productsRepository.getReferenceById(productId));
 
         userRepository.save(user);
@@ -43,8 +44,7 @@ public class FavoriteServiceImpl implements FavoriteService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException(User.class, "id", userId));
 
-        List<Product> products = user.getFavorites();
-        return productConverter.from(products);
+        return productConverter.from(user.getFavorites());
     }
 
     @Transactional
@@ -53,7 +53,7 @@ public class FavoriteServiceImpl implements FavoriteService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException(User.class, "id", userId));
 
-        user.getFavorites().remove(productsRepository.getReferenceById(productId));
+        user.getFavorites().removeIf(favoriteProduct -> favoriteProduct.getId().equals(productId));
 
         userRepository.save(user);
     }

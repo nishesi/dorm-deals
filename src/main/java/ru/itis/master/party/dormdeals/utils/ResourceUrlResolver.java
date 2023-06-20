@@ -11,6 +11,6 @@ public class ResourceUrlResolver {
     }
 
     public String resolveUrl(Long id, File.FileDtoType dtoType, File.FileType fileType, Integer numberResource) {
-        return "http://localhost/resource/" + fileType + "/" + dtoType + "/" + id + "/" + numberResource;
+        return "http://localhost/resource/" + fileType.toString().toLowerCase() + "/" + dtoType.toString().toLowerCase() + "/" + id + "/" + numberResource;
     }
 }

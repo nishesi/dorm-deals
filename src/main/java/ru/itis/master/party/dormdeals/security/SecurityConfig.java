@@ -52,9 +52,10 @@ public class SecurityConfig {
                                 .requestMatchers("/auth/token", "/email/confirm/**").permitAll()
                                 .requestMatchers(HttpMethod.POST, "/logout").permitAll()
                                 .requestMatchers(HttpMethod.POST, "/user").permitAll()
-                                .requestMatchers("/my/favourites/**").hasAnyRole("USER", "SELLER")
+                                .requestMatchers("/my/favorites/**").hasAnyRole("USER", "SELLER")
                                 .requestMatchers("/user/**").hasRole("USER")
-                                .requestMatchers("/my/cart/**").permitAll()
+                                .requestMatchers(HttpMethod.GET, "/my/cart").permitAll()
+                                .requestMatchers("/my/cart/**").hasRole("USER")
 
                                 // business logic
 
