@@ -18,5 +18,5 @@ public interface OrderService {
 
     Page<OrderDto> getUserOrders(long userId, Pageable pageable);
 
-    Page<OrderDto> getShopOrders(long shopId, Pageable pageable);
+    Page<OrderDto> getShopOrders(long shopOwnerId, long shopId, Pageable pageable);
 }

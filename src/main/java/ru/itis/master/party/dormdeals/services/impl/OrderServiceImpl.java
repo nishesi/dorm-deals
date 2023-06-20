@@ -13,6 +13,7 @@ import ru.itis.master.party.dormdeals.exceptions.NotAcceptableException;
 import ru.itis.master.party.dormdeals.exceptions.NotEnoughException;
 import ru.itis.master.party.dormdeals.exceptions.NotFoundException;
 import ru.itis.master.party.dormdeals.models.Product;
+import ru.itis.master.party.dormdeals.models.Shop;
 import ru.itis.master.party.dormdeals.models.order.Order;
 import ru.itis.master.party.dormdeals.models.order.OrderMessage;
 import ru.itis.master.party.dormdeals.models.order.OrderProduct;
@@ -177,7 +178,12 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public Page<OrderDto> getShopOrders(long shopId, Pageable pageable) {
+    public Page<OrderDto> getShopOrders(long shopOwnerId, long shopId, Pageable pageable) {
+        Shop shop = shopRepository.findById(shopId)
+                .orElseThrow(() -> new NotFoundException(Shop.class, "id", shopId));
+        if (shop.getOwner().getId() != shopOwnerId)
+            throw new NotAcceptableException("have not permission");
+
         Page<Order> orders = orderRepository.findAllWithUserAndShopsByShopId(shopId, pageable);
         return orderConverter.from(orders);
     }

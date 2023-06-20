@@ -68,7 +68,7 @@ public class ShopsController implements ShopsApi {
     public ResponseEntity<Page<OrderDto>> getShopOrders(Long shopId, Integer pageInd, Integer pageSize,
                                                         @AuthenticationPrincipal UserDetailsImpl userDetails) {
         Pageable pageable = PageRequest.of(pageInd, pageSize);
-        Page<OrderDto> shopOrders = orderService.getShopOrders(shopId, pageable);
+        Page<OrderDto> shopOrders = orderService.getShopOrders(userDetails.getUser().getId(), shopId, pageable);
         return ResponseEntity.ok(shopOrders);
     }
 }
