@@ -33,7 +33,7 @@ public class EmailUtil {
 
         String text = processTemplate(templateName, data);
 
-        MimeMessagePreparator preparator = mimeMessage -> {
+        MimeMessagePreparator mimeMessagePreparator = mimeMessage -> {
             MimeMessageHelper messageHelper = new MimeMessageHelper(mimeMessage);
             messageHelper.setSubject(subject);
             messageHelper.setText(text, true);
@@ -41,7 +41,7 @@ public class EmailUtil {
             messageHelper.setFrom(from);
         };
 
-        mailSender.send(preparator);
+        mailSender.send(mimeMessagePreparator);
     }
 
     private String processTemplate(String templateName, Map<String, String> data)  {

@@ -4,7 +4,6 @@ import com.auth0.jwt.exceptions.JWTVerificationException;
 import org.springframework.security.core.Authentication;
 import ru.itis.master.party.dormdeals.models.User;
 
-import java.util.List;
 import java.util.Map;
 
 public interface JwtUtil {
