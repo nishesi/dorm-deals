@@ -12,7 +12,7 @@ import java.util.List;
 
 @NamedEntityGraph(name = "order-user-shop",
         attributeNodes = {
-                @NamedAttributeNode(value = "user"),
+                @NamedAttributeNode(value = "customer"),
                 @NamedAttributeNode(value = "shop")
         }
 )
@@ -39,8 +39,8 @@ public class Order {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
-    private User user;
+    @JoinColumn(name = "customer_id")
+    private User customer;
 
     @DateTimeFormat(pattern = "dd-MM-yyyy hh-mm-ss XX")
     @Temporal(TemporalType.TIMESTAMP)

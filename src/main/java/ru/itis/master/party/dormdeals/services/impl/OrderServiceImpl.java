@@ -100,7 +100,7 @@ public class OrderServiceImpl implements OrderService {
                             .sum();
                     priceSum = (float) ((int) (priceSum * 100)) / 100;
                     return Order.builder()
-                            .user(userRepository.getReferenceById(userId))
+                            .customer(userRepository.getReferenceById(userId))
                             .addedDate(time)
                             .shop(shopRepository.getReferenceById(entry.getKey()))
                             .price(priceSum)
@@ -127,7 +127,7 @@ public class OrderServiceImpl implements OrderService {
                 .orElseThrow(() -> new NotFoundException(Order.class, "id", orderId));
 
         // Is costumer wants to update status?
-        if (Objects.equals(userId, order.getUser().getId())) {
+        if (Objects.equals(userId, order.getCustomer().getId())) {
 
             // cancel order if possible
             if (state == CANCELLED && order.getState().index() < CONFIRMED.index()) {
@@ -162,7 +162,7 @@ public class OrderServiceImpl implements OrderService {
                 .orElseThrow(() -> new NotFoundException(Order.class, "id", orderId));
 
         // throw if message adder not consumer and not seller
-        if (!Objects.equals(userId, order.getUser().getId()) &&
+        if (!Objects.equals(userId, order.getCustomer().getId()) &&
                 !Objects.equals(userId, order.getShop().getOwner().getId())) {
             throw new NotAcceptableException("have not permission");
         }
@@ -190,7 +190,7 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public Page<OrderDto> getUserOrders(long userId, Pageable pageable) {
-        Page<Order> orders = orderRepository.findAllWithUserAndShopsByUserId(userId, pageable);
+        Page<Order> orders = orderRepository.findAllWithUserAndShopsByCustomerId(userId, pageable);
         return orderConverter.from(orders);
     }
 }

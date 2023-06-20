@@ -23,7 +23,7 @@ public class OrderDto {
     private Long id;
 
     @Schema(description = "Заказчик")
-    private UserDto user;
+    private UserDto customer;
 
     @Schema(description = "Магазин")
     private ShopDto shop;

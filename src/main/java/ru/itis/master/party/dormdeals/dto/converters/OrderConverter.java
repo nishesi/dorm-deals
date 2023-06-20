@@ -23,7 +23,7 @@ public class OrderConverter {
     public OrderDto from(Order order) {
         return OrderDto.builder()
                 .id(order.getId())
-                .user(userConverter.from(order.getUser()))
+                .customer(userConverter.from(order.getCustomer()))
                 .shop(from(order.getShop()))
                 .orderMessages(from(order.getMessages()))
                 .addedDate(order.getAddedDate())
@@ -34,7 +34,7 @@ public class OrderConverter {
     public Page<OrderDto> from(Page<Order> orders) {
         return orders.map(order -> OrderDto.builder()
                 .id(order.getId())
-                .user(from(order.getUser()))
+                .customer(from(order.getCustomer()))
                 .shop(from(order.getShop()))
                 .addedDate(order.getAddedDate())
                 .price(order.getPrice())

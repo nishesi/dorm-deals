@@ -10,7 +10,7 @@ import java.util.Optional;
 
 public interface OrderRepository extends JpaRepository<Order, Long> {
     @EntityGraph(value = "order-user-shop", type = EntityGraph.EntityGraphType.FETCH)
-    Page<Order> findAllWithUserAndShopsByUserId(long userId, Pageable pageable);
+    Page<Order> findAllWithUserAndShopsByCustomerId(long userId, Pageable pageable);
 
     @EntityGraph(value = "order-user-shop", type = EntityGraph.EntityGraphType.FETCH)
     Page<Order> findAllWithUserAndShopsByShopId(long shopId, Pageable pageable);
