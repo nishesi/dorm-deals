@@ -36,7 +36,7 @@ public class Product {
 
     //TODO: реализовать проверку на ноль после заказа, если ноль то переводить состояние в "NOT_AVAILABLE"
     @Column(columnDefinition = "smallint check (count_in_storage >= 0)", nullable = false)
-    private short countInStorage;
+    private int countInStorage;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "shop_id")

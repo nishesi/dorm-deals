@@ -8,11 +8,12 @@ import lombok.Getter;
 @AllArgsConstructor
 public class NotEnoughException extends RuntimeException {
     private Class<?> element;
-    private Integer required;
-    private Integer available;
+    private Object id;
+    private int required;
+    private int available;
 
     @Override
     public String getMessage() {
-        return element.getName() + " requested " + required + ", but available " + available;
+        return element.getName() + "with id " + id + " requested " + required + ", but available " + available;
     }
 }

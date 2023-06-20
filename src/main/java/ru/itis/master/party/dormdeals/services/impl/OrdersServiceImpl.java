@@ -100,7 +100,7 @@ public class OrdersServiceImpl implements OrdersService {
         Set<Long> shopsIdSet = new HashSet<>();
 
         for (CartProductDto cartProductDto : cartProductDtoList) {
-            Long productId = cartProductDto.getId();
+            Long productId = cartProductDto.getProductDto().getId();
             Product product = productsRepository.findById(productId)
                     .orElseThrow(() -> new NotFoundException(Product.class, "id", productId));
             Long shopId = product.getShop().getId();

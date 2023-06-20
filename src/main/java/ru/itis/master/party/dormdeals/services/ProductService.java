@@ -1,9 +1,8 @@
 package ru.itis.master.party.dormdeals.services;
 
-import ru.itis.master.party.dormdeals.dto.ProductDto.NewProduct;
-import ru.itis.master.party.dormdeals.dto.ProductDto.ProductDto;
-import ru.itis.master.party.dormdeals.dto.ProductDto.ProductsPage;
-import ru.itis.master.party.dormdeals.dto.ProductDto.UpdateProduct;
+import ru.itis.master.party.dormdeals.dto.ProductDto.*;
+
+import java.util.List;
 
 public interface ProductService {
     ProductsPage getAllProducts(int page);
@@ -19,4 +18,5 @@ public interface ProductService {
 //    ProductsPage getAllProductsByShop(int page, Long shopId);
 
     void returnInSell(long userId, Long productId);
+    List<CartProductDto> getCartProducts(List<Long> productsId);
 }

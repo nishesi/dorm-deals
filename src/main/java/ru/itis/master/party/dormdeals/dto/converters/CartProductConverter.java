@@ -3,10 +3,15 @@ package ru.itis.master.party.dormdeals.dto.converters;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import ru.itis.master.party.dormdeals.dto.ProductDto.CartProductDto;
+import ru.itis.master.party.dormdeals.dto.ProductDto.ProductDto;
 import ru.itis.master.party.dormdeals.models.Cart;
+import ru.itis.master.party.dormdeals.models.CartProduct;
 import ru.itis.master.party.dormdeals.models.File;
+import ru.itis.master.party.dormdeals.models.Product;
 import ru.itis.master.party.dormdeals.utils.ResourceUrlResolver;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -14,25 +19,53 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class CartProductConverter {
     private final ResourceUrlResolver resolver;
-    public CartProductDto from(Cart cart) {
-        List<String> images = cart.getProduct().getResources();
+    public CartProductDto fromCartProduct(CartProduct cartProduct) {
+        List<String> images = cartProduct.getProduct().getResources();
         String url = (images.isEmpty()) ?
                 "" :
-                resolver.resolveUrl(cart.getProduct().getId(), File.FileDtoType.PRODUCT, File.FileType.IMAGE, 1);
+                resolver.resolveUrl(cartProduct.getProduct().getId(), File.FileDtoType.PRODUCT, File.FileType.IMAGE, 1);
         return CartProductDto.builder()
-                .id(cart.getProduct().getId())
-                .name(cart.getProduct().getName())
-                .price(cart.getProduct().getPrice())
-                .count(cart.getCount())
-                .countInStorage(cart.getProduct().getCountInStorage())
-                .coverImageUrl(url)
+                .productDto(
+                        ProductDto.builder()
+                                .id(cartProduct.getProduct().getId())
+                                .name(cartProduct.getProduct().getName())
+                                .price(cartProduct.getProduct().getPrice())
+                                .countInStorage(cartProduct.getProduct().getCountInStorage())
+                                .build()
+                )
+                .count(cartProduct.getCount())
+                .state(cartProduct.getState())
+                .coverImage(url)
                 .build();
     }
 
-    public List<CartProductDto> from(List<Cart> carts) {
-        return carts
-                .stream()
-                .map(this::from)
+    public CartProductDto fromProduct(Product product) {
+        List<String> images = product.getResources();
+        String url = (images.isEmpty()) ?
+                "" :
+                resolver.resolveUrl(product.getId(), File.FileDtoType.PRODUCT, File.FileType.IMAGE, 1);
+        return CartProductDto.builder()
+                .productDto(
+                        ProductDto.builder()
+                                .id(product.getId())
+                                .name(product.getName())
+                                .price(product.getPrice())
+                                .countInStorage(product.getCountInStorage())
+                                .build()
+                )
+                .coverImage(url)
+                .build();
+    }
+
+    public List<CartProductDto> listFromCartProduct(List<CartProduct> cartProducts) {
+        return cartProducts.stream()
+                .map(this::fromCartProduct)
+                .collect(Collectors.toList());
+    }
+
+    public List<CartProductDto> listFromProduct(List<Product> products) {
+        return products.stream()
+                .map(this::fromProduct)
                 .collect(Collectors.toList());
     }
 }

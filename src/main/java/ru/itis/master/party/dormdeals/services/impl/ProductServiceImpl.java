@@ -5,10 +5,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
-import ru.itis.master.party.dormdeals.dto.ProductDto.NewProduct;
-import ru.itis.master.party.dormdeals.dto.ProductDto.ProductDto;
-import ru.itis.master.party.dormdeals.dto.ProductDto.ProductsPage;
-import ru.itis.master.party.dormdeals.dto.ProductDto.UpdateProduct;
+import ru.itis.master.party.dormdeals.dto.ProductDto.*;
 import ru.itis.master.party.dormdeals.dto.converters.ProductConverter;
 import ru.itis.master.party.dormdeals.exceptions.NotAcceptableException;
 import ru.itis.master.party.dormdeals.exceptions.NotFoundException;
@@ -17,6 +14,10 @@ import ru.itis.master.party.dormdeals.models.Shop;
 import ru.itis.master.party.dormdeals.repositories.ProductsRepository;
 import ru.itis.master.party.dormdeals.repositories.ShopsRepository;
 import ru.itis.master.party.dormdeals.services.ProductService;
+import ru.itis.master.party.dormdeals.dto.converters.CartProductConverter;
+
+
+import java.util.List;
 
 
 @Service
@@ -25,6 +26,7 @@ public class ProductServiceImpl implements ProductService {
     private final ProductConverter productConverter;
     private final ProductsRepository productsRepository;
     private final ShopsRepository shopsRepository;
+    private final CartProductConverter cartProductConverter;
 
     @Value("${default.page-size}")
     private int defaultPageSize;
@@ -119,5 +121,10 @@ public class ProductServiceImpl implements ProductService {
 
         product.setState(Product.State.ACTIVE);
         productsRepository.save(product);
+    }
+
+    @Override
+    public List<CartProductDto> getCartProducts(List<Long> productsId) {
+        return cartProductConverter.listFromProduct(productsRepository.findAllById(productsId));
     }
 }
