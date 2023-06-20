@@ -4,9 +4,11 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Component;
 import ru.itis.master.party.dormdeals.dto.ShopDto.ShopDto;
+import ru.itis.master.party.dormdeals.dto.UserDto.UserDto;
 import ru.itis.master.party.dormdeals.dto.orders.OrderDto;
 import ru.itis.master.party.dormdeals.dto.orders.OrderMessageDto;
 import ru.itis.master.party.dormdeals.models.Shop;
+import ru.itis.master.party.dormdeals.models.User;
 import ru.itis.master.party.dormdeals.models.order.Order;
 import ru.itis.master.party.dormdeals.models.order.OrderMessage;
 
@@ -32,6 +34,7 @@ public class OrderConverter {
     public Page<OrderDto> from(Page<Order> orders) {
         return orders.map(order -> OrderDto.builder()
                 .id(order.getId())
+                .user(from(order.getUser()))
                 .shop(from(order.getShop()))
                 .addedDate(order.getAddedDate())
                 .price(order.getPrice())
@@ -42,6 +45,15 @@ public class OrderConverter {
         return ShopDto.builder()
                 .id(shop.getId())
                 .name(shop.getName())
+                .build();
+    }
+
+    private UserDto from(User user) {
+        return UserDto.builder()
+                .email(user.getEmail())
+                .firstName(user.getFirstName())
+                .lastName(user.getLastName())
+                .telephone(user.getTelephone())
                 .build();
     }
 

@@ -10,6 +10,23 @@ import java.time.ZonedDateTime;
 import java.util.List;
 
 
+@NamedEntityGraph(name = "order-user-shop",
+        attributeNodes = {
+                @NamedAttributeNode(value = "user"),
+                @NamedAttributeNode(value = "shop")
+        }
+)
+@NamedEntityGraph(
+        name = "order-product",
+        attributeNodes = {
+                @NamedAttributeNode(value = "products", subgraph = "orderProduct-product")
+        },
+        subgraphs = {
+                @NamedSubgraph(name = "orderProduct-product", attributeNodes = {
+                        @NamedAttributeNode("product")
+                })
+        }
+)
 @Data
 @Builder
 @NoArgsConstructor

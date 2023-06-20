@@ -26,6 +26,8 @@ import java.time.ZonedDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static ru.itis.master.party.dormdeals.models.Product.State.ACTIVE;
+import static ru.itis.master.party.dormdeals.models.Product.State.NOT_AVAILABLE;
 import static ru.itis.master.party.dormdeals.models.order.Order.State.*;
 
 
@@ -37,6 +39,27 @@ public class OrderServiceImpl implements OrderService {
     private final ShopRepository shopRepository;
     private final UserRepository userRepository;
     private final OrderConverter orderConverter;
+
+    private static void reserveProductAmounts(List<OrderProduct> orderProducts) {
+        orderProducts.forEach(orderProduct -> {
+            Product product = orderProduct.getProduct();
+            int required = orderProduct.getCount();
+            int available = product.getCountInStorage();
+
+            if (product.getState() == ACTIVE && required <= available) {
+                product.setCountInStorage((short) (available - required));
+                if (required == available) product.setState(NOT_AVAILABLE);
+            } else
+                throw new NotEnoughException(Product.class, product.getId(), required, available);
+        });
+    }
+
+    private static void returnReservedAmounts(Order order) {
+        order.getProducts().forEach(orderProduct -> {
+            Product product = orderProduct.getProduct();
+            product.setCountInStorage((short) (product.getCountInStorage() + orderProduct.getCount()));
+        });
+    }
 
     @Override
     public OrderDto getOrder(Long id) {
@@ -52,26 +75,12 @@ public class OrderServiceImpl implements OrderService {
                 NewOrderDto.OrderProduct::getProductId,
                 NewOrderDto.OrderProduct::getCount));
 
-        List<Product> products = productsRepository.findAllById(productIdAndCount.keySet());
-
-        // check that required counts less or equal then count in storage
-        // and minus required count
-        products.forEach(product -> {
-            int required = productIdAndCount.get(product.getId());
-            int available = product.getCountInStorage();
-
-            if (available < required) {
-                throw new NotEnoughException(Product.class, product.getId(),
-                        required, available);
-            } else {
-                product.setCountInStorage((short) (available - required));
-            }
-        });
+        List<Product> products = productsRepository.findAllProductWithShopByIdIn(productIdAndCount.keySet());
 
         // group products by shopId
-        Map<Long, List<OrderProduct>> shopIdAndOrderProduct = new HashMap<>();
+        Map<Long, List<OrderProduct>> shopIdAndOrderProducts = new HashMap<>();
         for (Product product : products) {
-            List<OrderProduct> list = shopIdAndOrderProduct.computeIfAbsent(product.getShop().getId(), k -> new ArrayList<>());
+            List<OrderProduct> list = shopIdAndOrderProducts.computeIfAbsent(product.getShop().getId(), k -> new ArrayList<>());
             list.add(OrderProduct.builder()
                     .product(product)
                     .count(productIdAndCount.get(product.getId()))
@@ -79,9 +88,11 @@ public class OrderServiceImpl implements OrderService {
                     .build());
         }
 
+        shopIdAndOrderProducts.values().forEach(OrderServiceImpl::reserveProductAmounts);
+
         // create orders for each shop
         ZonedDateTime time = ZonedDateTime.now();
-        List<Order> orders = shopIdAndOrderProduct.entrySet().stream()
+        List<Order> orders = shopIdAndOrderProducts.entrySet().stream()
                 .map(entry -> {
                     float priceSum = (float) entry.getValue().stream()
                             .mapToDouble(product -> product.getPrice() * product.getCount())
@@ -93,40 +104,54 @@ public class OrderServiceImpl implements OrderService {
                             .shop(shopRepository.getReferenceById(entry.getKey()))
                             .price(priceSum)
                             .state(Order.State.IN_PROCESSING)
-                            .products(entry.getValue())
+                            .products(new ArrayList<>())
                             .build();
                 }).toList();
 
+
+        // Save result
         orders = orderRepository.saveAll(orders);
-        orders.forEach(order -> order.getProducts().forEach(product -> product.setOrder(order)));
+
+        orders.forEach(order -> shopIdAndOrderProducts.get(order.getShop().getId())
+                .forEach(orderProduct -> {
+                    orderProduct.setOrder(order);
+                    order.getProducts().add(orderProduct);
+                }));
     }
 
     @Override
     @Transactional
     public void updateOrderState(long userId, Long orderId, Order.State state) {
-        Order order = orderRepository.findById(orderId)
+        Order order = orderRepository.findOrderWithProductsById(orderId)
                 .orElseThrow(() -> new NotFoundException(Order.class, "id", orderId));
 
         // Is costumer wants to update status?
         if (Objects.equals(userId, order.getUser().getId())) {
 
-            // requirements to cancel order
+            // cancel order if possible
             if (state == CANCELLED && order.getState().index() < CONFIRMED.index()) {
                 order.setState(CANCELLED);
+                returnReservedAmounts(order);
+                return;
             }
 
             // Is shop owner wants to update status?
         } else if (Objects.equals(userId, order.getShop().getOwner().getId())) {
 
+            // normal changing of status or recovery from CANCELLED
             if (state.index() > order.getState().index()) {
+                if (order.getState() == CANCELLED) reserveProductAmounts(order.getProducts());
                 order.setState(state);
+                return;
+
+                // cancel order if possible
             } else if (state == CANCELLED && order.getState() != DELIVERED) {
                 order.setState(CANCELLED);
+                returnReservedAmounts(order);
+                return;
             }
-
-        } else {
-            throw new NotAcceptableException("Have not permission");
         }
+        throw new NotAcceptableException("Have not permission");
     }
 
     @Override
@@ -153,13 +178,13 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public Page<OrderDto> getShopOrders(long shopId, Pageable pageable) {
-        Page<Order> orders = orderRepository.findAllByShopId(shopId, pageable);
+        Page<Order> orders = orderRepository.findAllWithUserAndShopsByShopId(shopId, pageable);
         return orderConverter.from(orders);
     }
 
     @Override
     public Page<OrderDto> getUserOrders(long userId, Pageable pageable) {
-        Page<Order> orders = orderRepository.findAllByUserId(userId, pageable);
+        Page<Order> orders = orderRepository.findAllWithUserAndShopsByUserId(userId, pageable);
         return orderConverter.from(orders);
     }
 }
