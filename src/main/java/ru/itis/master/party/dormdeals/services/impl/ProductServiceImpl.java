@@ -5,7 +5,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
-import ru.itis.master.party.dormdeals.dto.ProductDto.*;
+import ru.itis.master.party.dormdeals.dto.product.*;
 import ru.itis.master.party.dormdeals.dto.converters.ProductConverter;
 import ru.itis.master.party.dormdeals.exceptions.NotAcceptableException;
 import ru.itis.master.party.dormdeals.exceptions.NotFoundException;

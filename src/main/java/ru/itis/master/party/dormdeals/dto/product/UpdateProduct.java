@@ -1,4 +1,4 @@
-package ru.itis.master.party.dormdeals.dto.ProductDto;
+package ru.itis.master.party.dormdeals.dto.product;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Max;
@@ -12,25 +12,22 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
-@AllArgsConstructor
-@NoArgsConstructor
 @Builder
-@Schema(description = "Новый товар")
-public class NewProduct {
+@NoArgsConstructor
+@AllArgsConstructor
+
+@Schema(description = "Обновление товара")
+public class UpdateProduct {
 
     @Schema(description = "название товара", example = "Adrenaline Rush")
-    @NotBlank(message = "{constraint.field.not-blank.message}")
-    @Size(max = 50, message = "{constraint.field.max.message}")
+    @NotBlank(message = "Поле обязательно к заполнению")
+    @Size(max = 50, message = "Слишком длинное или короткое название")
     private String name;
 
     @Schema(description = "описание товара", example = "бодрит")
     @NotBlank
-    @Size(max = 1000, message = "{constraint.field.max.message}")
+    @Size(max = 1000, message = "Слишком длинное или короткое описание")
     private String description;
-
-    @Schema(description = "категория товара", example = "продукты/напитки")
-    @NotBlank(message = "{constraint.field.not-blank.message}")
-    private String category;
 
     @Schema(description = "цена товара", example = "100")
     @NotNull

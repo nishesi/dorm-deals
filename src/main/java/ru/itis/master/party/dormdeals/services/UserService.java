@@ -1,8 +1,8 @@
 package ru.itis.master.party.dormdeals.services;
 
-import ru.itis.master.party.dormdeals.dto.UserDto.NewUserDto;
-import ru.itis.master.party.dormdeals.dto.UserDto.UpdateUserDto;
-import ru.itis.master.party.dormdeals.dto.UserDto.UserDto;
+import ru.itis.master.party.dormdeals.dto.user.NewUserDto;
+import ru.itis.master.party.dormdeals.dto.user.UpdateUserDto;
+import ru.itis.master.party.dormdeals.dto.user.UserDto;
 
 public interface UserService {
     String register(NewUserDto userDto);

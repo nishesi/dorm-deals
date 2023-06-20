@@ -1,4 +1,4 @@
-package ru.itis.master.party.dormdeals.dto.orders;
+package ru.itis.master.party.dormdeals.dto.order;
 
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;

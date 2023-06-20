@@ -9,20 +9,20 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.RestController;
-import ru.itis.master.party.dormdeals.controllers.api.ShopsApi;
-import ru.itis.master.party.dormdeals.dto.ShopDto.NewShop;
-import ru.itis.master.party.dormdeals.dto.ShopDto.ShopDto;
-import ru.itis.master.party.dormdeals.dto.ShopDto.ShopsPage;
-import ru.itis.master.party.dormdeals.dto.ShopDto.UpdateShop;
+import ru.itis.master.party.dormdeals.controllers.api.ShopApi;
+import ru.itis.master.party.dormdeals.dto.shop.NewShop;
+import ru.itis.master.party.dormdeals.dto.shop.ShopDto;
+import ru.itis.master.party.dormdeals.dto.shop.ShopsPage;
+import ru.itis.master.party.dormdeals.dto.shop.UpdateShop;
 import ru.itis.master.party.dormdeals.dto.ShopWithProducts;
-import ru.itis.master.party.dormdeals.dto.orders.OrderDto;
+import ru.itis.master.party.dormdeals.dto.order.OrderDto;
 import ru.itis.master.party.dormdeals.security.details.UserDetailsImpl;
 import ru.itis.master.party.dormdeals.services.OrderService;
 import ru.itis.master.party.dormdeals.services.ShopService;
 
 @RestController
 @RequiredArgsConstructor
-public class ShopsController implements ShopsApi {
+public class ShopController implements ShopApi {
 
     private final ShopService shopService;
     private final OrderService orderService;

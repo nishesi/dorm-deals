@@ -1,4 +1,4 @@
-package ru.itis.master.party.dormdeals.dto.ShopDto;
+package ru.itis.master.party.dormdeals.dto.shop;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
@@ -6,7 +6,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import ru.itis.master.party.dormdeals.dto.DormitoryDto;
-import ru.itis.master.party.dormdeals.dto.UserDto.UserDtoForShop;
+import ru.itis.master.party.dormdeals.dto.user.UserDtoForShop;
 
 import java.util.List;
 

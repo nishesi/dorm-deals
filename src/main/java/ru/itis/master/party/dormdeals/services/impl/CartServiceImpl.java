@@ -3,7 +3,7 @@ package ru.itis.master.party.dormdeals.services.impl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.itis.master.party.dormdeals.dto.CartCookie;
-import ru.itis.master.party.dormdeals.dto.ProductDto.CartProductDto;
+import ru.itis.master.party.dormdeals.dto.product.CartProductDto;
 import ru.itis.master.party.dormdeals.dto.converters.CartProductConverter;
 import ru.itis.master.party.dormdeals.exceptions.NotEnoughException;
 import ru.itis.master.party.dormdeals.models.Cart;

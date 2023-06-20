@@ -12,12 +12,12 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.itis.master.party.dormdeals.dto.ExceptionDto;
-import ru.itis.master.party.dormdeals.dto.ShopDto.NewShop;
-import ru.itis.master.party.dormdeals.dto.ShopDto.ShopDto;
-import ru.itis.master.party.dormdeals.dto.ShopDto.ShopsPage;
-import ru.itis.master.party.dormdeals.dto.ShopDto.UpdateShop;
+import ru.itis.master.party.dormdeals.dto.shop.NewShop;
+import ru.itis.master.party.dormdeals.dto.shop.ShopDto;
+import ru.itis.master.party.dormdeals.dto.shop.ShopsPage;
+import ru.itis.master.party.dormdeals.dto.shop.UpdateShop;
 import ru.itis.master.party.dormdeals.dto.ShopWithProducts;
-import ru.itis.master.party.dormdeals.dto.orders.OrderDto;
+import ru.itis.master.party.dormdeals.dto.order.OrderDto;
 import ru.itis.master.party.dormdeals.security.details.UserDetailsImpl;
 import ru.itis.master.party.dormdeals.validation.responses.ValidationErrorsDto;
 
@@ -25,7 +25,7 @@ import ru.itis.master.party.dormdeals.validation.responses.ValidationErrorsDto;
         @Tag(name = "Shops")
 })
 @RequestMapping("/shops")
-public interface ShopsApi {
+public interface ShopApi {
 
     @Operation(summary = "Получение списка магазинов")
     @ApiResponses(value = {

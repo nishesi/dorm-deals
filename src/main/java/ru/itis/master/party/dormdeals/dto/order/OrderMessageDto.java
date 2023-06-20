@@ -1,4 +1,4 @@
-package ru.itis.master.party.dormdeals.dto.orders;
+package ru.itis.master.party.dormdeals.dto.order;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

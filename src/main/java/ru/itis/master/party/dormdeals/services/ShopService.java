@@ -1,9 +1,9 @@
 package ru.itis.master.party.dormdeals.services;
 
-import ru.itis.master.party.dormdeals.dto.ShopDto.NewShop;
-import ru.itis.master.party.dormdeals.dto.ShopDto.ShopDto;
-import ru.itis.master.party.dormdeals.dto.ShopDto.ShopsPage;
-import ru.itis.master.party.dormdeals.dto.ShopDto.UpdateShop;
+import ru.itis.master.party.dormdeals.dto.shop.NewShop;
+import ru.itis.master.party.dormdeals.dto.shop.ShopDto;
+import ru.itis.master.party.dormdeals.dto.shop.ShopsPage;
+import ru.itis.master.party.dormdeals.dto.shop.UpdateShop;
 import ru.itis.master.party.dormdeals.dto.ShopWithProducts;
 
 public interface ShopService {

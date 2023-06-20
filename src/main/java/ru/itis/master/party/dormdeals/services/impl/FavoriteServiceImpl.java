@@ -3,7 +3,7 @@ package ru.itis.master.party.dormdeals.services.impl;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import ru.itis.master.party.dormdeals.dto.ProductDto.ProductDto;
+import ru.itis.master.party.dormdeals.dto.product.ProductDto;
 import ru.itis.master.party.dormdeals.dto.converters.ProductConverter;
 import ru.itis.master.party.dormdeals.exceptions.NotAcceptableException;
 import ru.itis.master.party.dormdeals.exceptions.NotFoundException;

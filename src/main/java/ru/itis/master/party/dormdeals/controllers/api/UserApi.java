@@ -13,10 +13,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.itis.master.party.dormdeals.dto.ExceptionDto;
 import ru.itis.master.party.dormdeals.dto.MessageDto;
-import ru.itis.master.party.dormdeals.dto.UserDto.NewUserDto;
-import ru.itis.master.party.dormdeals.dto.UserDto.UpdateUserDto;
-import ru.itis.master.party.dormdeals.dto.UserDto.UserDto;
-import ru.itis.master.party.dormdeals.dto.orders.OrderDto;
+import ru.itis.master.party.dormdeals.dto.user.NewUserDto;
+import ru.itis.master.party.dormdeals.dto.user.UpdateUserDto;
+import ru.itis.master.party.dormdeals.dto.user.UserDto;
+import ru.itis.master.party.dormdeals.dto.order.OrderDto;
 import ru.itis.master.party.dormdeals.security.details.UserDetailsImpl;
 import ru.itis.master.party.dormdeals.validation.responses.ValidationErrorsDto;
 

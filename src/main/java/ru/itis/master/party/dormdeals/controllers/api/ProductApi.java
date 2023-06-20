@@ -12,10 +12,10 @@ import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.itis.master.party.dormdeals.dto.*;
-import ru.itis.master.party.dormdeals.dto.ProductDto.NewProduct;
-import ru.itis.master.party.dormdeals.dto.ProductDto.ProductDto;
-import ru.itis.master.party.dormdeals.dto.ProductDto.ProductsPage;
-import ru.itis.master.party.dormdeals.dto.ProductDto.UpdateProduct;
+import ru.itis.master.party.dormdeals.dto.product.NewProduct;
+import ru.itis.master.party.dormdeals.dto.product.ProductDto;
+import ru.itis.master.party.dormdeals.dto.product.ProductsPage;
+import ru.itis.master.party.dormdeals.dto.product.UpdateProduct;
 import ru.itis.master.party.dormdeals.security.details.UserDetailsImpl;
 import ru.itis.master.party.dormdeals.validation.responses.ValidationErrorsDto;
 

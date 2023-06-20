@@ -1,4 +1,4 @@
-package ru.itis.master.party.dormdeals.dto.UserDto;
+package ru.itis.master.party.dormdeals.dto.user;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;

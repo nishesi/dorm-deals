@@ -8,10 +8,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.RestController;
 import ru.itis.master.party.dormdeals.controllers.api.ProductApi;
-import ru.itis.master.party.dormdeals.dto.ProductDto.NewProduct;
-import ru.itis.master.party.dormdeals.dto.ProductDto.ProductDto;
-import ru.itis.master.party.dormdeals.dto.ProductDto.ProductsPage;
-import ru.itis.master.party.dormdeals.dto.ProductDto.UpdateProduct;
+import ru.itis.master.party.dormdeals.dto.product.NewProduct;
+import ru.itis.master.party.dormdeals.dto.product.ProductDto;
+import ru.itis.master.party.dormdeals.dto.product.ProductsPage;
+import ru.itis.master.party.dormdeals.dto.product.UpdateProduct;
 import ru.itis.master.party.dormdeals.security.details.UserDetailsImpl;
 import ru.itis.master.party.dormdeals.services.ProductService;
 

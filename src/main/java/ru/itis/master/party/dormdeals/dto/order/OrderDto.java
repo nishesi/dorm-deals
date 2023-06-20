@@ -1,4 +1,4 @@
-package ru.itis.master.party.dormdeals.dto.orders;
+package ru.itis.master.party.dormdeals.dto.order;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
@@ -6,8 +6,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
-import ru.itis.master.party.dormdeals.dto.ShopDto.ShopDto;
-import ru.itis.master.party.dormdeals.dto.UserDto.UserDto;
+import ru.itis.master.party.dormdeals.dto.shop.ShopDto;
+import ru.itis.master.party.dormdeals.dto.user.UserDto;
 
 import java.time.ZonedDateTime;
 import java.util.List;

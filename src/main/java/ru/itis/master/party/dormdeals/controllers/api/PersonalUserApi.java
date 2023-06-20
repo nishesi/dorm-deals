@@ -11,14 +11,14 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import ru.itis.master.party.dormdeals.dto.CartCookie;
 import ru.itis.master.party.dormdeals.dto.ExceptionDto;
-import ru.itis.master.party.dormdeals.dto.ProductDto.CartProductDto;
-import ru.itis.master.party.dormdeals.dto.ProductDto.ProductDto;
+import ru.itis.master.party.dormdeals.dto.product.CartProductDto;
+import ru.itis.master.party.dormdeals.dto.product.ProductDto;
 import ru.itis.master.party.dormdeals.security.details.UserDetailsImpl;
 
 import java.util.List;
 
 @RequestMapping("/my")
-public interface PersonalUserControllerApi {
+public interface PersonalUserApi {
 
     @Operation(summary = "Добавление товара в избранное")
     @ApiResponses(value = {

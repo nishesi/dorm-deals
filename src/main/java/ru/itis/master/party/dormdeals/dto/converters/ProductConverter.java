@@ -2,7 +2,7 @@ package ru.itis.master.party.dormdeals.dto.converters;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
-import ru.itis.master.party.dormdeals.dto.ProductDto.ProductDto;
+import ru.itis.master.party.dormdeals.dto.product.ProductDto;
 import ru.itis.master.party.dormdeals.models.File;
 import ru.itis.master.party.dormdeals.models.Product;
 import ru.itis.master.party.dormdeals.utils.ResourceUrlResolver;

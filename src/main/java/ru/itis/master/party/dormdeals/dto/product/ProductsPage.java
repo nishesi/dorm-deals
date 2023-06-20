@@ -1,4 +1,4 @@
-package ru.itis.master.party.dormdeals.dto.ProductDto;
+package ru.itis.master.party.dormdeals.dto.product;
 
 
 import io.swagger.v3.oas.annotations.media.Schema;

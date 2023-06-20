@@ -1,6 +1,6 @@
 package ru.itis.master.party.dormdeals.services;
 
-import ru.itis.master.party.dormdeals.dto.ProductDto.*;
+import ru.itis.master.party.dormdeals.dto.product.*;
 
 import java.util.List;
 

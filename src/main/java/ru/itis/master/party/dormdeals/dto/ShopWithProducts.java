@@ -4,8 +4,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import ru.itis.master.party.dormdeals.dto.ProductDto.ProductsPage;
-import ru.itis.master.party.dormdeals.dto.ShopDto.ShopDto;
+import ru.itis.master.party.dormdeals.dto.product.ProductsPage;
+import ru.itis.master.party.dormdeals.dto.shop.ShopDto;
 
 @Builder
 @Data
