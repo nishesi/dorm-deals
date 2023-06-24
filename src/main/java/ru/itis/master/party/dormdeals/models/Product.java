@@ -14,10 +14,11 @@ import java.util.List;
         }
 )
 @Entity
+@Table(name = "products")
 @Data
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
 public class Product {
 
     @Id
@@ -44,6 +45,7 @@ public class Product {
 
     @ElementCollection(fetch = FetchType.EAGER)
     @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+    @JoinTable(name = "products_resources")
     private List<String> resources = new ArrayList<>();
 
     @ManyToMany(fetch = FetchType.EAGER)

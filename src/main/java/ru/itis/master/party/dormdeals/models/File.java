@@ -7,21 +7,11 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@AllArgsConstructor
-@NoArgsConstructor
 @Data
 @Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class File {
-    public enum FileType {
-        IMAGE,
-        VIDEO
-    }
-    public enum FileDtoType {
-        PRODUCT,
-        USER,
-        SHOP
-    }
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -35,4 +25,15 @@ public class File {
 
     @Enumerated(EnumType.STRING)
     private FileDtoType fileDtoType;
+
+    public enum FileType {
+        IMAGE,
+        VIDEO
+    }
+
+    public enum FileDtoType {
+        PRODUCT,
+        USER,
+        SHOP
+    }
 }

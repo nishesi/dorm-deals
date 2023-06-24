@@ -27,12 +27,12 @@ import java.util.List;
                 })
         }
 )
+@Entity
+@Table(name = "orders")
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "orders")
-@Entity
 public class Order {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

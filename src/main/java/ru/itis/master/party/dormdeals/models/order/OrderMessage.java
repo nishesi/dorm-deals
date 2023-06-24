@@ -9,12 +9,12 @@ import ru.itis.master.party.dormdeals.models.User;
 
 import java.time.ZonedDateTime;
 
+@Entity
+@Table(name = "orders_messages")
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Entity
-@Table(name = "orders_messages")
 public class OrderMessage {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

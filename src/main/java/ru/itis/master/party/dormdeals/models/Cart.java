@@ -12,8 +12,9 @@ import java.util.List;
 
 
 @Entity
-@Builder
+@Table(name = "carts")
 @Data
+@Builder
 @AllArgsConstructor
 @NoArgsConstructor
 public class Cart {
