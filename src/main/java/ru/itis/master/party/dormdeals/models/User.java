@@ -55,6 +55,7 @@ public class User {
     public enum State {
         NOT_CONFIRMED,
         ACTIVE,
+        BANNED,
         DELETED
     }
 }

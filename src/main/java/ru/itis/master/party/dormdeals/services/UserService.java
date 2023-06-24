@@ -13,5 +13,7 @@ public interface UserService {
 
     void deleteUser(long userId);
 
+    void activateAccount(String hashEmail);
+
     void deleteUnconfirmedUsers();
 }
