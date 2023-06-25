@@ -9,12 +9,15 @@ import ru.itis.master.party.dormdeals.models.order.Order;
 import java.util.Optional;
 
 public interface OrderRepository extends JpaRepository<Order, Long> {
-    @EntityGraph(value = "order-user-shop", type = EntityGraph.EntityGraphType.FETCH)
-    Page<Order> findAllWithUserAndShopsByCustomerId(long userId, Pageable pageable);
+    @EntityGraph(value = "order-customer-shop", type = EntityGraph.EntityGraphType.FETCH)
+    Page<Order> findAllWithCustomerAndShopByCustomerId(long userId, Pageable pageable);
 
-    @EntityGraph(value = "order-user-shop", type = EntityGraph.EntityGraphType.FETCH)
-    Page<Order> findAllWithUserAndShopsByShopId(long shopId, Pageable pageable);
+    @EntityGraph(value = "order-customer-shop", type = EntityGraph.EntityGraphType.FETCH)
+    Page<Order> findAllWithUserAndShopByShopId(long shopId, Pageable pageable);
 
     @EntityGraph(value = "order-product", type = EntityGraph.EntityGraphType.FETCH)
-    Optional<Order> findOrderWithProductsById(Long orderId);
+    Optional<Order> findWithProductsById(Long orderId);
+
+    @EntityGraph(value = "order-customer-shop", type = EntityGraph.EntityGraphType.FETCH)
+    Optional<Order> findWithCustomerAndShopById(long orderId);
 }

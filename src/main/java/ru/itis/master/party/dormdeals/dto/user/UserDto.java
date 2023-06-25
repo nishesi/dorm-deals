@@ -13,6 +13,8 @@ import lombok.NoArgsConstructor;
 @Schema(description = "user")
 public class UserDto {
 
+    private Long id;
+
     @Schema(description = "почта пользователя", example = "email@gmail.com")
     private String email;
 

@@ -14,6 +14,7 @@ public class UserConverter {
     public UserDto from(User user) {
         String imageUrl = resolver.resolveUrl(user.getId(), File.FileDtoType.USER, File.FileType.IMAGE);
         return UserDto.builder()
+                .id(user.getId())
                 .email(user.getEmail())
                 .firstName(user.getFirstName())
                 .lastName(user.getLastName())

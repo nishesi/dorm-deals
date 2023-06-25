@@ -43,12 +43,12 @@ public class Product {
     @JoinColumn(name = "shop_id")
     private Shop shop;
 
-    @ElementCollection(fetch = FetchType.EAGER)
+    @ElementCollection
     @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     @JoinTable(name = "products_resources")
     private List<String> resources = new ArrayList<>();
 
-    @ManyToMany(fetch = FetchType.EAGER)
+    @ManyToMany
     @JoinTable(name = "favorites",
             joinColumns = @JoinColumn(name = "product_id"),
             inverseJoinColumns = @JoinColumn(name = "user_id"))

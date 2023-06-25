@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.format.annotation.DateTimeFormat;
 import ru.itis.master.party.dormdeals.dto.shop.ShopDto;
 import ru.itis.master.party.dormdeals.dto.user.UserDto;
@@ -32,7 +33,7 @@ public class OrderDto {
     private List<OrderProductDto> orderProducts;
 
     @Schema(description = "история переписки закзачика и продавца")
-    private List<OrderMessageDto> orderMessages;
+    private Page<OrderMessageDto> orderMessages;
 
     @Schema(description = "Время заказа", example = "16-03-2023 21:40")
     @DateTimeFormat(pattern = "dd-MM-yyyy hh-mm-ss XX")

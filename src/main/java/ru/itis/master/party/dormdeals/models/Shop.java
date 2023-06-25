@@ -28,12 +28,12 @@ public class Shop {
     @ManyToMany
     private List<Dormitory> dormitories;
 
-    @Column(columnDefinition = "numeric(2, 1)")
+    @Column(columnDefinition = "numeric(2, 1)", nullable = false)
     private double rating;
 
     private String resource;
 
-    @OneToOne
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "owner_id")
     private User owner;
 }

@@ -3,7 +3,9 @@ package ru.itis.master.party.dormdeals.services.impl;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import ru.itis.master.party.dormdeals.dto.converters.OrderConverter;
 import ru.itis.master.party.dormdeals.dto.order.NewOrderDto;
@@ -17,10 +19,7 @@ import ru.itis.master.party.dormdeals.models.Shop;
 import ru.itis.master.party.dormdeals.models.order.Order;
 import ru.itis.master.party.dormdeals.models.order.OrderMessage;
 import ru.itis.master.party.dormdeals.models.order.OrderProduct;
-import ru.itis.master.party.dormdeals.repositories.OrderRepository;
-import ru.itis.master.party.dormdeals.repositories.ProductRepository;
-import ru.itis.master.party.dormdeals.repositories.ShopRepository;
-import ru.itis.master.party.dormdeals.repositories.UserRepository;
+import ru.itis.master.party.dormdeals.repositories.*;
 import ru.itis.master.party.dormdeals.services.OrderService;
 
 import java.time.ZonedDateTime;
@@ -35,6 +34,7 @@ import static ru.itis.master.party.dormdeals.models.order.Order.State.*;
 @Service
 @RequiredArgsConstructor
 public class OrderServiceImpl implements OrderService {
+    private final OrderMessageRepository orderMessageRepository;
     private final ProductRepository productRepository;
     private final OrderRepository orderRepository;
     private final ShopRepository shopRepository;
@@ -63,10 +63,14 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
+    @Transactional
     public OrderDto getOrder(Long id) {
-        Order order = orderRepository.findById(id)
+        Order order = orderRepository.findWithCustomerAndShopById(id)
                 .orElseThrow(() -> new NotFoundException(Order.class, "id", id));
-        return orderConverter.from(order);
+
+        Pageable pageable = PageRequest.of(0, 20, Sort.by("addedDate"));
+        Page<OrderMessage> orderMessages = orderMessageRepository.findAllByOrderId(id, pageable);
+        return orderConverter.from(order, orderMessages);
     }
 
     @Override
@@ -123,7 +127,7 @@ public class OrderServiceImpl implements OrderService {
     @Override
     @Transactional
     public void updateOrderState(long userId, Long orderId, Order.State state) {
-        Order order = orderRepository.findOrderWithProductsById(orderId)
+        Order order = orderRepository.findWithProductsById(orderId)
                 .orElseThrow(() -> new NotFoundException(Order.class, "id", orderId));
 
         // Is costumer wants to update status?
@@ -184,13 +188,13 @@ public class OrderServiceImpl implements OrderService {
         if (shop.getOwner().getId() != shopOwnerId)
             throw new NotAcceptableException("have not permission");
 
-        Page<Order> orders = orderRepository.findAllWithUserAndShopsByShopId(shopId, pageable);
+        Page<Order> orders = orderRepository.findAllWithUserAndShopByShopId(shopId, pageable);
         return orderConverter.from(orders);
     }
 
     @Override
     public Page<OrderDto> getUserOrders(long userId, Pageable pageable) {
-        Page<Order> orders = orderRepository.findAllWithUserAndShopsByCustomerId(userId, pageable);
+        Page<Order> orders = orderRepository.findAllWithCustomerAndShopByCustomerId(userId, pageable);
         return orderConverter.from(orders);
     }
 }

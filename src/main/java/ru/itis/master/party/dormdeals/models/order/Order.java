@@ -9,8 +9,7 @@ import ru.itis.master.party.dormdeals.models.User;
 import java.time.ZonedDateTime;
 import java.util.List;
 
-
-@NamedEntityGraph(name = "order-user-shop",
+@NamedEntityGraph(name = "order-customer-shop",
         attributeNodes = {
                 @NamedAttributeNode(value = "customer"),
                 @NamedAttributeNode(value = "shop")
