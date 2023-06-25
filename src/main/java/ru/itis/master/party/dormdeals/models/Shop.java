@@ -1,10 +1,7 @@
 package ru.itis.master.party.dormdeals.models;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.util.List;
 
@@ -26,6 +23,7 @@ public class Shop {
     private String description;
 
     @ManyToMany
+    @EqualsAndHashCode.Exclude
     private List<Dormitory> dormitories;
 
     @Column(columnDefinition = "numeric(2, 1)", nullable = false)
@@ -35,5 +33,6 @@ public class Shop {
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "owner_id")
+    @EqualsAndHashCode.Exclude
     private User owner;
 }

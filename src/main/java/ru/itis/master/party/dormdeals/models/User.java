@@ -50,6 +50,7 @@ public class User {
             inverseJoinColumns = @JoinColumn(name = "product_id"))
     @JsonIgnore
     @ToString.Exclude
+    @EqualsAndHashCode.Exclude
     private List<Product> favorites = new ArrayList<>();
 
     public enum State {

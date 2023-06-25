@@ -2,10 +2,7 @@ package ru.itis.master.party.dormdeals.models;
 
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,6 +21,7 @@ public class Cart {
 
     @ManyToOne
     @JoinColumn(name = "user_id")
+    @EqualsAndHashCode.Exclude
     private User user;
 
     @OneToMany(
@@ -32,6 +30,7 @@ public class Cart {
             orphanRemoval = true,
             fetch = FetchType.EAGER
     )
+    @EqualsAndHashCode.Exclude
     private List<CartProduct> productsInCart = new ArrayList<>();
 
 

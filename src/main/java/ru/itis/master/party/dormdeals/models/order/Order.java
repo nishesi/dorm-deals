@@ -39,6 +39,7 @@ public class Order {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "customer_id")
+    @EqualsAndHashCode.Exclude
     private User customer;
 
     @DateTimeFormat(pattern = "dd-MM-yyyy hh-mm-ss XX")
@@ -47,6 +48,7 @@ public class Order {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "shop_id")
+    @EqualsAndHashCode.Exclude
     private Shop shop;
 
     @Column
@@ -56,9 +58,11 @@ public class Order {
     private State state;
 
     @OneToMany(mappedBy = "order", cascade = {CascadeType.ALL})
+    @EqualsAndHashCode.Exclude
     private List<OrderProduct> products;
 
     @OneToMany(mappedBy = "order", cascade = {CascadeType.ALL})
+    @EqualsAndHashCode.Exclude
     private List<OrderMessage> messages;
 
     @RequiredArgsConstructor
