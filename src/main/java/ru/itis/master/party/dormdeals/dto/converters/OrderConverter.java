@@ -49,6 +49,25 @@ public class OrderConverter {
         }).toList();
     }
 
+    public Page<OrderDto> fromForCustomer(Page<Order> orders) {
+        return orders.map(order -> OrderDto.builder()
+                .id(order.getId())
+                .shop(from(order.getShop()))
+                .addedDate(order.getAddedDate())
+                .price(order.getPrice())
+                .build());
+    }
+
+    public Page<OrderDto> fromForSeller(Page<Order> orders) {
+        return orders.map(order -> OrderDto.builder()
+                .id(order.getId())
+                .customer(from(order.getCustomer()))
+                .addedDate(order.getAddedDate())
+                .price(order.getPrice())
+                .build());
+    }
+
+
     public Page<OrderDto> from(Page<Order> orders) {
         return orders.map(order -> OrderDto.builder()
                 .id(order.getId())

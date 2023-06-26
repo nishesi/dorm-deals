@@ -162,7 +162,7 @@ public class OrderServiceImpl implements OrderService {
     @Override
     @Transactional
     public void addOrderMessage(long userId, Long orderId, NewOrderMessageDto orderMessage) {
-        Order order = orderRepository.findById(orderId)
+        Order order = orderRepository.findWithShopById(orderId)
                 .orElseThrow(() -> new NotFoundException(Order.class, "id", orderId));
 
         // throw if message adder not consumer and not seller
@@ -188,13 +188,13 @@ public class OrderServiceImpl implements OrderService {
         if (shop.getOwner().getId() != shopOwnerId)
             throw new NotAcceptableException("have not permission");
 
-        Page<Order> orders = orderRepository.findAllWithUserAndShopByShopId(shopId, pageable);
-        return orderConverter.from(orders);
+        Page<Order> orders = orderRepository.findAllWithCustomerByShopId(shopId, pageable);
+        return orderConverter.fromForSeller(orders);
     }
 
     @Override
     public Page<OrderDto> getUserOrders(long userId, Pageable pageable) {
-        Page<Order> orders = orderRepository.findAllWithCustomerAndShopByCustomerId(userId, pageable);
-        return orderConverter.from(orders);
+        Page<Order> orders = orderRepository.findAllWithShopByCustomerId(userId, pageable);
+        return orderConverter.fromForCustomer(orders);
     }
 }
