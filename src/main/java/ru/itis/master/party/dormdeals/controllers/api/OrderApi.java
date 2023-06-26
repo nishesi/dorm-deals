@@ -82,6 +82,21 @@ public interface OrderApi {
             @Parameter(hidden = true)
             UserDetailsImpl userDetails);
 
+    @Operation(summary = "Добавление сообщения к заказу")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "сообщение добавлено"),
+            @ApiResponse(responseCode = "406", description = "ошибка выполнения",
+                    content = {
+                            @Content(mediaType = "application/json",
+                                    schema = @Schema(implementation = ExceptionDto.class))
+                    }),
+            @ApiResponse(responseCode = "404", description = "заказ не найден",
+                    content = {
+                            @Content(mediaType = "application/json",
+                                    schema = @Schema(implementation = ExceptionDto.class))
+                    }
+            ),
+    })
     @PostMapping("/{order-id}/message")
     ResponseEntity<?> addMessage(
             @PathVariable("order-id")

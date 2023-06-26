@@ -70,6 +70,8 @@ public class UserServiceImpl implements UserService {
         return userConverter.from(user);
     }
 
+    @Override
+    @Transactional
     public UserDto updateUser(long userId, UpdateUserDto userDto) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException(User.class, "id", userId));
@@ -79,20 +81,20 @@ public class UserServiceImpl implements UserService {
         user.setLastName(userDto.getLastName());
         user.setTelephone(userDto.getTelephone());
 
-        user = userRepository.save(user);
         return userConverter.from(user);
     }
 
     @Override
+    @Transactional
     public void deleteUser(long userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException(User.class, "id", userId));
 
         user.setState(DELETED);
-        userRepository.save(user);
     }
 
     @Override
+    @Transactional
     public void activateAccount(String hashForConfirm) {
         User user = userRepository.getByHashForConfirm(hashForConfirm)
                 .orElseThrow(() -> new NotFoundException(User.class, "confirm_code", hashForConfirm));
@@ -104,14 +106,13 @@ public class UserServiceImpl implements UserService {
 
         user.setState(ACTIVE);
 
-        userRepository.save(user);
         cartRepository.save(Cart.builder()
                 .user(user)
                 .build());
     }
 
-    @Transactional
     @Override
+    @Transactional
     public void deleteUnconfirmedUsers() {
         userRepository.deleteByStateEquals(NOT_CONFIRMED);
     }

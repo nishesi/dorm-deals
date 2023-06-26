@@ -2,7 +2,6 @@ package ru.itis.master.party.dormdeals.repositories;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import ru.itis.master.party.dormdeals.models.Product;
@@ -20,6 +19,5 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
     @Query("select p.resources from Product p where p.id=:id")
     List<String> getResourceById(Long id);
 
-    @EntityGraph(value = "product-shop", type = EntityGraph.EntityGraphType.FETCH)
-    List<Product> findAllProductWithShopByIdIn(Collection<Long> ids);
+    List<Product> findAllByIdIn(Collection<Long> ids);
 }

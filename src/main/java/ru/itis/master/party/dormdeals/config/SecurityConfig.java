@@ -45,36 +45,37 @@ public class SecurityConfig {
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
                 .authorizeHttpRequests(requests -> requests
-                                .shouldFilterAllDispatcherTypes(false)
+                        .shouldFilterAllDispatcherTypes(false)
 
-                                // User
+                        // User
 
-                                .requestMatchers("/auth/token", "/email/confirm/**").permitAll()
-                                .requestMatchers(HttpMethod.POST, "/logout").permitAll()
-                                .requestMatchers(HttpMethod.POST, "/user").permitAll()
-                                .requestMatchers("/my/favorites/**").hasAnyRole("USER", "SELLER")
-                                .requestMatchers("/user/**").hasRole("USER")
-                                .requestMatchers(HttpMethod.GET, "/my/cart").permitAll()
-                                .requestMatchers("/my/cart/**").hasRole("USER")
+                        .requestMatchers("/auth/token", "/email/confirm/**").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/logout").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/user").permitAll()
+                        .requestMatchers("/my/favorites/**").hasAnyRole("USER", "SELLER")
+                        .requestMatchers("/user/**").hasRole("USER")
+                        .requestMatchers(HttpMethod.GET, "/my/cart").permitAll()
+                        .requestMatchers("/my/cart/**").hasRole("USER")
 
-                                // business logic
+                        // business logic
 
-//                        .requestMatchers(HttpMethod.GET, "/products/**", "/shops/**").permitAll()
-                                .requestMatchers("/products/**", "/shops/**").hasRole("SELLER")
-                                .requestMatchers(HttpMethod.GET,"/resource/**").permitAll()
-                                .requestMatchers(HttpMethod.POST, "/resource/**").hasRole("SELLER")
+                        .requestMatchers("/shops/*/orders").hasRole("SELLER")
+                        .requestMatchers(HttpMethod.GET, "/products/**", "/shops/**").permitAll()
+                        .requestMatchers("/products/**", "/shops/**").hasRole("SELLER")
+                        .requestMatchers(HttpMethod.GET, "/resource/**").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/resource/**").hasRole("SELLER")
 
-                                // base pages
+                        // base pages
 
-                                .requestMatchers("/", "/home").permitAll()
+                        .requestMatchers("/", "/home").permitAll()
 
-                                // orders
+                        // orders
 
-                                .requestMatchers("/orders/**").authenticated()
+                        .requestMatchers("/orders/**").authenticated()
 
-                                // development
+                        // development
 
-                                .requestMatchers("/swagger-ui.html", "/swagger-ui/**", "/v3/**").permitAll()
+                        .requestMatchers("/swagger-ui.html", "/swagger-ui/**", "/v3/**").permitAll()
                 )
                 .exceptionHandling(configurer -> configurer
                         .authenticationEntryPoint(new Http403ForbiddenEntryPoint())

@@ -1,10 +1,7 @@
 package ru.itis.master.party.dormdeals.models.order;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import ru.itis.master.party.dormdeals.models.Product;
 
 @Entity
@@ -20,10 +17,13 @@ public class OrderProduct {
 
     @ManyToOne
     @JoinColumn(name = "order_id", nullable = false)
+    @EqualsAndHashCode.Exclude
+    @ToString.Exclude
     private Order order;
 
     @ManyToOne
     @JoinColumn(name = "product_id", nullable = false)
+    @EqualsAndHashCode.Exclude
     private Product product;
 
     @JoinColumn(nullable = false)

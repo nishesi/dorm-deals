@@ -50,9 +50,11 @@ public class ShopServiceImpl implements ShopService {
     private int defaultPageSize;
 
     @Override
+    @Transactional
     public ShopDto getShop(Long shopId) {
-        return shopConverter.from(shopRepository.findById(shopId)
-                .orElseThrow(() -> new NotFoundException(Shop.class, "id", shopId)));
+        Shop shop = shopRepository.findById(shopId)
+                .orElseThrow(() -> new NotFoundException(Shop.class, "id", shopId));
+        return shopConverter.from(shop);
     }
 
     @Override

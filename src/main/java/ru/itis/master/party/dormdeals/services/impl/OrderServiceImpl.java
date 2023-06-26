@@ -3,7 +3,9 @@ package ru.itis.master.party.dormdeals.services.impl;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import ru.itis.master.party.dormdeals.dto.converters.OrderConverter;
 import ru.itis.master.party.dormdeals.dto.order.NewOrderDto;
@@ -17,10 +19,7 @@ import ru.itis.master.party.dormdeals.models.Shop;
 import ru.itis.master.party.dormdeals.models.order.Order;
 import ru.itis.master.party.dormdeals.models.order.OrderMessage;
 import ru.itis.master.party.dormdeals.models.order.OrderProduct;
-import ru.itis.master.party.dormdeals.repositories.OrderRepository;
-import ru.itis.master.party.dormdeals.repositories.ProductRepository;
-import ru.itis.master.party.dormdeals.repositories.ShopRepository;
-import ru.itis.master.party.dormdeals.repositories.UserRepository;
+import ru.itis.master.party.dormdeals.repositories.*;
 import ru.itis.master.party.dormdeals.services.OrderService;
 
 import java.time.ZonedDateTime;
@@ -35,6 +34,7 @@ import static ru.itis.master.party.dormdeals.models.order.Order.State.*;
 @Service
 @RequiredArgsConstructor
 public class OrderServiceImpl implements OrderService {
+    private final OrderMessageRepository orderMessageRepository;
     private final ProductRepository productRepository;
     private final OrderRepository orderRepository;
     private final ShopRepository shopRepository;
@@ -46,7 +46,7 @@ public class OrderServiceImpl implements OrderService {
             Product product = orderProduct.getProduct();
             int required = orderProduct.getCount();
             int available = product.getCountInStorage();
-
+            //TODO мейби выкидывать другое исключение если стейт != ACTIVE
             if (product.getState() == ACTIVE && required <= available) {
                 product.setCountInStorage((short) (available - required));
                 if (required == available) product.setState(NOT_AVAILABLE);
@@ -55,18 +55,22 @@ public class OrderServiceImpl implements OrderService {
         });
     }
 
-    private static void returnReservedAmounts(Order order) {
-        order.getProducts().forEach(orderProduct -> {
+    private static void returnReservedAmounts(List<OrderProduct> orderProducts) {
+        orderProducts.forEach(orderProduct -> {
             Product product = orderProduct.getProduct();
             product.setCountInStorage((short) (product.getCountInStorage() + orderProduct.getCount()));
         });
     }
 
     @Override
+    @Transactional
     public OrderDto getOrder(Long id) {
-        Order order = orderRepository.findById(id)
+        Order order = orderRepository.findWithCustomerAndShopById(id)
                 .orElseThrow(() -> new NotFoundException(Order.class, "id", id));
-        return orderConverter.from(order);
+
+        Pageable pageable = PageRequest.of(0, 20, Sort.by("addedDate"));
+        Page<OrderMessage> orderMessages = orderMessageRepository.findAllByOrderId(id, pageable);
+        return orderConverter.from(order, orderMessages);
     }
 
     @Override
@@ -76,7 +80,7 @@ public class OrderServiceImpl implements OrderService {
                 NewOrderDto.OrderProduct::getProductId,
                 NewOrderDto.OrderProduct::getCount));
 
-        List<Product> products = productRepository.findAllProductWithShopByIdIn(productIdAndCount.keySet());
+        List<Product> products = productRepository.findAllByIdIn(productIdAndCount.keySet());
 
         // group products by shopId
         Map<Long, List<OrderProduct>> shopIdAndOrderProducts = new HashMap<>();
@@ -123,7 +127,7 @@ public class OrderServiceImpl implements OrderService {
     @Override
     @Transactional
     public void updateOrderState(long userId, Long orderId, Order.State state) {
-        Order order = orderRepository.findOrderWithProductsById(orderId)
+        Order order = orderRepository.findWithShopById(orderId)
                 .orElseThrow(() -> new NotFoundException(Order.class, "id", orderId));
 
         // Is costumer wants to update status?
@@ -132,7 +136,7 @@ public class OrderServiceImpl implements OrderService {
             // cancel order if possible
             if (state == CANCELLED && order.getState().index() < CONFIRMED.index()) {
                 order.setState(CANCELLED);
-                returnReservedAmounts(order);
+                returnReservedAmounts(order.getProducts());
                 return;
             }
 
@@ -146,9 +150,9 @@ public class OrderServiceImpl implements OrderService {
                 return;
 
                 // cancel order if possible
-            } else if (state == CANCELLED && order.getState() != DELIVERED) {
+            } else if (state == CANCELLED && order.getState() != DELIVERED && order.getState() != CANCELLED) {
                 order.setState(CANCELLED);
-                returnReservedAmounts(order);
+                returnReservedAmounts(order.getProducts());
                 return;
             }
         }
@@ -158,7 +162,7 @@ public class OrderServiceImpl implements OrderService {
     @Override
     @Transactional
     public void addOrderMessage(long userId, Long orderId, NewOrderMessageDto orderMessage) {
-        Order order = orderRepository.findById(orderId)
+        Order order = orderRepository.findWithShopById(orderId)
                 .orElseThrow(() -> new NotFoundException(Order.class, "id", orderId));
 
         // throw if message adder not consumer and not seller
@@ -184,13 +188,13 @@ public class OrderServiceImpl implements OrderService {
         if (shop.getOwner().getId() != shopOwnerId)
             throw new NotAcceptableException("have not permission");
 
-        Page<Order> orders = orderRepository.findAllWithUserAndShopsByShopId(shopId, pageable);
-        return orderConverter.from(orders);
+        Page<Order> orders = orderRepository.findAllWithCustomerByShopId(shopId, pageable);
+        return orderConverter.fromForSeller(orders);
     }
 
     @Override
     public Page<OrderDto> getUserOrders(long userId, Pageable pageable) {
-        Page<Order> orders = orderRepository.findAllWithUserAndShopsByCustomerId(userId, pageable);
-        return orderConverter.from(orders);
+        Page<Order> orders = orderRepository.findAllWithShopByCustomerId(userId, pageable);
+        return orderConverter.fromForCustomer(orders);
     }
 }

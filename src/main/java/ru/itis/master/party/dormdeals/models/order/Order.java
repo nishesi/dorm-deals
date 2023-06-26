@@ -9,8 +9,12 @@ import ru.itis.master.party.dormdeals.models.User;
 import java.time.ZonedDateTime;
 import java.util.List;
 
-
-@NamedEntityGraph(name = "order-user-shop",
+@NamedEntityGraph(name = "order-shop",
+        attributeNodes = {
+                @NamedAttributeNode(value = "shop")
+        }
+)
+@NamedEntityGraph(name = "order-customer-shop",
         attributeNodes = {
                 @NamedAttributeNode(value = "customer"),
                 @NamedAttributeNode(value = "shop")
@@ -40,6 +44,8 @@ public class Order {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "customer_id")
+    @Access(AccessType.PROPERTY)
+    @EqualsAndHashCode.Exclude
     private User customer;
 
     @DateTimeFormat(pattern = "dd-MM-yyyy hh-mm-ss XX")
@@ -48,6 +54,7 @@ public class Order {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "shop_id")
+    @EqualsAndHashCode.Exclude
     private Shop shop;
 
     @Column
@@ -57,9 +64,11 @@ public class Order {
     private State state;
 
     @OneToMany(mappedBy = "order", cascade = {CascadeType.ALL})
+    @EqualsAndHashCode.Exclude
     private List<OrderProduct> products;
 
     @OneToMany(mappedBy = "order", cascade = {CascadeType.ALL})
+    @EqualsAndHashCode.Exclude
     private List<OrderMessage> messages;
 
     @RequiredArgsConstructor

@@ -44,12 +44,13 @@ public class User {
     @Enumerated(EnumType.STRING)
     private List<Authority> authorities;
 
-    @ManyToMany(fetch = FetchType.EAGER)
+    @ManyToMany
     @JoinTable(name = "favorites",
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "product_id"))
     @JsonIgnore
     @ToString.Exclude
+    @EqualsAndHashCode.Exclude
     private List<Product> favorites = new ArrayList<>();
 
     public enum State {
