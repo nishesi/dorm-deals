@@ -39,6 +39,7 @@ spring.mail.properties.mail.debug=true
 
 default.page-size=3
 password.encoder.strength = 10
+password.salt=ttt
 storage.path=${STORAGE_PATH}
 
 

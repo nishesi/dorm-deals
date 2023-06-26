@@ -3,6 +3,7 @@ package ru.itis.master.party.dormdeals.services.impl;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.codec.digest.DigestUtils;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import ru.itis.master.party.dormdeals.dto.user.NewUserDto;
@@ -33,6 +34,9 @@ public class UserServiceImpl implements UserService {
     private final UserConverter userConverter;
     private final EmailUtil emailUtil;
 
+    @Value("${password.salt}")
+    private String salt;
+
     @Transactional
     public String register(NewUserDto userDto) {
         if (userRepository.existsUserByEmail(userDto.getEmail()))
@@ -40,7 +44,7 @@ public class UserServiceImpl implements UserService {
 
         User returnedUser = userRepository.save(User.builder()
                 .email(userDto.getEmail())
-                .hashPassword(passwordEncoder.encode(userDto.getPassword()))
+                .hashPassword(passwordEncoder.encode(userDto.getPassword() + salt))
                 .firstName(userDto.getFirstName())
                 .lastName(userDto.getLastName())
                 .telephone(userDto.getTelephone())

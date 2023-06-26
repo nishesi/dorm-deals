@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
@@ -27,6 +28,9 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
     private final ObjectMapper objectMapper;
     private final JwtService jwtService;
     private final JwtUtil jwtUtil;
+
+    @Value("${password.salt}")
+    private String salt;
 
 
     public JwtAuthenticationFilter(AuthenticationConfiguration authenticationConfiguration,
@@ -56,6 +60,11 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
             return getAuthenticationManager().authenticate(authentication);
         }
         return super.attemptAuthentication(request, response);
+    }
+
+    @Override
+    protected String obtainPassword(HttpServletRequest request) {
+        return super.obtainPassword(request) + salt;
     }
 
     @Override
