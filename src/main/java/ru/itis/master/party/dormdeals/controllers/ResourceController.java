@@ -37,7 +37,7 @@ public class ResourceController implements ResourceApi {
 
         resourceService.uploadResource(file, id, File.FileDtoType.valueOf(typeDto.toUpperCase()));
 
-        return ResponseEntity.ok("File uploaded successful");
+        return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
     @Override
@@ -47,7 +47,7 @@ public class ResourceController implements ResourceApi {
         }
         resourceService.uploadResource(files, id, File.FileDtoType.PRODUCT);
 
-        return ResponseEntity.ok("Files uploaded successful");
+        return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
 
@@ -101,5 +101,4 @@ public class ResourceController implements ResourceApi {
                 .headers(headers)
                 .body(resource);
     }
-
 }
