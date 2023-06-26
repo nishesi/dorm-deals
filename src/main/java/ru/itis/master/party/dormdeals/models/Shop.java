@@ -33,6 +33,7 @@ public class Shop {
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "owner_id")
+    @Access(AccessType.PROPERTY)
     @EqualsAndHashCode.Exclude
     private User owner;
 }

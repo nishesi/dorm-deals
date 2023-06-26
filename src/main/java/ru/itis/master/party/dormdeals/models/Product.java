@@ -41,6 +41,7 @@ public class Product {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "shop_id")
+    @Access(AccessType.PROPERTY)
     @EqualsAndHashCode.Exclude
     private Shop shop;
 

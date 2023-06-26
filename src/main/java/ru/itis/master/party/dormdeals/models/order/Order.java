@@ -9,6 +9,11 @@ import ru.itis.master.party.dormdeals.models.User;
 import java.time.ZonedDateTime;
 import java.util.List;
 
+@NamedEntityGraph(name = "order-shop",
+        attributeNodes = {
+                @NamedAttributeNode(value = "shop")
+        }
+)
 @NamedEntityGraph(name = "order-customer-shop",
         attributeNodes = {
                 @NamedAttributeNode(value = "customer"),
@@ -39,6 +44,7 @@ public class Order {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "customer_id")
+    @Access(AccessType.PROPERTY)
     @EqualsAndHashCode.Exclude
     private User customer;
 

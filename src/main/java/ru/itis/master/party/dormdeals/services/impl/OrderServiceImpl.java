@@ -46,7 +46,7 @@ public class OrderServiceImpl implements OrderService {
             Product product = orderProduct.getProduct();
             int required = orderProduct.getCount();
             int available = product.getCountInStorage();
-
+            //TODO мейби выкидывать другое исключение если стейт != ACTIVE
             if (product.getState() == ACTIVE && required <= available) {
                 product.setCountInStorage((short) (available - required));
                 if (required == available) product.setState(NOT_AVAILABLE);
@@ -55,8 +55,8 @@ public class OrderServiceImpl implements OrderService {
         });
     }
 
-    private static void returnReservedAmounts(Order order) {
-        order.getProducts().forEach(orderProduct -> {
+    private static void returnReservedAmounts(List<OrderProduct> orderProducts) {
+        orderProducts.forEach(orderProduct -> {
             Product product = orderProduct.getProduct();
             product.setCountInStorage((short) (product.getCountInStorage() + orderProduct.getCount()));
         });
@@ -80,7 +80,7 @@ public class OrderServiceImpl implements OrderService {
                 NewOrderDto.OrderProduct::getProductId,
                 NewOrderDto.OrderProduct::getCount));
 
-        List<Product> products = productRepository.findAllProductWithShopByIdIn(productIdAndCount.keySet());
+        List<Product> products = productRepository.findAllByIdIn(productIdAndCount.keySet());
 
         // group products by shopId
         Map<Long, List<OrderProduct>> shopIdAndOrderProducts = new HashMap<>();
@@ -127,7 +127,7 @@ public class OrderServiceImpl implements OrderService {
     @Override
     @Transactional
     public void updateOrderState(long userId, Long orderId, Order.State state) {
-        Order order = orderRepository.findWithProductsById(orderId)
+        Order order = orderRepository.findWithShopById(orderId)
                 .orElseThrow(() -> new NotFoundException(Order.class, "id", orderId));
 
         // Is costumer wants to update status?
@@ -136,7 +136,7 @@ public class OrderServiceImpl implements OrderService {
             // cancel order if possible
             if (state == CANCELLED && order.getState().index() < CONFIRMED.index()) {
                 order.setState(CANCELLED);
-                returnReservedAmounts(order);
+                returnReservedAmounts(order.getProducts());
                 return;
             }
 
@@ -150,9 +150,9 @@ public class OrderServiceImpl implements OrderService {
                 return;
 
                 // cancel order if possible
-            } else if (state == CANCELLED && order.getState() != DELIVERED) {
+            } else if (state == CANCELLED && order.getState() != DELIVERED && order.getState() != CANCELLED) {
                 order.setState(CANCELLED);
-                returnReservedAmounts(order);
+                returnReservedAmounts(order.getProducts());
                 return;
             }
         }

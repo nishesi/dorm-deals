@@ -15,9 +15,9 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
     @EntityGraph(value = "order-customer-shop", type = EntityGraph.EntityGraphType.FETCH)
     Page<Order> findAllWithUserAndShopByShopId(long shopId, Pageable pageable);
 
-    @EntityGraph(value = "order-product", type = EntityGraph.EntityGraphType.FETCH)
-    Optional<Order> findWithProductsById(Long orderId);
-
     @EntityGraph(value = "order-customer-shop", type = EntityGraph.EntityGraphType.FETCH)
     Optional<Order> findWithCustomerAndShopById(long orderId);
+
+    @EntityGraph(value = "order-shop", type = EntityGraph.EntityGraphType.FETCH)
+    Optional<Order> findWithShopById(long orderId);
 }
