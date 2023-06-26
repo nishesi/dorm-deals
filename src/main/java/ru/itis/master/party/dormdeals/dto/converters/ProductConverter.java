@@ -3,12 +3,13 @@ package ru.itis.master.party.dormdeals.dto.converters;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import ru.itis.master.party.dormdeals.dto.product.ProductDto;
+import ru.itis.master.party.dormdeals.dto.shop.ShopDto;
 import ru.itis.master.party.dormdeals.models.File;
 import ru.itis.master.party.dormdeals.models.Product;
+import ru.itis.master.party.dormdeals.models.Shop;
 import ru.itis.master.party.dormdeals.utils.ResourceUrlResolver;
 
 import java.util.List;
-import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 @Component
@@ -29,7 +30,18 @@ public class ProductConverter {
                 .category(product.getCategory())
                 .price(product.getPrice())
                 .countInStorage(product.getCountInStorage())
+                .state(product.getState())
                 .resources(imageUrls)
+                .shop(from(product.getShop()))
+                .build();
+    }
+
+    private ShopDto from(Shop shop) {
+        return ShopDto.builder()
+                .id(shop.getId())
+                .name(shop.getName())
+                .rating(shop.getRating())
+                .resourceUrl(shop.getResource())
                 .build();
     }
 
@@ -37,6 +49,6 @@ public class ProductConverter {
         return products
                 .stream()
                 .map(this::from)
-                .collect(Collectors.toList());
+                .toList();
     }
 }

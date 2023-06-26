@@ -1,6 +1,5 @@
 package ru.itis.master.party.dormdeals.models;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -39,17 +38,21 @@ public class Product {
     @Column(columnDefinition = "smallint check (count_in_storage >= 0)", nullable = false)
     private int countInStorage;
 
+    @Enumerated(value = EnumType.STRING)
+    private State state;
+
+    @ElementCollection
+//    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+    @JoinTable(name = "products_resources")
+    @EqualsAndHashCode.Exclude
+    @Builder.Default
+    private List<String> resources = new ArrayList<>();
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "shop_id")
     @Access(AccessType.PROPERTY)
     @EqualsAndHashCode.Exclude
     private Shop shop;
-
-    @ElementCollection
-    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
-    @JoinTable(name = "products_resources")
-    @EqualsAndHashCode.Exclude
-    private List<String> resources = new ArrayList<>();
 
     @ManyToMany
     @JoinTable(name = "favorites",
@@ -59,12 +62,9 @@ public class Product {
     @EqualsAndHashCode.Exclude
     private List<User> users = new ArrayList<>();
 
-    @Enumerated(value = EnumType.STRING)
-    private State state;
-
     public enum State {
         ACTIVE,
-        NOT_AVAILABLE,
+        HIDDEN,
         DELETED
     }
 }
