@@ -1,12 +1,14 @@
 package ru.itis.master.party.dormdeals.dto.converters;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Component;
 import ru.itis.master.party.dormdeals.dto.product.ProductDto;
 import ru.itis.master.party.dormdeals.models.File;
 import ru.itis.master.party.dormdeals.models.Product;
 import ru.itis.master.party.dormdeals.utils.ResourceUrlResolver;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -38,5 +40,17 @@ public class ProductConverter {
                 .stream()
                 .map(this::from)
                 .collect(Collectors.toList());
+    }
+
+    public Page<ProductDto> from(Page<Product> products) {
+        return products.map(product -> ProductDto.builder()
+                .id(product.getId())
+                .name(product.getName())
+                .description(product.getDescription())
+                .category(product.getCategory())
+                .countInStorage(product.getCountInStorage())
+                .price(product.getPrice())
+                .resources(new ArrayList<>(product.getResources()))
+                .build());
     }
 }

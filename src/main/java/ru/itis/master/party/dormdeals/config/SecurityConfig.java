@@ -64,14 +64,12 @@ public class SecurityConfig {
                         .requestMatchers("/products/**", "/shops/**").hasRole("SELLER")
                         .requestMatchers(HttpMethod.GET, "/resource/**").permitAll()
                         .requestMatchers(HttpMethod.POST, "/resource/**").hasRole("SELLER")
+                        .requestMatchers("/search/**").permitAll()
+                        .requestMatchers("/orders/**").authenticated()
 
                         // base pages
 
                         .requestMatchers("/", "/home").permitAll()
-
-                        // orders
-
-                        .requestMatchers("/orders/**").authenticated()
 
                         // development
 
