@@ -27,7 +27,6 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import static ru.itis.master.party.dormdeals.models.Product.State.ACTIVE;
-import static ru.itis.master.party.dormdeals.models.Product.State.NOT_AVAILABLE;
 import static ru.itis.master.party.dormdeals.models.order.Order.State.*;
 
 
@@ -46,10 +45,10 @@ public class OrderServiceImpl implements OrderService {
             Product product = orderProduct.getProduct();
             int required = orderProduct.getCount();
             int available = product.getCountInStorage();
+
             //TODO мейби выкидывать другое исключение если стейт != ACTIVE
             if (product.getState() == ACTIVE && required <= available) {
                 product.setCountInStorage((short) (available - required));
-                if (required == available) product.setState(NOT_AVAILABLE);
             } else
                 throw new NotEnoughException(Product.class, product.getId(), required, available);
         });
@@ -80,7 +79,7 @@ public class OrderServiceImpl implements OrderService {
                 NewOrderDto.OrderProduct::getProductId,
                 NewOrderDto.OrderProduct::getCount));
 
-        List<Product> products = productRepository.findAllByIdIn(productIdAndCount.keySet());
+        List<Product> products = productRepository.findAllById(productIdAndCount.keySet());
 
         // group products by shopId
         Map<Long, List<OrderProduct>> shopIdAndOrderProducts = new HashMap<>();

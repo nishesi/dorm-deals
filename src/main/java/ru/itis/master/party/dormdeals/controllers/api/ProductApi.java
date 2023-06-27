@@ -8,51 +8,24 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import io.swagger.v3.oas.annotations.tags.Tags;
-import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import ru.itis.master.party.dormdeals.dto.*;
+import ru.itis.master.party.dormdeals.dto.ExceptionDto;
 import ru.itis.master.party.dormdeals.dto.product.NewProduct;
 import ru.itis.master.party.dormdeals.dto.product.ProductDto;
-import ru.itis.master.party.dormdeals.dto.product.ProductsPage;
 import ru.itis.master.party.dormdeals.dto.product.UpdateProduct;
+import ru.itis.master.party.dormdeals.models.Product;
 import ru.itis.master.party.dormdeals.security.details.UserDetailsImpl;
 import ru.itis.master.party.dormdeals.validation.responses.ValidationErrorsDto;
 
-@Tags(value = {
+@Tags({
         @Tag(name = "Products")
 })
 @RequestMapping("/products")
 public interface ProductApi {
 
-
-//    @Operation(summary = "Получение списка продуктов c идентификатором магазина")
-//    @ApiResponses(value = {
-//            @ApiResponse(responseCode = "200", description = "Страница с продуктами",
-//                    content = {
-//                            @Content(mediaType = "application/json", schema = @Schema(implementation = ProductsPage.class))
-//                    })
-//    })
-//    @GetMapping("/shop/{shop-id}")
-//    ResponseEntity<ProductsPage> getAllProductsByShop(@Parameter(description = "Номер страницы") @RequestParam("page") int page, @Parameter(description = "Идентификатор магазина") @PathVariable("shop-id") Long shopId);
-
-    @Operation(summary = "Получение списка продуктов без идентификатора магазина")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Страница с продуктами",
-                    content = {
-                            @Content(mediaType = "application/json",
-                                    schema = @Schema(implementation = ProductsPage.class))
-                    }
-            )
-    })
-    @GetMapping
-    ResponseEntity<ProductsPage> getAllProducts(
-            @Parameter(description = "Номер страницы")
-            @RequestParam("page")
-            int page);
-
     @Operation(summary = "Добавление нового продукта")
-    @ApiResponses(value = {
+    @ApiResponses({
             @ApiResponse(responseCode = "201", description = "Добавленный продукт",
                     content = {
                             @Content(mediaType = "application/json",
@@ -64,18 +37,23 @@ public interface ProductApi {
                             @Content(mediaType = "application/json",
                                     schema = @Schema(implementation = ValidationErrorsDto.class))
                     }
-            )
+            ),
+            @ApiResponse(responseCode = "404", description = "магазин не найден",
+                    content = {
+                            @Content(mediaType = "application/json",
+                                    schema = @Schema(implementation = ExceptionDto.class))
+                    })
     })
     @PostMapping
     ResponseEntity<ProductDto> addProduct(
             @Parameter(description = "Данные нового товара")
-            @RequestBody @Valid
+            @RequestBody
             NewProduct newProduct,
             @Parameter(hidden = true)
             UserDetailsImpl userDetails);
 
-    @Operation(summary = "Получение товара")
-    @ApiResponses(value = {
+    @Operation(summary = "Получение товара по идентификатору")
+    @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Информация о товаре",
                     content = {
                             @Content(mediaType = "application/json",
@@ -87,20 +65,27 @@ public interface ProductApi {
                             @Content(mediaType = "application/json",
                                     schema = @Schema(implementation = ExceptionDto.class))
                     }
-            )
+            ),
+            @ApiResponse(responseCode = "406", description = "Ошибка доступа",
+                    content = {
+                            @Content(mediaType = "application/json",
+                                    schema = @Schema(implementation = ExceptionDto.class))
+                    })
     })
     @GetMapping("/{product-id}")
     ResponseEntity<ProductDto> getProduct(
-            @Parameter(description = "Получение товара по идентификатору", example = "1")
+            @Parameter(description = "идентификатор", example = "1")
             @PathVariable("product-id")
-            Long productId);
+            Long productId,
+            @Parameter(hidden = true)
+            UserDetailsImpl userDetails);
 
     @Operation(summary = "Обновление товара")
-    @ApiResponses(value = {
+    @ApiResponses({
             @ApiResponse(responseCode = "202", description = "Обновлённый товар",
                     content = {
                             @Content(mediaType = "application/json",
-                                    schema = @Schema(implementation = UpdateProduct.class))
+                                    schema = @Schema(implementation = ProductDto.class))
                     }
             ),
             @ApiResponse(responseCode = "404", description = "Сведения об ошибке",
@@ -109,16 +94,21 @@ public interface ProductApi {
                                     schema = @Schema(implementation = ExceptionDto.class))
                     }
             ),
-            @ApiResponse(responseCode = "422", description = "невалидные данные",
+            @ApiResponse(responseCode = "422", description = "Сведения о невалидных данных",
                     content = {
                             @Content(mediaType = "application/json",
                                     schema = @Schema(implementation = ValidationErrorsDto.class))
                     }
-            )
+            ),
+            @ApiResponse(responseCode = "406", description = "Ошибка доступа",
+                    content = {
+                            @Content(mediaType = "application/json",
+                                    schema = @Schema(implementation = ExceptionDto.class))
+                    })
     })
     @PutMapping("/{product-id}")
     ResponseEntity<ProductDto> updateProduct(
-            @Parameter(description = "Обновление товара")
+            @Parameter(description = "идентификатор")
             @PathVariable("product-id")
             Long productId,
             @RequestBody
@@ -127,14 +117,19 @@ public interface ProductApi {
             UserDetailsImpl userDetails);
 
     @Operation(summary = "Удаление товара")
-    @ApiResponses(value = {
+    @ApiResponses({
             @ApiResponse(responseCode = "202", description = "Товар удален"),
             @ApiResponse(responseCode = "404", description = "Сведения об ошибке",
                     content = {
                             @Content(mediaType = "application/json",
                                     schema = @Schema(implementation = ExceptionDto.class))
                     }
-            )
+            ),
+            @ApiResponse(responseCode = "406", description = "Ошибка доступа",
+                    content = {
+                            @Content(mediaType = "application/json",
+                                    schema = @Schema(implementation = ExceptionDto.class))
+                    })
     })
     @DeleteMapping("/{product-id}")
     ResponseEntity<?> deleteProduct(
@@ -144,21 +139,29 @@ public interface ProductApi {
             @Parameter(hidden = true)
             UserDetailsImpl userDetails);
 
-    @Operation(summary = "Возврат товара в продажу")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "202", description = "Товар возвращен"),
-            @ApiResponse(responseCode = "404", description = "Сведения об ошибке",
+    @Operation(summary = "Изменение статуса товара")
+    @ApiResponses({
+            @ApiResponse(responseCode = "202", description = "Статус обновлён"),
+            @ApiResponse(responseCode = "400", description = "Невалидные данные"),
+            @ApiResponse(responseCode = "404", description = "Товар не найден",
                     content = {
                             @Content(mediaType = "application/json",
                                     schema = @Schema(implementation = ExceptionDto.class))
-                    }
-            )
+                    }),
+            @ApiResponse(responseCode = "406", description = "ошибка выполнения",
+                    content = {
+                            @Content(mediaType = "application/json",
+                                    schema = @Schema(implementation = ExceptionDto.class))
+                    })
     })
-    @PutMapping("/{product-id}/restore")
-    ResponseEntity<ProductDto> returnProductInSell(
-            @Parameter(description = "Возвращение товара в продажу", example = "1")
+    @PutMapping("/{product-id}/state")
+    ResponseEntity<?> updateProductState(
+            @Parameter(description = "Идентификатор товара")
             @PathVariable("product-id")
             Long productId,
+            @Parameter(description = "Статус товара")
+            @RequestParam
+            Product.State state,
             @Parameter(hidden = true)
             UserDetailsImpl userDetails);
 }

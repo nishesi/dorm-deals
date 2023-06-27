@@ -10,7 +10,7 @@ import java.util.Optional;
 
 public interface ShopRepository extends JpaRepository<Shop, Long> {
     Page<Shop> findAllByOrderByIdAsc(Pageable pageable);
-    Optional<Shop> findShopByOwnerId(Long ownerId);
+    Optional<Shop> findByOwnerId(Long ownerId);
     boolean existsByOwnerId(Long ownerId);
     boolean existsByName(String name);
 

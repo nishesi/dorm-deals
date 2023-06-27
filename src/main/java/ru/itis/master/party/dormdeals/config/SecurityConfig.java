@@ -60,18 +60,23 @@ public class SecurityConfig {
                         // business logic
 
                         .requestMatchers("/shops/*/orders").hasRole("SELLER")
-                        .requestMatchers(HttpMethod.GET, "/products/**", "/shops/**").permitAll()
-                        .requestMatchers("/products/**", "/shops/**").hasRole("SELLER")
+                        .requestMatchers(HttpMethod.GET, "/shops/**").permitAll()
+                        .requestMatchers("/shops/**").hasRole("SELLER")
                         .requestMatchers(HttpMethod.GET, "/resource/**").permitAll()
                         .requestMatchers(HttpMethod.POST, "/resource/**").hasRole("SELLER")
 
-                        // base pages
+                        // products
 
-                        .requestMatchers("/", "/home").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/products/*").permitAll()
+                        .requestMatchers("/products/**").hasRole("SELLER")
 
                         // orders
 
                         .requestMatchers("/orders/**").authenticated()
+
+                        // base pages
+
+                        .requestMatchers("/", "/home").permitAll()
 
                         // development
 

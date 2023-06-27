@@ -115,7 +115,7 @@ public class ShopServiceImpl implements ShopService {
     @Override
     @Transactional
     public void deleteShop(long userId) {
-        Optional<Shop> shopOptional = shopRepository.findShopByOwnerId(userId);
+        Optional<Shop> shopOptional = shopRepository.findByOwnerId(userId);
         shopOptional.ifPresent(shop -> {
             productRepository.deleteAllByShopId(shop.getId());
             shopRepository.deleteById(shop.getId());
