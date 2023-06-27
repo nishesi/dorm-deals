@@ -6,12 +6,6 @@ import lombok.*;
 import java.util.ArrayList;
 import java.util.List;
 
-@NamedEntityGraph(name = "product-shop",
-        attributeNodes = @NamedAttributeNode(value = "shop", subgraph = "shop-subgraph"),
-        subgraphs = {
-                @NamedSubgraph(name = "shop-subgraph", attributeNodes = {})
-        }
-)
 @Entity
 @Table(name = "products")
 @Data
@@ -42,7 +36,6 @@ public class Product {
     private State state;
 
     @ElementCollection
-//    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     @JoinTable(name = "products_resources")
     @EqualsAndHashCode.Exclude
     @Builder.Default
