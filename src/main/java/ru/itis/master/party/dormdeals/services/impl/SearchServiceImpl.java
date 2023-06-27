@@ -18,7 +18,12 @@ public class SearchServiceImpl implements SearchService {
     private final ProductConverter productConverter;
     @Override
     @Transactional
-    public List<ProductDto> getProductSearch(List<String> namesQuery, List<String> categories, List<Long> shopIdn, Pageable pageable) {
-        return productConverter.from(searchRepository.productSearch(namesQuery, categories, shopIdn, pageable));
+    public List<ProductDto> getProductSearch(List<String> namesQuery,
+                                             List<String> categories,
+                                             List<Long> shopIdn,
+                                             Pageable pageable) {
+        return productConverter
+                .from(searchRepository.productSearch(namesQuery,
+                        categories, shopIdn, pageable));
     }
 }

@@ -6,10 +6,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.MultiValueMap;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import ru.itis.master.party.dormdeals.controllers.api.SearchApi;
 import ru.itis.master.party.dormdeals.dto.product.ProductDto;
 import ru.itis.master.party.dormdeals.services.SearchService;
 
@@ -18,20 +16,15 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @RestController
-@RequestMapping("/search")
 @RequiredArgsConstructor
-public class SearchController {
+public class SearchController implements SearchApi {
+    //TODO: сделать 404 нормальную ошибку отлавливать если на странице нет товара вообще, переделать List<> на Page<>
     private final SearchService searchService;
     @Value("${default.page-size}")
     private int defaultPageSize;
 
-    @GetMapping("/products")
-    public ResponseEntity<List<ProductDto>> searchProducts(@RequestParam MultiValueMap<String, String> criteria,
-                                           @RequestParam(value = "pageIndex",
-                                                   required = false,
-                                                   defaultValue = "0")
-                                           Integer pageIndex) {
-
+    @Override
+    public ResponseEntity<List<ProductDto>> searchProducts(MultiValueMap<String, String> criteria, Integer pageIndex) {
         List<String> nameQueries = extractCriteriaValues(criteria, "name-query");
         List<String> categories = extractCriteriaValues(criteria, "category");
         List<Long> shopIds = extractCriteriaValues(criteria, "shop-id")
@@ -50,5 +43,4 @@ public class SearchController {
                 .flatMap(value -> Stream.of(value.split(",")))
                 .collect(Collectors.toList());
     }
-
 }
