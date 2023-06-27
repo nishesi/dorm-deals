@@ -37,7 +37,12 @@ public interface ProductApi {
                             @Content(mediaType = "application/json",
                                     schema = @Schema(implementation = ValidationErrorsDto.class))
                     }
-            )
+            ),
+            @ApiResponse(responseCode = "404", description = "магазин не найден",
+                    content = {
+                            @Content(mediaType = "application/json",
+                                    schema = @Schema(implementation = ExceptionDto.class))
+                    })
     })
     @PostMapping
     ResponseEntity<ProductDto> addProduct(
@@ -60,7 +65,12 @@ public interface ProductApi {
                             @Content(mediaType = "application/json",
                                     schema = @Schema(implementation = ExceptionDto.class))
                     }
-            )
+            ),
+            @ApiResponse(responseCode = "406", description = "Ошибка доступа",
+                    content = {
+                            @Content(mediaType = "application/json",
+                                    schema = @Schema(implementation = ExceptionDto.class))
+                    })
     })
     @GetMapping("/{product-id}")
     ResponseEntity<ProductDto> getProduct(
@@ -89,7 +99,12 @@ public interface ProductApi {
                             @Content(mediaType = "application/json",
                                     schema = @Schema(implementation = ValidationErrorsDto.class))
                     }
-            )
+            ),
+            @ApiResponse(responseCode = "406", description = "Ошибка доступа",
+                    content = {
+                            @Content(mediaType = "application/json",
+                                    schema = @Schema(implementation = ExceptionDto.class))
+                    })
     })
     @PutMapping("/{product-id}")
     ResponseEntity<ProductDto> updateProduct(
@@ -109,7 +124,12 @@ public interface ProductApi {
                             @Content(mediaType = "application/json",
                                     schema = @Schema(implementation = ExceptionDto.class))
                     }
-            )
+            ),
+            @ApiResponse(responseCode = "406", description = "Ошибка доступа",
+                    content = {
+                            @Content(mediaType = "application/json",
+                                    schema = @Schema(implementation = ExceptionDto.class))
+                    })
     })
     @DeleteMapping("/{product-id}")
     ResponseEntity<?> deleteProduct(
