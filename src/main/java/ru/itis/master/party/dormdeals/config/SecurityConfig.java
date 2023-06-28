@@ -68,6 +68,7 @@ public class SecurityConfig {
                         .requestMatchers("/shops/*/orders").hasRole("SELLER")
                         .requestMatchers(HttpMethod.GET, "/shops/**").permitAll()
                         .requestMatchers("/shops/**").hasRole("SELLER")
+                        .requestMatchers("/search/**").permitAll()
 
                         // products
 
