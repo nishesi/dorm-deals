@@ -46,7 +46,7 @@ public class OrderServiceImpl implements OrderService {
             int required = orderProduct.getCount();
             int available = product.getCountInStorage();
 
-            //TODO мейби выкидывать другое исключение если стейт != ACTIVE
+            //TODO: мейби выкидывать другое исключение если стейт != ACTIVE
             if (product.getState() == ACTIVE && required <= available) {
                 product.setCountInStorage((short) (available - required));
             } else
