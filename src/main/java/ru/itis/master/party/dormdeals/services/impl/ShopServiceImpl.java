@@ -9,17 +9,13 @@ import org.springframework.stereotype.Service;
 import ru.itis.master.party.dormdeals.dto.product.ProductsPage;
 import ru.itis.master.party.dormdeals.dto.shop.NewShop;
 import ru.itis.master.party.dormdeals.dto.shop.ShopDto;
-import ru.itis.master.party.dormdeals.dto.shop.ShopsPage;
 import ru.itis.master.party.dormdeals.dto.shop.UpdateShop;
 import ru.itis.master.party.dormdeals.dto.ShopWithProducts;
 import ru.itis.master.party.dormdeals.dto.converters.ProductConverter;
 import ru.itis.master.party.dormdeals.dto.converters.ShopConverter;
 import ru.itis.master.party.dormdeals.exceptions.NotAcceptableException;
 import ru.itis.master.party.dormdeals.exceptions.NotFoundException;
-import ru.itis.master.party.dormdeals.models.Dormitory;
-import ru.itis.master.party.dormdeals.models.Product;
-import ru.itis.master.party.dormdeals.models.Shop;
-import ru.itis.master.party.dormdeals.models.User;
+import ru.itis.master.party.dormdeals.models.*;
 import ru.itis.master.party.dormdeals.repositories.DormitoryRepository;
 import ru.itis.master.party.dormdeals.repositories.ProductRepository;
 import ru.itis.master.party.dormdeals.repositories.ShopRepository;
@@ -50,25 +46,6 @@ public class ShopServiceImpl implements ShopService {
     private int defaultPageSize;
 
     @Override
-    @Transactional
-    public ShopDto getShop(Long shopId) {
-        Shop shop = shopRepository.findById(shopId)
-                .orElseThrow(() -> new NotFoundException(Shop.class, "id", shopId));
-        return shopConverter.from(shop);
-    }
-
-    @Override
-    public ShopsPage getAllShops(int page) {
-        PageRequest pageRequest = PageRequest.of(page, defaultPageSize);
-        Page<Shop> shopsPage = shopRepository.findAllByOrderByIdAsc(pageRequest);
-
-        return ShopsPage.builder()
-                .shops(shopConverter.from(shopsPage.getContent()))
-                .totalPagesCount(shopsPage.getTotalPages())
-                .build();
-    }
-
-    @Override
     public ShopDto createShop(long userId, NewShop newShop) {
         User user = userRepository.findById(userId).orElseThrow(() ->
                 new NotFoundException(User.class, "email", userId));
@@ -86,10 +63,12 @@ public class ShopServiceImpl implements ShopService {
                 .build();
 
         shopRepository.save(shop);
+
         return shopConverter.from(shop);
     }
 
     @Override
+    @Transactional
     public ShopDto updateShop(long userId, Long shopId, UpdateShop newShopData) {
         Shop shop = shopRepository.findById(shopId)
                 .orElseThrow(() -> new NotFoundException(Shop.class, "id", shopId));
@@ -97,13 +76,15 @@ public class ShopServiceImpl implements ShopService {
         if (shop.getOwner().getId() != userId)
             throw new NotAcceptableException("have not permission");
 
-        if (!shop.getName().equals(newShopData.getName()) &&
-                shopRepository.existsByName(newShopData.getName()))
-            throw new IllegalArgumentException("shop with name <" + newShopData.getName() + "> already exists");
+        String newShopName = newShopData.getName();
+
+        if (!shop.getName().equals(newShopName) &&
+                shopRepository.existsByName(newShopName))
+            throw new IllegalArgumentException("shop with name <" + newShopName + "> already exists");
 
         List<Dormitory> dormitories = dormitoryRepository.findByIdIn(newShopData.getDormitoryIdList());
 
-        shop.setName(newShopData.getName());
+        shop.setName(newShopName);
         shop.setDescription(newShopData.getDescription());
         shop.setDormitories(dormitories);
 
@@ -123,13 +104,16 @@ public class ShopServiceImpl implements ShopService {
     }
 
     @Override
+    @Transactional
     public ShopWithProducts getAllProductsThisShop(Long shopId, int page) {
         Shop thisShop = shopRepository.findById(shopId).orElseThrow(() -> new NotFoundException(Shop.class, "id", shopId));
         PageRequest pageRequest = PageRequest.of(page, defaultPageSize);
         Page<Product> productsPageTemp = productRepository
                 .findAllByShopIdAndStateOrderById(shopId, Product.State.ACTIVE, pageRequest);
         ProductsPage productsPage = ProductsPage.builder()
-                .products(productConverter.from(productsPageTemp.getContent()))
+                .products(productConverter
+                        .convertListProductInListProductDtoForShop(productsPageTemp
+                                .getContent()))
                 .totalPageCount(productsPageTemp.getTotalPages())
                 .build();
 

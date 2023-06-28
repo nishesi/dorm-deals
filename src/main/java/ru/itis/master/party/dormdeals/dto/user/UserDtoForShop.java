@@ -1,5 +1,6 @@
 package ru.itis.master.party.dormdeals.dto.user;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
 import ru.itis.master.party.dormdeals.models.User;
@@ -9,6 +10,7 @@ import ru.itis.master.party.dormdeals.models.User;
 @NoArgsConstructor
 @Builder
 public class UserDtoForShop {
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private Long id;
 
     @Schema(example = "Bob")
