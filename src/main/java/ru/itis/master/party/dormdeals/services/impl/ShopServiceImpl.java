@@ -128,6 +128,7 @@ public class ShopServiceImpl implements ShopService {
         PageRequest pageRequest = PageRequest.of(page, defaultPageSize);
         Page<Product> productsPageTemp = productRepository
                 .findAllByShopIdAndStateOrderById(shopId, Product.State.ACTIVE, pageRequest);
+
         ProductsPage productsPage = ProductsPage.builder()
                 .products(productConverter.from(productsPageTemp.getContent()))
                 .totalPageCount(productsPageTemp.getTotalPages())

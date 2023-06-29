@@ -8,7 +8,7 @@ import ru.itis.master.party.dormdeals.models.User;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class UserDtoForShop {
+public class UserDtoForShopAndReview {
     private Long id;
 
     @Schema(example = "Bob")
@@ -17,8 +17,8 @@ public class UserDtoForShop {
     @Schema(example = "Martin")
     private String lastName;
 
-    public static UserDtoForShop from(User user) {
-        return UserDtoForShop.builder()
+    public static UserDtoForShopAndReview from(User user) {
+        return UserDtoForShopAndReview.builder()
                 .firstName(user.getFirstName())
                 .lastName(user.getLastName())
                 .build();

@@ -30,9 +30,14 @@ public class ProductController implements ProductApi {
     }
 
     @Override
-    public ResponseEntity<ProductDto> getProduct(Long productId,
+    public ResponseEntity<ProductDto> getProduct(Long productId, int pageIndex,
                                                  @AuthenticationPrincipal UserDetailsImpl userDetails) {
-        return ResponseEntity.ok(productService.getProduct(userDetails.getUser().getId(), productId));
+        if (userDetails != null) {
+            long userId = userDetails.getUser().getId();
+            return ResponseEntity.ok(productService.getProduct(productId, userId, pageIndex));
+        }
+
+        return ResponseEntity.ok(productService.getProduct(productId, null, pageIndex));
     }
 
     @Override

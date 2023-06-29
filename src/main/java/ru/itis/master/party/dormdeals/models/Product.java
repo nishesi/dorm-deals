@@ -34,6 +34,8 @@ public class Product {
 
     @Enumerated(value = EnumType.STRING)
     private State state;
+    @Column(columnDefinition = "float check (rating >= 0 and rating <= 5)")
+    private float rating;
 
     @ElementCollection
     @JoinTable(name = "products_resources")
@@ -54,6 +56,11 @@ public class Product {
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
     private List<User> users = new ArrayList<>();
+
+    @OneToMany(mappedBy = "product", fetch = FetchType.LAZY)
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
+    private List<Review> reviews = new ArrayList<>();
 
     public enum State {
         ACTIVE,
