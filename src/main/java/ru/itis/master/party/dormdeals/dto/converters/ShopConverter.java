@@ -3,7 +3,7 @@ package ru.itis.master.party.dormdeals.dto.converters;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import ru.itis.master.party.dormdeals.dto.shop.ShopDto;
-import ru.itis.master.party.dormdeals.dto.user.UserDtoForShop;
+import ru.itis.master.party.dormdeals.dto.user.UserDtoForShopAndReview;
 import ru.itis.master.party.dormdeals.models.File;
 import ru.itis.master.party.dormdeals.models.Shop;
 import ru.itis.master.party.dormdeals.utils.ResourceUrlResolver;
@@ -26,7 +26,7 @@ public class ShopConverter {
                 .description(shop.getDescription())
                 .rating(shop.getRating())
                 .dormitories(dormitoryConverter.from(shop.getDormitories()))
-                .owner(UserDtoForShop.from(shop.getOwner()))
+                .owner(UserDtoForShopAndReview.from(shop.getOwner()))
                 .resourceUrl(urlImage)
                 .build();
     }

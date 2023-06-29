@@ -23,7 +23,7 @@ public class SearchServiceImpl implements SearchService {
                                              List<Long> shopIdn,
                                              Pageable pageable) {
         return productConverter
-                .from(searchRepository.productSearch(namesQuery,
+                .convertListProductInListProductDto(searchRepository.productSearch(namesQuery,
                         categories, shopIdn, pageable));
     }
 }

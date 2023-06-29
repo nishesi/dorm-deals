@@ -6,6 +6,8 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import io.swagger.v3.oas.annotations.tags.Tags;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -18,6 +20,9 @@ import ru.itis.master.party.dormdeals.security.details.UserDetailsImpl;
 import java.util.List;
 
 @RequestMapping("/my")
+@Tags(value = {
+        @Tag(name = "Personal User Logic")
+})
 public interface PersonalUserApi {
 
     @Operation(summary = "Добавление товара в избранное")

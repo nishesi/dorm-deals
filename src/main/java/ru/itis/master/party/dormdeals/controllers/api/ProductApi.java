@@ -77,8 +77,11 @@ public interface ProductApi {
             @Parameter(description = "идентификатор", example = "1")
             @PathVariable("product-id")
             Long productId,
+            @RequestParam(value = "pageIndex", defaultValue = "0", required = false)
+            int pageIndex,
             @Parameter(hidden = true)
             UserDetailsImpl userDetails);
+
 
     @Operation(summary = "Обновление товара")
     @ApiResponses({

@@ -5,6 +5,8 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import io.swagger.v3.oas.annotations.tags.Tags;
 import org.springframework.core.io.Resource;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -16,6 +18,9 @@ import java.io.IOException;
 
 
 @RequestMapping("/resource")
+@Tags(value = {
+        @Tag(name = "Resources")
+})
 public interface ResourceApi {
     @Operation(summary = "Загрузка файла")
     @ApiResponses(value = {

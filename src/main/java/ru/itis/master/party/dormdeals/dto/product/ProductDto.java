@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import ru.itis.master.party.dormdeals.dto.review.ReviewDto;
 import ru.itis.master.party.dormdeals.dto.shop.ShopDto;
 import ru.itis.master.party.dormdeals.models.Product;
 
@@ -47,4 +48,8 @@ public class ProductDto {
     @Schema(description = "фотографии/видео")
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private List<String> resources;
+    @Schema(description = "отзывы")
+    private List<ReviewDto> reviews;
+    @Schema(description = "рейтинг")
+    private float rating;
 }

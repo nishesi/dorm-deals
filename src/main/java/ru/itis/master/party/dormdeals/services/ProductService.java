@@ -9,7 +9,7 @@ public interface ProductService {
 
     ProductDto addProduct(long userId, NewProduct newProduct);
 
-    ProductDto getProduct(long userId, Long productId);
+    ProductDto getProduct(Long productId, Long userId, int pageIndex);
 
     ProductDto updateProduct(long userId, Long productId, UpdateProduct updatedProduct);
 
