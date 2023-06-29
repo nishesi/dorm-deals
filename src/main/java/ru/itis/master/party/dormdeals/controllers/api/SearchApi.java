@@ -27,7 +27,7 @@ public interface SearchApi {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Товары найдены",
             content = {
-                    @Content(mediaType = "application/json", schema = @Schema(implementation = ProductDto.class))
+                    @Content(mediaType = "application/json", schema = @Schema(implementation = ProductDto[].class))
             }),
             @ApiResponse(responseCode = "404", description = "Таких товаров нет",
                     content = {
