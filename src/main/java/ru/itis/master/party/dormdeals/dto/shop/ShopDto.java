@@ -1,5 +1,6 @@
 package ru.itis.master.party.dormdeals.dto.shop;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -18,6 +19,7 @@ import java.util.List;
 public class ShopDto {
 
     @Schema(description = "идентификатор магазина", example = "100500")
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private Long id;
 
     @Schema(description = "название магазина", example = "TopShop")

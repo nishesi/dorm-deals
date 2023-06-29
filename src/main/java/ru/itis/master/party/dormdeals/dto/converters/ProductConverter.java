@@ -1,26 +1,25 @@
 package ru.itis.master.party.dormdeals.dto.converters;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Component;
 import ru.itis.master.party.dormdeals.dto.product.ProductDto;
-import ru.itis.master.party.dormdeals.dto.review.ReviewDto;
+import ru.itis.master.party.dormdeals.dto.product.ProductDtoForShop;
 import ru.itis.master.party.dormdeals.dto.shop.ShopDto;
-import ru.itis.master.party.dormdeals.dto.user.UserDtoForShopAndReview;
 import ru.itis.master.party.dormdeals.models.File;
 import ru.itis.master.party.dormdeals.models.Product;
-import ru.itis.master.party.dormdeals.models.Review;
 import ru.itis.master.party.dormdeals.models.Shop;
 import ru.itis.master.party.dormdeals.utils.ResourceUrlResolver;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 @Component
 @RequiredArgsConstructor
 public class ProductConverter {
     private final ResourceUrlResolver resolver;
-    public ProductDto from(Product product) {
+    public ProductDto convertProductInProductDto(Product product) {
 
         //TODO: определять тип файла
         List<String> imageUrls = IntStream.range(0, product.getResources().size())
@@ -34,15 +33,32 @@ public class ProductConverter {
                 .category(product.getCategory())
                 .price(product.getPrice())
                 .countInStorage(product.getCountInStorage())
-                .rating(product.getRating())
                 .state(product.getState())
                 .resources(imageUrls)
-                .shop(from(product.getShop()))
-                .reviews(fromReview(product.getReviews()))
+                .shop(convertShopInShopDto(product.getShop()))
                 .build();
     }
 
-    private ShopDto from(Shop shop) {
+    public ProductDtoForShop convertProductInProductDtoForShop(Product product) {
+
+        //TODO: определять тип файла
+        List<String> imageUrls = IntStream.range(0, product.getResources().size())
+                .mapToObj(index -> resolver.resolveUrl(product.getId(), File.FileDtoType.PRODUCT, File.FileType.IMAGE, index + 1))
+                .toList();
+
+        return ProductDtoForShop.builder()
+                .id(product.getId())
+                .name(product.getName())
+                .description(product.getDescription())
+                .category(product.getCategory())
+                .price(product.getPrice())
+                .countInStorage(product.getCountInStorage())
+                .state(product.getState())
+                .resources(imageUrls)
+                .build();
+    }
+
+    private ShopDto convertShopInShopDto(Shop shop) {
         return ShopDto.builder()
                 .id(shop.getId())
                 .name(shop.getName())
@@ -50,26 +66,30 @@ public class ProductConverter {
                 .resourceUrl(shop.getResource())
                 .build();
     }
-    private ReviewDto from(Review review) {
-        return ReviewDto.builder()
-                .user(UserDtoForShopAndReview.builder()
-                        .id(review.getUser().getId())
-                        .firstName(review.getUser().getFirstName())
-                        .lastName(review.getUser().getLastName())
-                        .build())
-                .message(review.getMessage())
-                .score(review.getScore())
-                .build();
-    }
 
-    private List<ReviewDto> fromReview(List<Review> reviews) {
-        return reviews.stream().map(this::from).collect(Collectors.toList());
-    }
-
-    public List<ProductDto> from(List<Product> products) {
+    public List<ProductDto> convertListProductInListProductDto(List<Product> products) {
         return products
                 .stream()
-                .map(this::from)
+                .map(this::convertProductInProductDto)
                 .toList();
+    }
+
+    public List<ProductDtoForShop> convertListProductInListProductDtoForShop(List<Product> products) {
+        return products
+                .stream()
+                .map(this::convertProductInProductDtoForShop)
+                .toList();
+    }
+
+    public Page<ProductDto> from(Page<Product> products) {
+        return products.map(product -> ProductDto.builder()
+                .id(product.getId())
+                .name(product.getName())
+                .description(product.getDescription())
+                .category(product.getCategory())
+                .countInStorage(product.getCountInStorage())
+                .price(product.getPrice())
+                .resources(new ArrayList<>(product.getResources()))
+                .build());
     }
 }

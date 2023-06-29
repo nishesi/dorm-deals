@@ -16,7 +16,7 @@ import java.util.List;
 
 public class ProductsPage {
     @Schema(description = "Страница с товарами и общее количество страниц")
-    private List<ProductDto> products;
+    private List<ProductDtoForShop> products;
     @Schema(description = "Общее количество страниц", example = "5")
     private Integer totalPageCount;
 }

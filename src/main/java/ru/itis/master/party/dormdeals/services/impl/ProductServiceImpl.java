@@ -52,7 +52,7 @@ public class ProductServiceImpl implements ProductService {
                 .build();
 
         product = productRepository.save(product);
-        return productConverter.from(product);
+        return productConverter.convertProductInProductDto(product);
     }
 
     @Override
@@ -73,7 +73,7 @@ public class ProductServiceImpl implements ProductService {
         if (product.getState() != ACTIVE && !Objects.equals(userId, product.getShop().getOwner().getId()))
             throw new NotAcceptableException("have not permission");
 
-        return productConverter.from(product);
+        return productConverter.convertProductInProductDto(product);
     }
 
     @Override
@@ -90,7 +90,7 @@ public class ProductServiceImpl implements ProductService {
         product.setPrice(updatedProduct.getPrice());
         product.setCountInStorage(updatedProduct.getCountInStorage());
 
-        return productConverter.from(product);
+        return productConverter.convertProductInProductDto(product);
     }
 
     @Override

@@ -58,12 +58,17 @@ public class SecurityConfig {
                         .requestMatchers("/my/cart/**").hasRole("USER")
 
                         // business logic
+                        // resources
+
+                        .requestMatchers(HttpMethod.GET, "/resource/**").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/resource/**").hasRole("SELLER")
+
+                        // shop
 
                         .requestMatchers("/shops/*/orders").hasRole("SELLER")
                         .requestMatchers(HttpMethod.GET, "/shops/**").permitAll()
                         .requestMatchers("/shops/**").hasRole("SELLER")
-                        .requestMatchers(HttpMethod.GET, "/resource/**").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/resource/**").hasRole("SELLER")
+                        .requestMatchers("/search/**").permitAll()
 
                         // products
 

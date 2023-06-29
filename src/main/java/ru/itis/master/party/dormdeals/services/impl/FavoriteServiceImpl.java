@@ -43,7 +43,7 @@ public class FavoriteServiceImpl implements FavoriteService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException(User.class, "id", userId));
 
-        return productConverter.from(user.getFavorites());
+        return productConverter.convertListProductInListProductDto(user.getFavorites());
     }
 
     @Transactional

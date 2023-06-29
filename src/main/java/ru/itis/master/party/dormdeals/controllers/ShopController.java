@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.RestController;
 import ru.itis.master.party.dormdeals.controllers.api.ShopApi;
 import ru.itis.master.party.dormdeals.dto.shop.NewShop;
 import ru.itis.master.party.dormdeals.dto.shop.ShopDto;
-import ru.itis.master.party.dormdeals.dto.shop.ShopsPage;
 import ru.itis.master.party.dormdeals.dto.shop.UpdateShop;
 import ru.itis.master.party.dormdeals.dto.ShopWithProducts;
 import ru.itis.master.party.dormdeals.dto.order.OrderDto;
@@ -27,10 +26,11 @@ public class ShopController implements ShopApi {
     private final ShopService shopService;
     private final OrderService orderService;
 
+
     @Override
-    public ResponseEntity<ShopsPage> getAllShops(int page) {
-        return ResponseEntity
-                .ok(shopService.getAllShops(page));
+    public ResponseEntity<ShopWithProducts> getMainPageShop(Long shopId, int pageIndex) {
+        return ResponseEntity.ok()
+                .body(shopService.getAllProductsThisShop(shopId, pageIndex));
     }
 
     @Override
@@ -42,26 +42,17 @@ public class ShopController implements ShopApi {
     }
 
     @Override
-    public ResponseEntity<ShopDto> getShop(Long shopId) {
-        return ResponseEntity.ok(shopService.getShop(shopId));
-    }
-
-    @Override
     public ResponseEntity<ShopDto> updateShop(Long shopId, @Valid UpdateShop updateShop,
                                               @AuthenticationPrincipal UserDetailsImpl userDetails) {
         long userId = userDetails.getUser().getId();
-        return ResponseEntity.accepted().body(shopService.updateShop(userId, shopId, updateShop));
+        return ResponseEntity.accepted()
+                .body(shopService.updateShop(userId, shopId, updateShop));
     }
 
     @Override
     public ResponseEntity<?> deleteShop(@AuthenticationPrincipal UserDetailsImpl userDetails) {
         shopService.deleteShop(userDetails.getUser().getId());
         return ResponseEntity.accepted().build();
-    }
-
-    @Override
-    public ResponseEntity<ShopWithProducts> getAllProductsThisShop(Long shopId, int page) {
-        return ResponseEntity.ok().body(shopService.getAllProductsThisShop(shopId, page));
     }
 
     @Override

@@ -46,7 +46,7 @@ public class OrderServiceImpl implements OrderService {
             int required = orderProduct.getCount();
             int available = product.getCountInStorage();
 
-            //TODO мейби выкидывать другое исключение если стейт != ACTIVE
+            //TODO: мейби выкидывать другое исключение если стейт != ACTIVE
             if (product.getState() == ACTIVE && required <= available) {
                 product.setCountInStorage((short) (available - required));
             } else
@@ -82,15 +82,18 @@ public class OrderServiceImpl implements OrderService {
         List<Product> products = productRepository.findAllById(productIdAndCount.keySet());
 
         // group products by shopId
-        Map<Long, List<OrderProduct>> shopIdAndOrderProducts = new HashMap<>();
-        for (Product product : products) {
-            List<OrderProduct> list = shopIdAndOrderProducts.computeIfAbsent(product.getShop().getId(), k -> new ArrayList<>());
-            list.add(OrderProduct.builder()
-                    .product(product)
-                    .count(productIdAndCount.get(product.getId()))
-                    .price(product.getPrice())
-                    .build());
-        }
+        Map<Long, List<OrderProduct>> shopIdAndOrderProducts = products.stream()
+                .collect(Collectors.groupingBy(
+                        product -> product.getShop().getId(),
+                        Collectors.mapping(
+                                product -> OrderProduct.builder()
+                                        .product(product)
+                                        .count(productIdAndCount.get(product.getId()))
+                                        .price(product.getPrice())
+                                        .build(),
+                                Collectors.toList()
+                        )
+                ));
 
         shopIdAndOrderProducts.values().forEach(OrderServiceImpl::reserveProductAmounts);
 
