@@ -25,7 +25,10 @@ import java.util.List;
 public interface SearchApi {
     @Operation(summary = "Поиск товаров по критериям")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Товары найдены"),
+            @ApiResponse(responseCode = "200", description = "Товары найдены",
+            content = {
+                    @Content(mediaType = "application/json", schema = @Schema(implementation = ProductDto.class))
+            }),
             @ApiResponse(responseCode = "404", description = "Таких товаров нет",
                     content = {
                             @Content(mediaType = "application/json", schema = @Schema(implementation = ExceptionDto.class))
