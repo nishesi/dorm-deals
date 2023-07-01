@@ -22,4 +22,6 @@ public interface ProductService {
     List<CartProductDto> getCartProducts(List<Long> productsId);
 
     void addProductImage(long userId, Long productId, MultipartFile productImage);
+
+    void deleteProductImage(long userId, Long productId, String imageId);
 }

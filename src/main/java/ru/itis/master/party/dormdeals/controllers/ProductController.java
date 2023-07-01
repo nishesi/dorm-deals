@@ -76,4 +76,12 @@ public class ProductController implements ProductApi {
         productService.addProductImage(userDetails.getUser().getId(), productId, file);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
+
+    @Override
+    public ResponseEntity<?> deleteProductImage(Long productId,
+                                                String imageId,
+                                                @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        productService.deleteProductImage(userDetails.getUser().getId(), productId, imageId);
+        return ResponseEntity.accepted().build();
+    }
 }

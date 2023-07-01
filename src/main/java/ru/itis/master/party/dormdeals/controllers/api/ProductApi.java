@@ -170,12 +170,13 @@ public interface ProductApi {
             schema = @Schema(type = "object"),
             schemaProperties = {
                     @SchemaProperty(name = "file",
-                            schema = @Schema(type = "string", format = "binary"))}
+                            schema = @Schema(type = "string", format = "binary"))
+            }
     ))
     @ApiResponses({
-            @ApiResponse(responseCode = "202", description = "изменено")
+            @ApiResponse(responseCode = "201", description = "создано")
     })
-    @PostMapping(value = "{product-id}/image")
+    @PostMapping("{product-id}/images")
     ResponseEntity<?> addProductImage(
             @PathVariable("product-id")
             Long productId,
@@ -183,4 +184,26 @@ public interface ProductApi {
             @RequestParam("file")
             MultipartFile file,
             @Parameter(hidden = true) UserDetailsImpl userDetails);
+
+    @Operation(summary = "удаление картинки товара")
+    @ApiResponses({
+            @ApiResponse(responseCode = "202", description = "удалено"),
+            @ApiResponse(responseCode = "404", description = "не найдено",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = ExceptionDto.class))
+            ),
+            @ApiResponse(responseCode = "406", description = "нет доступа",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = ExceptionDto.class)))
+    })
+    @DeleteMapping("{product-id}/images/{image-id}")
+    ResponseEntity<?> deleteProductImage(
+            @Parameter(description = "идентификатор товара")
+            @PathVariable("product-id")
+            Long productId,
+            @Parameter(description = "идентификатор картинки")
+            @PathVariable("image-id")
+            String imageId,
+            @Parameter(hidden = true)
+            UserDetailsImpl userDetails);
 }

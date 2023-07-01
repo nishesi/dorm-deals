@@ -151,4 +151,17 @@ public class ProductServiceImpl implements ProductService {
         resourceService.saveFile(FileType.IMAGE, EntityType.PRODUCT, resourceId, productImage);
         product.getResources().add(resourceId);
     }
+
+    @Override
+    @Transactional
+    public void deleteProductImage(long userId, Long productId, String imageId) {
+        Product product = productRepository.findById(productId)
+                .orElseThrow(() -> new NotFoundException(Product.class, "id", productId));
+
+        if (userId != product.getShop().getId())
+            throw new NotAcceptableException("Have not permission");
+
+        resourceService.deleteFile(FileType.IMAGE, EntityType.PRODUCT, imageId);
+        product.getResources().remove(imageId);
+    }
 }

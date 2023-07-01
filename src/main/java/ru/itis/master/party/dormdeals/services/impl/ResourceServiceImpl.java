@@ -25,7 +25,8 @@ public class ResourceServiceImpl implements ResourceService {
     @Value("${resource.max-return-size}")
     private int maxReturnSize;
 
-    private static String validateExtension(FileType fileType, MultipartFile multipartFile) {
+    private static String validateExtension(FileType fileType,
+                                            MultipartFile multipartFile) throws NotAcceptableException {
         String type = multipartFile.getContentType();
         if (type == null)
             throw new NotAcceptableException("empty content type");
@@ -56,7 +57,7 @@ public class ResourceServiceImpl implements ResourceService {
 
 
     @Nonnull
-    private File getFile(FileType fileType, EntityType entityType, String id) {
+    private File getFile(FileType fileType, EntityType entityType, String id) throws NotFoundException {
         for (String ext : fileType.extensions()) {
             File file = Paths.get(storagePath, fileType.name(), entityType.name(), id + "." + ext).toFile();
             if (file.exists() && file.isFile()) {
@@ -86,6 +87,15 @@ public class ResourceServiceImpl implements ResourceService {
             }
         } catch (IOException e) {
             throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public void deleteFile(FileType fileType, EntityType entityType, String id) {
+        try {
+            File file = getFile(fileType, entityType, id);
+            file.delete();
+        } catch (NotFoundException ignored) {
         }
     }
 
