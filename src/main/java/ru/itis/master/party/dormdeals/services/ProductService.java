@@ -1,5 +1,6 @@
 package ru.itis.master.party.dormdeals.services;
 
+import org.springframework.web.multipart.MultipartFile;
 import ru.itis.master.party.dormdeals.dto.product.*;
 import ru.itis.master.party.dormdeals.models.Product;
 
@@ -15,4 +16,8 @@ public interface ProductService {
 
     void updateProductState(long userId, long productId, Product.State state);
     List<CartProductDto> getCartProducts(List<Long> productsId);
+
+    void addProductImage(long userId, Long productId, MultipartFile productImage);
+
+    void deleteProductImage(long userId, Long productId, String imageId);
 }

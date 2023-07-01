@@ -60,8 +60,7 @@ public class SecurityConfig {
                         // business logic
                         // resources
 
-                        .requestMatchers(HttpMethod.GET, "/resource/**").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/resource/**").hasRole("SELLER")
+                        .requestMatchers("/resources/**").permitAll()
 
                         // shop
 

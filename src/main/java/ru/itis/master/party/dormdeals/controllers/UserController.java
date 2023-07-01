@@ -2,12 +2,14 @@ package ru.itis.master.party.dormdeals.controllers;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 import ru.itis.master.party.dormdeals.controllers.api.UserApi;
 import ru.itis.master.party.dormdeals.dto.MessageDto;
 import ru.itis.master.party.dormdeals.dto.user.NewUserDto;
@@ -53,5 +55,12 @@ public class UserController implements UserApi {
         Pageable pageable = PageRequest.of(pageInd, pageSize);
         Page<OrderDto> userOrders = orderService.getUserOrders(userDetails.getUser().getId(), pageable);
         return ResponseEntity.ok(userOrders);
+    }
+
+    @Override
+    public ResponseEntity<?> updateUserImage(MultipartFile file,
+                                             @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        userService.updateUserImage(userDetails.getUser().getId(), file);
+        return ResponseEntity.accepted().build();
     }
 }

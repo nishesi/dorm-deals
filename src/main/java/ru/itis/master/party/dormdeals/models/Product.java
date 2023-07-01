@@ -37,11 +37,10 @@ public class Product {
     @Column(columnDefinition = "float check (rating >= 0 and rating <= 5)")
     private float rating;
 
-    @ElementCollection
-    @JoinTable(name = "products_resources")
-    @EqualsAndHashCode.Exclude
+    @Basic
     @Builder.Default
-    private List<String> resources = new ArrayList<>();
+    @EqualsAndHashCode.Exclude
+    private ArrayList<String> resources = new ArrayList<>();
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "shop_id")

@@ -7,6 +7,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 import ru.itis.master.party.dormdeals.controllers.api.ProductApi;
 import ru.itis.master.party.dormdeals.dto.product.NewProduct;
 import ru.itis.master.party.dormdeals.dto.product.ProductDto;
@@ -61,6 +62,22 @@ public class ProductController implements ProductApi {
                                                 Product.State state,
                                                 @AuthenticationPrincipal UserDetailsImpl userDetails) {
         productService.updateProductState(userDetails.getUser().getId(), productId, state);
+        return ResponseEntity.accepted().build();
+    }
+
+    @Override
+    public ResponseEntity<?> addProductImage(Long productId,
+                                             MultipartFile file,
+                                             @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        productService.addProductImage(userDetails.getUser().getId(), productId, file);
+        return ResponseEntity.status(HttpStatus.CREATED).build();
+    }
+
+    @Override
+    public ResponseEntity<?> deleteProductImage(Long productId,
+                                                String imageId,
+                                                @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        productService.deleteProductImage(userDetails.getUser().getId(), productId, imageId);
         return ResponseEntity.accepted().build();
     }
 }

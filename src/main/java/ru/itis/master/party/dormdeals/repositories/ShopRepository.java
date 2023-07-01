@@ -13,7 +13,4 @@ public interface ShopRepository extends JpaRepository<Shop, Long> {
     Optional<Shop> findByOwnerId(Long ownerId);
     boolean existsByOwnerId(Long ownerId);
     boolean existsByName(String name);
-
-    @Query("select s.resource from Shop s where s.id=:id")
-    String getResourceById(Long id);
 }

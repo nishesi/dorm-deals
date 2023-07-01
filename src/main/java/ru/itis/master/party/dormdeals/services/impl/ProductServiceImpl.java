@@ -4,6 +4,11 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
+import ru.itis.master.party.dormdeals.dto.product.*;
+import ru.itis.master.party.dormdeals.dto.converters.ProductConverter;
+import ru.itis.master.party.dormdeals.enums.EntityType;
+import ru.itis.master.party.dormdeals.enums.FileType;
 import ru.itis.master.party.dormdeals.dto.converters.CartProductConverter;
 import ru.itis.master.party.dormdeals.dto.converters.ProductConverter;
 import ru.itis.master.party.dormdeals.dto.product.CartProductDto;
@@ -18,8 +23,10 @@ import ru.itis.master.party.dormdeals.models.Shop;
 import ru.itis.master.party.dormdeals.repositories.ProductRepository;
 import ru.itis.master.party.dormdeals.repositories.ShopRepository;
 import ru.itis.master.party.dormdeals.services.ProductService;
+import ru.itis.master.party.dormdeals.services.ResourceService;
 
 import java.util.List;
+import java.util.UUID;
 import java.util.Objects;
 
 import static ru.itis.master.party.dormdeals.models.Product.State.ACTIVE;
@@ -27,10 +34,12 @@ import static ru.itis.master.party.dormdeals.models.Product.State.ACTIVE;
 @Service
 @RequiredArgsConstructor
 public class ProductServiceImpl implements ProductService {
-    private final ProductConverter productConverter;
     private final ProductRepository productRepository;
+    private final ResourceService resourceService;
     private final ShopRepository shopRepository;
     private final CartProductConverter cartProductConverter;
+    private final ProductConverter productConverter;
+
     @Value("${default.page-size}")
     private int defaultPageSize;
 
@@ -110,5 +119,35 @@ public class ProductServiceImpl implements ProductService {
     public List<CartProductDto> getCartProducts(List<Long> productsId) {
         List<Product> products = productRepository.findAllWithResourcesByIdIn(productsId);
         return cartProductConverter.listFromProduct(products);
+    }
+
+    @Override
+    @Transactional
+    public void addProductImage(long userId, Long productId, MultipartFile productImage) {
+        Product product = productRepository.findById(productId)
+                .orElseThrow(() -> new NotFoundException(Product.class, "id", productId));
+
+        if (userId != product.getShop().getId())
+            throw new NotAcceptableException("Have not permission");
+
+        if (product.getResources().size() >= 6)
+            throw new NotAcceptableException("Too much images");
+
+        String resourceId = UUID.randomUUID().toString();
+        resourceService.saveFile(FileType.IMAGE, EntityType.PRODUCT, resourceId, productImage);
+        product.getResources().add(resourceId);
+    }
+
+    @Override
+    @Transactional
+    public void deleteProductImage(long userId, Long productId, String imageId) {
+        Product product = productRepository.findById(productId)
+                .orElseThrow(() -> new NotFoundException(Product.class, "id", productId));
+
+        if (userId != product.getShop().getId())
+            throw new NotAcceptableException("Have not permission");
+
+        resourceService.deleteFile(FileType.IMAGE, EntityType.PRODUCT, imageId);
+        product.getResources().remove(imageId);
     }
 }

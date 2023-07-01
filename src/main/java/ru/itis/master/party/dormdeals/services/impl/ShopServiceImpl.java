@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 import ru.itis.master.party.dormdeals.dto.product.ProductsPage;
 import ru.itis.master.party.dormdeals.dto.shop.NewShop;
 import ru.itis.master.party.dormdeals.dto.shop.ShopDto;
@@ -13,6 +14,8 @@ import ru.itis.master.party.dormdeals.dto.shop.UpdateShop;
 import ru.itis.master.party.dormdeals.dto.ShopWithProducts;
 import ru.itis.master.party.dormdeals.dto.converters.ProductConverter;
 import ru.itis.master.party.dormdeals.dto.converters.ShopConverter;
+import ru.itis.master.party.dormdeals.enums.EntityType;
+import ru.itis.master.party.dormdeals.enums.FileType;
 import ru.itis.master.party.dormdeals.exceptions.NotAcceptableException;
 import ru.itis.master.party.dormdeals.exceptions.NotFoundException;
 import ru.itis.master.party.dormdeals.models.*;
@@ -20,6 +23,7 @@ import ru.itis.master.party.dormdeals.repositories.DormitoryRepository;
 import ru.itis.master.party.dormdeals.repositories.ProductRepository;
 import ru.itis.master.party.dormdeals.repositories.ShopRepository;
 import ru.itis.master.party.dormdeals.repositories.UserRepository;
+import ru.itis.master.party.dormdeals.services.ResourceService;
 import ru.itis.master.party.dormdeals.services.ShopService;
 
 import java.util.List;
@@ -30,17 +34,19 @@ import java.util.Optional;
 
 public class ShopServiceImpl implements ShopService {
 
-    private final ShopConverter shopConverter;
-
-    private final ProductConverter productConverter;
-
     private final DormitoryRepository dormitoryRepository;
 
     private final ProductRepository productRepository;
 
+    private final ResourceService resourceService;
+
     private final ShopRepository shopRepository;
 
     private final UserRepository userRepository;
+
+    private final ProductConverter productConverter;
+
+    private final ShopConverter shopConverter;
 
     @Value("${default.page-size}")
     private int defaultPageSize;
@@ -122,5 +128,13 @@ public class ShopServiceImpl implements ShopService {
                 .shop(shopConverter.from(thisShop))
                 .productsPage(productsPage)
                 .build();
+    }
+
+    @Override
+    public void updateShopImage(long userId, MultipartFile shopImage) {
+        Shop shop = shopRepository.findByOwnerId(userId)
+                .orElseThrow(() -> new NotFoundException(Shop.class, "ownerId", userId));
+
+        resourceService.saveFile(FileType.IMAGE, EntityType.SHOP, String.valueOf(shop.getId()), shopImage);
     }
 }

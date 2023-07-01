@@ -36,8 +36,6 @@ public class User {
     @Column(columnDefinition = "char(64)")
     private String hashForConfirm;
 
-    private String resource;
-
     @Enumerated(EnumType.STRING)
     private State state;
 
