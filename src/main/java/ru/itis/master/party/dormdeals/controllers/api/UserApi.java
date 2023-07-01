@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.media.SchemaProperty;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -11,12 +12,13 @@ import io.swagger.v3.oas.annotations.tags.Tags;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import ru.itis.master.party.dormdeals.dto.ExceptionDto;
 import ru.itis.master.party.dormdeals.dto.MessageDto;
+import ru.itis.master.party.dormdeals.dto.order.OrderDto;
 import ru.itis.master.party.dormdeals.dto.user.NewUserDto;
 import ru.itis.master.party.dormdeals.dto.user.UpdateUserDto;
 import ru.itis.master.party.dormdeals.dto.user.UserDto;
-import ru.itis.master.party.dormdeals.dto.order.OrderDto;
 import ru.itis.master.party.dormdeals.security.details.UserDetailsImpl;
 import ru.itis.master.party.dormdeals.validation.responses.ValidationErrorsDto;
 
@@ -116,6 +118,14 @@ public interface UserApi {
             @Parameter(hidden = true)
             UserDetailsImpl userDetails);
 
+    @Operation(summary = "получение всех заказов пользователя")
+    @ApiResponses(
+            @ApiResponse(responseCode = "200", description = "страница заказов",
+                    content = {
+                            @Content(mediaType = "application/json",
+                                    schema = @Schema(implementation = Page.class))
+                    })
+    )
     @GetMapping("/orders")
     ResponseEntity<Page<OrderDto>> getUserOrders(
             @Parameter(description = "индекс страницы, по умолчанию = 0")
@@ -126,4 +136,22 @@ public interface UserApi {
             Integer pageSize,
             @Parameter(hidden = true)
             UserDetailsImpl userDetails);
+
+    @Operation(summary = "обновление иконки пользователя")
+    @io.swagger.v3.oas.annotations.parameters.RequestBody(content = @Content(
+            mediaType = "multipart/form-data",
+            schema = @Schema(type = "object"),
+            schemaProperties = {
+                    @SchemaProperty(name = "file",
+                            schema = @Schema(type = "string", format = "binary"))}
+    ))
+    @ApiResponses({
+            @ApiResponse(responseCode = "202", description = "изменено")
+    })
+    @PostMapping(value = "/image")
+    ResponseEntity<?> updateUserImage(
+            @Parameter(description = "новая иконка")
+            @RequestParam("file")
+            MultipartFile file,
+            @Parameter(hidden = true) UserDetailsImpl userDetails);
 }

@@ -29,8 +29,6 @@ public class Shop {
     @Column(columnDefinition = "numeric(2, 1)", nullable = false)
     private double rating;
 
-    private String resource;
-
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "owner_id")
     @Access(AccessType.PROPERTY)

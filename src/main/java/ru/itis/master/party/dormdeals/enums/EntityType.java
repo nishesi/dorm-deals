@@ -7,16 +7,15 @@ public enum EntityType {
     USER("users"),
     SHOP("shops"),
     PRODUCT("products");
-    private final List<EntityType> entityTypes;
+    private static final List<EntityType> ENTITY_TYPES = List.of(values());
     private final String entity;
 
     EntityType(String entity) {
         this.entity = entity;
-        entityTypes = List.of(values());
     }
 
-    public EntityType from(String s) {
-        for (EntityType entityType : entityTypes) {
+    public static EntityType from(String s) {
+        for (EntityType entityType : ENTITY_TYPES) {
             if (entityType.entity.equals(s)) {
                 return entityType;
             }
@@ -25,7 +24,7 @@ public enum EntityType {
     }
 
     public List<EntityType> entityTypes() {
-        return entityTypes;
+        return ENTITY_TYPES;
     }
 
     public String entity() {

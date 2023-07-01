@@ -62,8 +62,7 @@ public class SecurityConfig {
                         .requestMatchers("/shops/*/orders").hasRole("SELLER")
                         .requestMatchers(HttpMethod.GET, "/products/**", "/shops/**").permitAll()
                         .requestMatchers("/products/**", "/shops/**").hasRole("SELLER")
-                        .requestMatchers(HttpMethod.GET, "/resource/**").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/resource/**").hasRole("SELLER")
+                        .requestMatchers("/resources/**").permitAll()
 
                         // base pages
 
