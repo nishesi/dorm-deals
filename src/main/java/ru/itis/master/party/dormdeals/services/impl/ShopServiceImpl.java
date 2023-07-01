@@ -132,7 +132,7 @@ public class ShopServiceImpl implements ShopService {
 
     @Override
     public void updateShopImage(long userId, MultipartFile shopImage) {
-        Shop shop = shopRepository.findShopByOwnerId(userId)
+        Shop shop = shopRepository.findByOwnerId(userId)
                 .orElseThrow(() -> new NotFoundException(Shop.class, "ownerId", userId));
 
         resourceService.saveFile(FileType.IMAGE, EntityType.SHOP, String.valueOf(shop.getId()), shopImage);
