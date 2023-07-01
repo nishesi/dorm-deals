@@ -1,12 +1,13 @@
 package ru.itis.master.party.dormdeals.dto.shop;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import ru.itis.master.party.dormdeals.dto.DormitoryDto;
-import ru.itis.master.party.dormdeals.dto.user.UserDtoForShop;
+import ru.itis.master.party.dormdeals.dto.user.UserDtoForShopAndReview;
 
 import java.util.List;
 
@@ -18,6 +19,7 @@ import java.util.List;
 public class ShopDto {
 
     @Schema(description = "идентификатор магазина", example = "100500")
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private Long id;
 
     @Schema(description = "название магазина", example = "TopShop")
@@ -27,13 +29,13 @@ public class ShopDto {
     private String description;
 
     @Schema(description = "рейтинг магазина", example = "4.9")
-    private double rating;
+    private float rating;
 
     @Schema(description = "место продаж", example = "Пушкина, 9")
     private List<DormitoryDto> dormitories;
 
     @Schema(description = "владелец магазина")
-    private UserDtoForShop owner;
+    private UserDtoForShopAndReview owner;
 
     @Schema(description = "изображение магазина")
     private String resourceUrl;

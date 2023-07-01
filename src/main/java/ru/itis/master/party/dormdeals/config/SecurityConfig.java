@@ -58,19 +58,29 @@ public class SecurityConfig {
                         .requestMatchers("/my/cart/**").hasRole("USER")
 
                         // business logic
+                        // resources
 
-                        .requestMatchers("/shops/*/orders").hasRole("SELLER")
-                        .requestMatchers(HttpMethod.GET, "/products/**", "/shops/**").permitAll()
-                        .requestMatchers("/products/**", "/shops/**").hasRole("SELLER")
                         .requestMatchers("/resources/**").permitAll()
 
-                        // base pages
+                        // shop
 
-                        .requestMatchers("/", "/home").permitAll()
+                        .requestMatchers("/shops/*/orders").hasRole("SELLER")
+                        .requestMatchers(HttpMethod.GET, "/shops/**").permitAll()
+                        .requestMatchers("/shops/**").hasRole("SELLER")
+                        .requestMatchers("/search/**").permitAll()
+
+                        // products
+
+                        .requestMatchers(HttpMethod.GET, "/products/*").permitAll()
+                        .requestMatchers("/products/**").hasRole("SELLER")
 
                         // orders
 
                         .requestMatchers("/orders/**").authenticated()
+
+                        // base pages
+
+                        .requestMatchers("/", "/home").permitAll()
 
                         // development
 

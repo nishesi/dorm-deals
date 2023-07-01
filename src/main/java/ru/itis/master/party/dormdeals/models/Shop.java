@@ -27,7 +27,7 @@ public class Shop {
     private List<Dormitory> dormitories;
 
     @Column(columnDefinition = "numeric(2, 1)", nullable = false)
-    private double rating;
+    private float rating;
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "owner_id")

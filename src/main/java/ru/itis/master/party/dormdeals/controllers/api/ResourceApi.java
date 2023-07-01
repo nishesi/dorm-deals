@@ -6,6 +6,9 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import io.swagger.v3.oas.annotations.tags.Tags;
+import org.springframework.core.io.Resource;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -15,44 +18,11 @@ import ru.itis.master.party.dormdeals.dto.ExceptionDto;
 
 import java.io.IOException;
 
-
-@RequestMapping("/resources")
+@RequestMapping("/resource")
+@Tags(value = {
+        @Tag(name = "Resources")
+})
 public interface ResourceApi {
-//    @Operation(summary = "Загрузка файла")
-//    @ApiResponses(value = {
-//            @ApiResponse(responseCode = "201", description = "Успешная загрузка файлов",
-//                    content = {
-//                            @Content(mediaType = "application/json",
-//                                    schema = @Schema(implementation = MultipartFile.class))
-//                    }
-//            ),
-//            @ApiResponse(responseCode = "422", description = "невалидные данные",
-//                    content = {
-//                            @Content(mediaType = "application/json",
-//                                    schema = @Schema(implementation = ValidationErrorsDto.class))
-//                    }
-//            )
-//    })
-//    @PostMapping("/{typeDto}/upload/{id}")
-//    ResponseEntity<String> uploadResource(@RequestParam("file") MultipartFile file, @PathVariable("id") Long id, @PathVariable("typeDto") String typeDto);
-//
-//    @Operation(summary = "Загрузка файлов для товара")
-//    @ApiResponses(value = {
-//            @ApiResponse(responseCode = "201", description = "Успешная загрузка файлов",
-//                    content = {
-//                            @Content(mediaType = "application/json",
-//                                    schema = @Schema(implementation = MultipartFile.class))
-//                    }
-//            ),
-//            @ApiResponse(responseCode = "422", description = "невалидные данные",
-//                    content = {
-//                            @Content(mediaType = "application/json",
-//                                    schema = @Schema(implementation = ValidationErrorsDto.class))
-//                    }
-//            )
-//    })
-//    @PostMapping("/product/upload/{id}")
-//    ResponseEntity<String> uploadProductResource(@RequestParam("files") MultipartFile[] files, @PathVariable("id") Long id);
 
     @Operation(summary = "Получение файла")
     @ApiResponses(value = {

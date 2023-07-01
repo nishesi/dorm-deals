@@ -11,8 +11,8 @@ import org.springframework.web.multipart.MultipartFile;
 import ru.itis.master.party.dormdeals.controllers.api.ProductApi;
 import ru.itis.master.party.dormdeals.dto.product.NewProduct;
 import ru.itis.master.party.dormdeals.dto.product.ProductDto;
-import ru.itis.master.party.dormdeals.dto.product.ProductsPage;
 import ru.itis.master.party.dormdeals.dto.product.UpdateProduct;
+import ru.itis.master.party.dormdeals.models.Product;
 import ru.itis.master.party.dormdeals.security.details.UserDetailsImpl;
 import ru.itis.master.party.dormdeals.services.ProductService;
 
@@ -22,32 +22,28 @@ public class ProductController implements ProductApi {
 
     private final ProductService productService;
 
-//    @Override
-//    public ResponseEntity<ProductsPage> getAllProductsByShop(int page, Long shopId) {
-//        return ResponseEntity.ok(productService.getAllProductsByShop(page, shopId));
-//    }
-
-    //TODO сделать page Long и required = false и при пустом значении возвращать первую страницу
-    @Override
-    public ResponseEntity<ProductsPage> getAllProducts(int page) {
-        return ResponseEntity.ok(productService.getAllProducts(page));
-    }
-
     @Override
     public ResponseEntity<ProductDto> addProduct(@Valid NewProduct newProduct,
                                                  @AuthenticationPrincipal UserDetailsImpl userDetails) {
         long userId = userDetails.getUser().getId();
-        return ResponseEntity.status(HttpStatus.CREATED)
-                .body(productService.addProduct(userId, newProduct));
+        ProductDto productDto = productService.addProduct(userId, newProduct);
+        return ResponseEntity.status(HttpStatus.CREATED).body(productDto);
     }
 
     @Override
-    public ResponseEntity<ProductDto> getProduct(Long productId) {
-        return ResponseEntity.ok(productService.getProduct(productId));
+    public ResponseEntity<ProductDto> getProduct(Long productId, int pageIndex,
+                                                 @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        if (userDetails != null) {
+            long userId = userDetails.getUser().getId();
+            return ResponseEntity.ok(productService.getProduct(productId, userId, pageIndex));
+        }
+
+        return ResponseEntity.ok(productService.getProduct(productId, null, pageIndex));
     }
 
     @Override
-    public ResponseEntity<ProductDto> updateProduct(Long productId, @Valid UpdateProduct updatedProduct,
+    public ResponseEntity<ProductDto> updateProduct(Long productId,
+                                                    @Valid UpdateProduct updatedProduct,
                                                     @AuthenticationPrincipal UserDetailsImpl userDetails) {
         long userId = userDetails.getUser().getId();
         return ResponseEntity.accepted().body(productService.updateProduct(userId, productId, updatedProduct));
@@ -57,15 +53,15 @@ public class ProductController implements ProductApi {
     public ResponseEntity<?> deleteProduct(Long productId,
                                            @AuthenticationPrincipal UserDetailsImpl userDetails) {
         long userId = userDetails.getUser().getId();
-        productService.deleteProduct(userId, productId);
+        productService.updateProductState(userId, productId, Product.State.DELETED);
         return ResponseEntity.accepted().build();
     }
 
     @Override
-    public ResponseEntity<ProductDto> returnProductInSell(Long productId,
-                                                          @AuthenticationPrincipal UserDetailsImpl userDetails) {
-        long userId = userDetails.getUser().getId();
-        productService.returnInSell(userId, productId);
+    public ResponseEntity<?> updateProductState(Long productId,
+                                                Product.State state,
+                                                @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        productService.updateProductState(userDetails.getUser().getId(), productId, state);
         return ResponseEntity.accepted().build();
     }
 

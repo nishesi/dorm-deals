@@ -16,7 +16,6 @@ import org.springframework.web.multipart.MultipartFile;
 import ru.itis.master.party.dormdeals.dto.ExceptionDto;
 import ru.itis.master.party.dormdeals.dto.shop.NewShop;
 import ru.itis.master.party.dormdeals.dto.shop.ShopDto;
-import ru.itis.master.party.dormdeals.dto.shop.ShopsPage;
 import ru.itis.master.party.dormdeals.dto.shop.UpdateShop;
 import ru.itis.master.party.dormdeals.dto.ShopWithProducts;
 import ru.itis.master.party.dormdeals.dto.order.OrderDto;
@@ -29,19 +28,30 @@ import ru.itis.master.party.dormdeals.validation.responses.ValidationErrorsDto;
 @RequestMapping("/shops")
 public interface ShopApi {
 
-    @Operation(summary = "Получение списка магазинов")
+
+    @Operation(summary = "Получение главной страницы магазина с его товарами постранично")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Страница с магазинами",
+            @ApiResponse(responseCode = "200", description = "Информация о магазине и его товары",
                     content = {
-                            @Content(mediaType = "application/json", schema = @Schema(implementation = ShopsPage.class))
+                            @Content(mediaType = "application/json",
+                                    schema = @Schema(implementation = ShopDto.class))
+                    }
+            ),
+            @ApiResponse(responseCode = "404", description = "Сведения об ошибке",
+                    content = {
+                            @Content(mediaType = "application/json",
+                                    schema = @Schema(implementation = ExceptionDto.class))
                     }
             )
     })
-    @GetMapping
-    ResponseEntity<ShopsPage> getAllShops(
+    @GetMapping("/{shop-id}")
+    ResponseEntity<ShopWithProducts> getMainPageShop(
+            @Parameter(description = "Идентификатор магазина")
+            @PathVariable("shop-id")
+            Long shopId,
             @Parameter(description = "Номер страницы")
-            @RequestParam("page")
-            int page);
+            @RequestParam(value = "pageIndex", required = false, defaultValue = "0")
+            int pageIndex);
 
     @Operation(summary = "Добавление магазина")
     @ApiResponses(value = {
@@ -65,26 +75,6 @@ public interface ShopApi {
             @Parameter(hidden = true)
             UserDetailsImpl userDetails);
 
-    @Operation(summary = "Получение магазина")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Информация о магазине",
-                    content = {
-                            @Content(mediaType = "application/json",
-                                    schema = @Schema(implementation = ShopDto.class))
-                    }
-            ),
-            @ApiResponse(responseCode = "404", description = "Сведения об ошибке",
-                    content = {
-                            @Content(mediaType = "application/json",
-                                    schema = @Schema(implementation = ExceptionDto.class))
-                    }
-            )
-    })
-    @GetMapping("/{shop-id}")
-    ResponseEntity<ShopDto> getShop(
-            @Parameter(description = "Идентификатор магазина", example = "1")
-            @PathVariable("shop-id")
-            Long shopId);
 
     @Operation(summary = "Обновление магазина")
     @ApiResponses(value = {
@@ -132,30 +122,15 @@ public interface ShopApi {
             @Parameter(hidden = true)
             UserDetailsImpl userDetails);
 
-    @Operation(summary = "Получение главной страницы магазина с его товарами постранично")
+    @Operation(summary = "Получение списка заказов магазина")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Информация о магазине и его товары",
-                    content = {
-                            @Content(mediaType = "application/json",
-                                    schema = @Schema(implementation = ShopDto.class))
-                    }
-            ),
+            @ApiResponse(responseCode = "200", description = "Данные о заказах в магизне получены"),
             @ApiResponse(responseCode = "404", description = "Сведения об ошибке",
-                    content = {
-                            @Content(mediaType = "application/json",
-                                    schema = @Schema(implementation = ExceptionDto.class))
-                    }
-            )
+            content = {
+                    @Content(mediaType = "application/json",
+                    schema = @Schema(implementation = ExceptionDto.class))
+            })
     })
-    @GetMapping("/{shop-id}/products")
-    ResponseEntity<ShopWithProducts> getAllProductsThisShop(
-            @Parameter(description = "Идентификатор магазина")
-            @PathVariable("shop-id")
-            Long shopId,
-            @Parameter(description = "Страница товаров")
-            @RequestParam("page")
-            int page);
-
     @GetMapping("/{shop-id}/orders")
     ResponseEntity<Page<OrderDto>> getShopOrders(
             @PathVariable("shop-id")
