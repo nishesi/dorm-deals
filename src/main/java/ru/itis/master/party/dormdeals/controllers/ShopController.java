@@ -74,7 +74,7 @@ public class ShopController implements ShopApi {
     }
 
     @Override
-    public ResponseEntity<?> updateUserImage(MultipartFile file,
+    public ResponseEntity<?> updateShopImage(MultipartFile file,
                                              @AuthenticationPrincipal UserDetailsImpl userDetails) {
         shopService.updateShopImage(userDetails.getUser().getId(), file);
         return ResponseEntity.accepted().build();

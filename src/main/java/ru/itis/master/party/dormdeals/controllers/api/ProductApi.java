@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.media.SchemaProperty;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -11,6 +12,7 @@ import io.swagger.v3.oas.annotations.tags.Tags;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import ru.itis.master.party.dormdeals.dto.*;
 import ru.itis.master.party.dormdeals.dto.product.NewProduct;
 import ru.itis.master.party.dormdeals.dto.product.ProductDto;
@@ -161,4 +163,24 @@ public interface ProductApi {
             Long productId,
             @Parameter(hidden = true)
             UserDetailsImpl userDetails);
+
+    @Operation(summary = "добавление картинок к товару")
+    @io.swagger.v3.oas.annotations.parameters.RequestBody(content = @Content(
+            mediaType = "multipart/form-data",
+            schema = @Schema(type = "object"),
+            schemaProperties = {
+                    @SchemaProperty(name = "file",
+                            schema = @Schema(type = "string", format = "binary"))}
+    ))
+    @ApiResponses({
+            @ApiResponse(responseCode = "202", description = "изменено")
+    })
+    @PostMapping(value = "{product-id}/image")
+    ResponseEntity<?> addProductImage(
+            @PathVariable("product-id")
+            Long productId,
+            @Parameter(description = "новая картинка")
+            @RequestParam("file")
+            MultipartFile file,
+            @Parameter(hidden = true) UserDetailsImpl userDetails);
 }

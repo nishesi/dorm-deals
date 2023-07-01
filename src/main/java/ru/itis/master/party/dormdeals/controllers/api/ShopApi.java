@@ -181,7 +181,7 @@ public interface ShopApi {
             @ApiResponse(responseCode = "202", description = "изменено")
     })
     @PostMapping(value = "/image")
-    ResponseEntity<?> updateUserImage(
+    ResponseEntity<?> updateShopImage(
             @Parameter(description = "новая иконка")
             @RequestParam("file")
             MultipartFile file,

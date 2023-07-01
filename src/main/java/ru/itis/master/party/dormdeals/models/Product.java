@@ -1,6 +1,5 @@
 package ru.itis.master.party.dormdeals.models;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -45,11 +44,10 @@ public class Product {
     @EqualsAndHashCode.Exclude
     private Shop shop;
 
-    @ElementCollection
-    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
-    @JoinTable(name = "products_resources")
+    @Basic
+    @Builder.Default
     @EqualsAndHashCode.Exclude
-    private List<String> resources = new ArrayList<>();
+    private ArrayList<String> resources = new ArrayList<>();
 
     @ManyToMany
     @JoinTable(name = "favorites",
@@ -67,5 +65,22 @@ public class Product {
         NOT_AVAILABLE,
         DELETED
     }
+
+//    @Converter
+//    public class StringListConverter implements AttributeConverter<List<String>, String> {
+//        private static final String SPLIT_CHAR = ";";
+//
+//        @Override
+//        public String convertToDatabaseColumn(List<String> stringList) {
+//            return stringList != null ? String.join(SPLIT_CHAR, stringList) : "";
+//        }
+//
+//        @Override
+//        public List<String> convertToEntityAttribute(String string) {
+//            return string != null
+//                    ? new ArrayList<>(List.of(string.split(SPLIT_CHAR)))
+//                    : new ArrayList<>();
+//        }
+//    }
 }
 

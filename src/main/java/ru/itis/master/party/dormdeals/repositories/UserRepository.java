@@ -11,6 +11,4 @@ public interface UserRepository  extends JpaRepository<User, Long> {
     Optional<User> getByHashForConfirm(String hashForConfirm);
     boolean existsUserByEmail(String email);
     void deleteByStateEquals(User.State state);
-    @Query("select u.resource from User u where u.id=:id")
-    String getResourceById(Long id);
 }

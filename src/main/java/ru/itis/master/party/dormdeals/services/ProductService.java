@@ -1,5 +1,6 @@
 package ru.itis.master.party.dormdeals.services;
 
+import org.springframework.web.multipart.MultipartFile;
 import ru.itis.master.party.dormdeals.dto.product.*;
 
 import java.util.List;
@@ -19,4 +20,6 @@ public interface ProductService {
 
     void returnInSell(long userId, Long productId);
     List<CartProductDto> getCartProducts(List<Long> productsId);
+
+    void addProductImage(long userId, Long productId, MultipartFile productImage);
 }
