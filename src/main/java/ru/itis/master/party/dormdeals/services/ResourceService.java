@@ -1,12 +1,14 @@
 package ru.itis.master.party.dormdeals.services;
 
 import org.springframework.web.multipart.MultipartFile;
-import ru.itis.master.party.dormdeals.models.File;
+import ru.itis.master.party.dormdeals.dto.ResourceDto;
+import ru.itis.master.party.dormdeals.enums.EntityType;
+import ru.itis.master.party.dormdeals.enums.FileType;
 
 public interface ResourceService {
-    void uploadResource(MultipartFile file, Long id, File.FileDtoType dtoType);
-    void uploadResource(MultipartFile[] files, Long id, File.FileDtoType dtoType);
+    void saveFile(FileType fileType, EntityType entityType, String id, MultipartFile file);
 
-    String getFileName(String dtoType, Long id);
-    String getFileName(Long id, Integer numberResource);
+    ResourceDto getResource(FileType fileType, EntityType entityType, String id);
+
+    ResourceDto getResourceInRange(FileType fileType, EntityType entityType, String id, String range);
 }
