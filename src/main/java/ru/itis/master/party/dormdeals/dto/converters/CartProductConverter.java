@@ -4,8 +4,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import ru.itis.master.party.dormdeals.dto.product.CartProductDto;
 import ru.itis.master.party.dormdeals.dto.product.ProductDto;
+import ru.itis.master.party.dormdeals.enums.EntityType;
+import ru.itis.master.party.dormdeals.enums.FileType;
 import ru.itis.master.party.dormdeals.models.CartProduct;
-import ru.itis.master.party.dormdeals.models.File;
 import ru.itis.master.party.dormdeals.models.Product;
 import ru.itis.master.party.dormdeals.utils.ResourceUrlResolver;
 
@@ -20,7 +21,7 @@ public class CartProductConverter {
         List<String> images = cartProduct.getProduct().getResources();
         String url = (images.isEmpty()) ?
                 "" :
-                resolver.resolveUrl(cartProduct.getProduct().getId(), File.FileDtoType.PRODUCT, File.FileType.IMAGE, 1);
+                resolver.resolveUrl(FileType.IMAGE, EntityType.PRODUCT,  images.get(0));
         return CartProductDto.builder()
                 .productDto(
                         ProductDto.builder()
@@ -40,7 +41,7 @@ public class CartProductConverter {
         List<String> images = product.getResources();
         String url = (images.isEmpty()) ?
                 "" :
-                resolver.resolveUrl(product.getId(), File.FileDtoType.PRODUCT, File.FileType.IMAGE, 1);
+                resolver.resolveUrl(FileType.IMAGE, EntityType.PRODUCT,  images.get(0));
         return CartProductDto.builder()
                 .productDto(
                         ProductDto.builder()
