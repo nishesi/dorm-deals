@@ -52,27 +52,26 @@ public class SecurityConfig {
                         .requestMatchers("/auth/token", "/email/confirm/**").permitAll()
                         .requestMatchers(HttpMethod.POST, "/logout").permitAll()
                         .requestMatchers(HttpMethod.POST, "/user").permitAll()
-                        .requestMatchers("/my/favorites/**").hasAnyRole("USER", "SELLER")
                         .requestMatchers("/user/**").hasRole("USER")
-                        .requestMatchers(HttpMethod.GET, "/my/cart").permitAll()
-                        .requestMatchers("/my/cart/**").hasRole("USER")
 
-                        // business logic
+                        // personal
+
+                        .requestMatchers(HttpMethod.GET, "/my/cart").permitAll()
+                        .requestMatchers("/my/cart/**", "/my/favorites/**").hasRole("USER")
+
                         // resources
 
                         .requestMatchers("/resources/**").permitAll()
 
-                        // shop
+                        // shops and products
 
-                        .requestMatchers("/shops/*/orders").hasRole("SELLER")
-                        .requestMatchers(HttpMethod.GET, "/shops/**").permitAll()
-                        .requestMatchers("/shops/**").hasRole("SELLER")
+                        .requestMatchers(HttpMethod.GET, "/products/*", "/shops/*").permitAll()
+                        .requestMatchers("/shops/**", "/products/**").hasRole("SELLER")
+
+
+                        // search
+
                         .requestMatchers("/search/**").permitAll()
-
-                        // products
-
-                        .requestMatchers(HttpMethod.GET, "/products/*").permitAll()
-                        .requestMatchers("/products/**").hasRole("SELLER")
 
                         // orders
 
