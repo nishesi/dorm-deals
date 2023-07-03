@@ -34,4 +34,4 @@ build/
 
 .mvn/
 
-src/main/resources/application.properties
+**/application.properties
