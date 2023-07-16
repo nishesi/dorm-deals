@@ -25,7 +25,10 @@ import ru.itis.master.party.dormdeals.services.UserService;
 import ru.itis.master.party.dormdeals.utils.EmailUtil;
 
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import static ru.itis.master.party.dormdeals.models.User.State.*;
 
@@ -61,10 +64,17 @@ public class UserServiceImpl implements UserService {
         String confirmationUrl = "http://localhost/email/confirm?accept=" +
                 returnedUser.getHashForConfirm();
 
-//        emailUtil.sendMail(userDto.getEmail(),
-//                "confirm",
-//                "confirmation-mail.ftlh",
-//                Map.of("confirmationUrl", confirmationUrl));
+        ExecutorService executorService = Executors.newSingleThreadExecutor();
+
+        executorService.submit(() -> {
+            emailUtil.sendMail(userDto.getEmail(),
+                    "confirm",
+                    "confirmation-mail.ftlh",
+                    Map.of("confirmationUrl", confirmationUrl));
+        });
+
+        executorService.shutdown();
+
 
         return "Please, check your email to confirm account.";
     }
