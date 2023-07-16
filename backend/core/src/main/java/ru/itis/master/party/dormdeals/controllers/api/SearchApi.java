@@ -26,9 +26,9 @@ public interface SearchApi {
     @Operation(summary = "Поиск товаров по критериям")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Товары найдены",
-            content = {
-                    @Content(mediaType = "application/json", schema = @Schema(implementation = ProductDto[].class))
-            }),
+                    content = {
+                            @Content(mediaType = "application/json", schema = @Schema(implementation = ProductDto[].class))
+                    }),
             @ApiResponse(responseCode = "404", description = "Таких товаров нет",
                     content = {
                             @Content(mediaType = "application/json", schema = @Schema(implementation = ExceptionDto.class))
@@ -36,7 +36,10 @@ public interface SearchApi {
     })
     @GetMapping("/products")
     ResponseEntity<List<ProductDto>> searchProducts(
-            @Parameter(description = "Список категорий и списки значений", example = "name-query=Lays,cheetos&category=chips")
+            @Parameter(description = "Список категорий и списки значений",
+                    example = """
+                            {"name-query":["Товар","Cheetos"],"category":"chips"}
+                            """)
             @RequestParam MultiValueMap<String, String> criteria,
             @Parameter(description = "Номер страницы", example = "1")
             @RequestParam(value = "pageIndex",

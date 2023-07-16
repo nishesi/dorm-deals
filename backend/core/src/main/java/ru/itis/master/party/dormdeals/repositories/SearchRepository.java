@@ -44,8 +44,6 @@ public class SearchRepository {
             predicates.add(root.get("shop").get("id").in(shopIdn));
         }
 
-        root.fetch("resources", JoinType.LEFT);
-
         criteriaQuery.where(cb.and(predicates.toArray(new Predicate[0])));
 
         TypedQuery<Product> query = entityManager.createQuery(criteriaQuery);
