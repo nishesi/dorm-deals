@@ -35,3 +35,4 @@ build/
 .mvn/
 
 **/application.properties
+**/node_modules/**
