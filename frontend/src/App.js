@@ -1,25 +1,14 @@
-import React, {useState} from "react";
-import logo from './logo.svg';
+import React, {useEffect, useState} from "react";
 import './App.css';
-import ProductCover from "./components/ProductCoverItem";
-import Shop from "./components/Shop";
-import ProductCoverItem from "./components/ProductCoverItem";
 import LogInForm from "./components/LogInForm";
-import async from "async";
 import axios from "axios";
+import SearchProductService from "./API/SearchProductService";
+import ProductsList from "./components/ProductsList";
+import SearchBar from "./components/UI/SearchBar";
 
 function App() {
     const [likes, setLikes] = useState(5);
-    const products = [
-        {name: "Cheetos", price: 10.99, countInStorage: 1},
-        {name: "Cheetos", price: 10.99, countInStorage: 1},
-        {name: "Cheetos", price: 10.99, countInStorage: 1},
-        {name: "Cheetos", price: 10.99, countInStorage: 1},
-        {name: "Cheetos", price: 10.99, countInStorage: 1},
-        {name: "Cheetos", price: 10.99, countInStorage: 1},
-        {name: "Cheetos", price: 10.99, countInStorage: 1},
-        {name: "Cheetos", price: 10.99, countInStorage: 1},
-    ]
+    const [products, setProducts] = useState([])
     const [users, setUsers] = useState([]);
     const addUser = (user) => {
         setUsers([...users, user]);
@@ -30,27 +19,20 @@ function App() {
         console.log(resp)
     }
 
-    function incr() {
-        setLikes(likes +    1)
-    }
-
     // Product Search Block
 
-
+    useEffect(() => {
+        SearchProductService.getByCriteria([], ['Товар'], [], 0)
+            .then((newProducts) => {
+                setProducts(newProducts)
+            })
+    }, [])
 
     return (
         <div className="App">
+            <SearchBar updateProducts={(pr) => setProducts(pr)}></SearchBar>
             <LogInForm callBack={addUser}/>
-            <button onClick={fetchPosts}>Click Me</button>
-            <p>Users</p>
-            {users.map((user)=>
-                <div>{user.email + " " + user.password}</div>
-            )}
-            <div className="row row-cols-2 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 row-cols-xl-5 g-3 p-3">
-                {products.map((pr, index) =>
-                    <ProductCoverItem ind={index} productCover={pr}></ProductCoverItem>
-                )}
-            </div>
+            <ProductsList products={products}></ProductsList>
         </div>
     );
 }
