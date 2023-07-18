@@ -5,7 +5,7 @@ const ProductsList = ({products}) => {
     return (
         <div className="row row-cols-2 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 row-cols-xl-5 g-3 p-3">
             {products.map((pr, index) => (
-                    <ProductCoverItem ind={index} productCover={pr}></ProductCoverItem>
+                    <ProductCoverItem key={pr.id} productCover={pr}></ProductCoverItem>
                 )
             )}
         </div>
