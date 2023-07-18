@@ -2,6 +2,7 @@ package ru.itis.master.party.dormdeals.security.filters;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.FilterChain;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Value;
@@ -80,7 +81,12 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         String email = userDetails.getUsername();
         jwtService.addTokensToUser(email, tokens.get("accessToken"), tokens.get("refreshToken"));
 
-        objectMapper.writeValue(response.getOutputStream(), tokens);
+        Cookie refreshTokenCookie = new Cookie("refreshToken", tokens.get("refreshToken"));
+        refreshTokenCookie.setHttpOnly(true);
+        refreshTokenCookie.setPath("/");
+        response.addCookie(refreshTokenCookie);
+
+        objectMapper.writeValue(response.getOutputStream(), Map.of("accessToken", tokens.get("accessToken")));
     }
 
     @Override
