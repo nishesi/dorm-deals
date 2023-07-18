@@ -37,6 +37,8 @@ public class SecurityConfig {
                               JwtLogoutFilter jwtLogoutFilter
     ) throws Exception {
         http
+                .cors()
+                .and()
                 .csrf().disable()
                 .addFilter(jwtAuthenticationFilter)
                 .addFilterBefore(jwtAuthorizationFilter, UsernamePasswordAuthenticationFilter.class)
