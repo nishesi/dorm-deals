@@ -1,0 +1,64 @@
+GET localhost/products?page=0
+
+###
+
+
+POST localhost/products
+Content-Type: application/json
+
+{
+  "name": "Lay's сыр 140 грамм",
+  "description": "Чипсы во лайк ставлю",
+  "category": "Продукты",
+  "price": "110",
+  "count_in_storage": "15"
+}
+
+###
+
+
+GET http://localhost/product/1
+
+###
+
+DELETE localhost/product/1
+
+###
+
+POST localhost/users
+
+###
+
+GET http://localhost/shops?page=0
+
+###
+
+POST http://localhost/shops?ownerId=1
+Content-Type: application/json
+
+{
+  "name": "Hey ara",
+  "description": "Hey maga",
+  "placeSells": "Kazan",
+  "rating": "5"
+}
+
+###
+
+GET http://localhost/shops/1
+
+###
+
+PUT http://localhost/shops/1
+Content-Type: application/json
+
+{
+  "name": "Updated Shop",
+  "description": "Update",
+  "rating": "2",
+  "placeSells": "America"
+}
+
+###
+
+DELETE http://localhost/shops/5
