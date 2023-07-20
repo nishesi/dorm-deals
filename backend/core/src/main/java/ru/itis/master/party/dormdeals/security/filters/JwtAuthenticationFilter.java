@@ -11,6 +11,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.stereotype.Component;
+import ru.itis.master.party.dormdeals.dto.converters.UserConverter;
 import ru.itis.master.party.dormdeals.security.authentication.RefreshAuthenticationToken;
 import ru.itis.master.party.dormdeals.security.details.UserDetailsImpl;
 import ru.itis.master.party.dormdeals.security.service.AuthorizationHeaderUtil;
@@ -18,6 +19,8 @@ import ru.itis.master.party.dormdeals.security.service.JwtUtil;
 import ru.itis.master.party.dormdeals.services.JwtService;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Component
@@ -26,6 +29,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
     public static final String USERNAME_PARAMETER = "email";
     public static final String AUTHENTICATION_URL = "/auth/token";
     private final AuthorizationHeaderUtil authorizationHeaderUtil;
+    private final UserConverter userConverter;
     private final ObjectMapper objectMapper;
     private final JwtService jwtService;
     private final JwtUtil jwtUtil;
@@ -36,6 +40,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 
     public JwtAuthenticationFilter(AuthenticationConfiguration authenticationConfiguration,
                                    AuthorizationHeaderUtil authorizationHeaderUtil,
+                                   UserConverter userConverter,
                                    ObjectMapper objectMapper,
                                    JwtService jwtService,
                                    JwtUtil jwtUtil
@@ -45,6 +50,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         this.setFilterProcessesUrl(AUTHENTICATION_URL);
 
         this.authorizationHeaderUtil = authorizationHeaderUtil;
+        this.userConverter = userConverter;
         this.objectMapper = objectMapper;
         this.jwtService = jwtService;
         this.jwtUtil = jwtUtil;
@@ -54,11 +60,12 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
     public Authentication attemptAuthentication(
             HttpServletRequest request, HttpServletResponse response
     ) throws AuthenticationException {
-        if (authorizationHeaderUtil.hasAuthorizationToken(request)) {
-
-            String refreshToken = authorizationHeaderUtil.getToken(request);
-            RefreshAuthenticationToken authentication = new RefreshAuthenticationToken(refreshToken);
-            return getAuthenticationManager().authenticate(authentication);
+        for (Cookie cookie : request.getCookies() != null ? request.getCookies() : new Cookie[0]) {
+            if (cookie.getValue().equals("refreshToken")) {
+                String refreshToken = cookie.getValue();
+                RefreshAuthenticationToken authentication = new RefreshAuthenticationToken(refreshToken);
+                return getAuthenticationManager().authenticate(authentication);
+            }
         }
         return super.attemptAuthentication(request, response);
     }
@@ -83,10 +90,12 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 
         Cookie refreshTokenCookie = new Cookie("refreshToken", tokens.get("refreshToken"));
         refreshTokenCookie.setHttpOnly(true);
-        refreshTokenCookie.setPath("/");
+        refreshTokenCookie.setPath(request.getContextPath() + request.getServletPath());
         response.addCookie(refreshTokenCookie);
 
-        objectMapper.writeValue(response.getOutputStream(), Map.of("accessToken", tokens.get("accessToken")));
+        Map<String, Object> resp = new HashMap<>(tokens);
+        resp.put("user", userConverter.from(userDetails.getUser()));
+        objectMapper.writeValue(response.getOutputStream(), resp);
     }
 
     @Override

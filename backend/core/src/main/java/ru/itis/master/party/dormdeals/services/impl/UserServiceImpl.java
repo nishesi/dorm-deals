@@ -45,6 +45,12 @@ public class UserServiceImpl implements UserService {
     @Value("${password.salt}")
     private String salt;
 
+    @Value("${server.host}")
+    private String host;
+
+    @Value("${server.servlet.context-path}")
+    private String contextPath;
+
     @Transactional
     public String register(NewUserDto userDto) {
         if (userRepository.existsUserByEmail(userDto.getEmail()))
@@ -61,7 +67,7 @@ public class UserServiceImpl implements UserService {
                 .authorities(List.of(Authority.ROLE_USER))
                 .build());
 
-        String confirmationUrl = "http://localhost/email/confirm?accept=" +
+        String confirmationUrl = contextPath + host +  "/email/confirm?accept=" +
                 returnedUser.getHashForConfirm();
 
         ExecutorService executorService = Executors.newSingleThreadExecutor();
