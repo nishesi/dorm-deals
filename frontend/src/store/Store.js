@@ -3,13 +3,13 @@ import {makeAutoObservable} from "mobx";
 import AuthService from "../API/AuthService"
 import axios from "axios";
 import {API_URL} from "../App";
-import type {AuthResponse} from "../models/AuthResponse";
+import loginForm from "../components/LoginForm";
 
 export default class Store {
-    user;
+    user = null;
     isAuth = false;
 
-    constructor(props) {
+    constructor() {
         makeAutoObservable(this);
     }
 
@@ -33,13 +33,19 @@ export default class Store {
         }
     }
 
+    async logout() {
+        this.user = null;
+        this.isAuth = false;
+        localStorage.removeItem("token")
+    }
+
     async register(newUser) {
         console.log(newUser)
     }
 
     async checkAuth() {
         axios.post(
-            API_URL + "/auth/token", "", {withCredentials: true}
+            API_URL + "/auth/token", null, {withCredentials: true}
         ).then(resp => {
             localStorage.setItem("token", resp.data.accessToken)
             this.setAuth(true)

@@ -1,15 +1,16 @@
-import React, {useContext, useEffect, useState} from "react";
+import React, {useEffect, useState} from "react";
 import './App.css';
 import SearchProductService from "./API/SearchProductService";
-import ProductsList from "./components/ProductsList";
-import Header from "./components/Header";
 import {AuthContext} from "./context";
 import Store from "./store/Store";
-import {observer} from "mobx-react-lite"
+import Header from "./components/Header";
+import ProductsList from "./components/ProductsList";
 
 export const API_URL = "http://localhost/app"
+const store = new Store();
 
 function App() {
+
     const [products, setProducts] = useState([])
 
     useEffect(() => {
@@ -21,13 +22,11 @@ function App() {
 
     // Authorization
 
-    const store = new Store();
-    useEffect(() => {
+    useEffect( () => {
         if (localStorage.getItem("token")) {
-            store.checkAuth()
+             store.checkAuth()
         }
     }, [])
-
 
     return (
         <div className="App">

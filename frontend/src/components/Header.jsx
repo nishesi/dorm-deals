@@ -4,55 +4,55 @@ import LoginForm from "./LoginForm";
 import {AuthContext} from "../context";
 import SignupForm from "./SignupForm";
 import {observer} from "mobx-react-lite";
+import {Button, Container, Nav, Navbar} from "react-bootstrap";
 
 const Header = ({updateProducts}) => {
     const {store} = useContext(AuthContext);
     const user = store.user
 
+    function logout() {
+        store.logout()
+    }
+
     return (
-        <header className="container-fluid">
-            <nav className="navbar navbar-expand-md bg-light">
-                <div className="container-fluid">
-                    <a className="navbar-brand" href="#">
-                        <img id="logo" src={"logo192.png"} alt="logo" style={{width: 50, height: 50}}/>
-                        <strong>Dorm Deals</strong>
-                    </a>
-
-                    <button className="navbar-toggler" type="button" data-bs-toggle="collapse"
-                            data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
-                            aria-expanded="false" aria-label="Toggle navigation">
-                        <span className="navbar-toggler-icon"></span>
-                    </button>
-
-                    <div className="collapse navbar-collapse" id="navbarSupportedContent">
-                        <ul className="navbar-nav me-auto mb-2 mb-md-0">
-
-                            <li className="nav-item ms-md-5">
-                                <SearchBar updateProducts={updateProducts}></SearchBar>
-                            </li>
-                        </ul>
+        <Navbar expand="md" className="bg-body-tertiary">
+            <Container>
+                <Navbar.Brand href="#home">
+                    <img id="logo" src={"logo192.png"} alt="logo" style={{width: 50, height: 50}}/>
+                    <strong>Dorm Deals</strong>
+                </Navbar.Brand>
+                <Navbar.Toggle aria-controls="basic-navbar-nav"/>
+                <Navbar.Collapse id="basic-navbar-nav">
+                    <Nav className="me-auto">
+                        <Nav.Item className="mt-2">
+                            <SearchBar updateProducts={updateProducts}></SearchBar>
+                        </Nav.Item>
 
                         {store.isAuth
-                            ? <button className="navbar-brand fs-5 ms-md-5 btn" type="button" data-bs-toggle="offcanvas"
-                                   data-bs-target="#offcanvasRight" aria-controls="offcanvasRight">
-                                {user.firstName + " " + user.lastName}
-                                <img className="rounded-circle" width="40" height="40" src={user.imgUrl}
-                                     alt="user image"/>
-                            </button>
-
-                            : <div className="d-flex ms-md-5 mb-2 mb-md-0">
-                                <div className="me-2">
-                                    <SignupForm></SignupForm>
-                                </div>
+                            ? <Nav.Item className="m-2">
                                 <div>
-                                    <LoginForm></LoginForm>
+                                    {user.firstName + " " + user.lastName}
+                                    <img className="rounded-circle" width="40" height="40" src={user.imgUrl}
+                                         alt="user img"/>
                                 </div>
-                            </div>
+                                <Button onClick={logout}>Logout</Button>
+                            </Nav.Item>
+
+                            : <Nav.Item>
+                                <div className="d-flex m-2">
+                                    <div className="me-2">
+                                        <SignupForm></SignupForm>
+                                    </div>
+                                    <div>
+                                        <LoginForm></LoginForm>
+                                    </div>
+                                </div>
+                            </Nav.Item>
                         }
-                    </div>
-                </div>
-            </nav>
-        </header>
+                    </Nav>
+                </Navbar.Collapse>
+            </Container>
+        </Navbar>
     )
 }
 
