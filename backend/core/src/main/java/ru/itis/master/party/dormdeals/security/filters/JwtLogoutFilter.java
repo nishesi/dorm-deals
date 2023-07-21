@@ -3,9 +3,11 @@ package ru.itis.master.party.dormdeals.security.filters;
 import jakarta.annotation.Nonnull;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
@@ -25,6 +27,8 @@ public class JwtLogoutFilter extends OncePerRequestFilter {
     private final JwtService jwtService;
     private final JwtUtil jwtUtil;
     private final AuthorizationHeaderUtil authorizationHeaderUtil;
+    @Value("${server.servlet.context-path}")
+    private String contextPath;
     private final RequestMatcher requestMatcher = AntPathRequestMatcher.antMatcher(HttpMethod.POST, "/logout");
 
     @Override
@@ -40,8 +44,12 @@ public class JwtLogoutFilter extends OncePerRequestFilter {
                 String email = ((UserDetailsImpl) authentication.getPrincipal()).getUsername();
                 jwtService.blockAllTokensForUser(email);
 
-                response.setStatus(HttpServletResponse.SC_ACCEPTED);
+                Cookie refreshTokenCookie = new Cookie("refreshToken", "");
+                refreshTokenCookie.setPath(contextPath + JwtAuthenticationFilter.AUTHENTICATION_URL);
+                refreshTokenCookie.setMaxAge(0);
+                response.addCookie(refreshTokenCookie);
 
+                response.setStatus(HttpServletResponse.SC_ACCEPTED);
             } else response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
         } else filterChain.doFilter(request, response);
     }

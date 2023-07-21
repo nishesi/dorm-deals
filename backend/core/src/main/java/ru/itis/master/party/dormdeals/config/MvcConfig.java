@@ -12,6 +12,10 @@ public class MvcConfig implements WebMvcConfigurer {
                 .allowedOrigins("http://localhost:3000")
                 .allowCredentials(true)
                 .allowedMethods("POST");
+        registry.addMapping("/logout")
+                .allowedOrigins("http://localhost:3000")
+                .allowCredentials(true)
+                .allowedMethods("POST");
         registry.addMapping("/**")
                 .allowedOrigins("http://localhost:3000")
                 .allowedMethods("*");

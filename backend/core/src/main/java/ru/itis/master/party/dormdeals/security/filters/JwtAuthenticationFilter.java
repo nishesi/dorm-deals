@@ -61,7 +61,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
             HttpServletRequest request, HttpServletResponse response
     ) throws AuthenticationException {
         for (Cookie cookie : request.getCookies() != null ? request.getCookies() : new Cookie[0]) {
-            if (cookie.getValue().equals("refreshToken")) {
+            if (cookie.getName().equals("refreshToken")) {
                 String refreshToken = cookie.getValue();
                 RefreshAuthenticationToken authentication = new RefreshAuthenticationToken(refreshToken);
                 return getAuthenticationManager().authenticate(authentication);

@@ -1,12 +1,14 @@
 package ru.itis.master.party.dormdeals.redis;
 
+import com.auth0.jwt.exceptions.JWTVerificationException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.itis.master.party.dormdeals.repositories.JwtRepository;
-import ru.itis.master.party.dormdeals.services.JwtService;
 import ru.itis.master.party.dormdeals.security.service.JwtUtil;
+import ru.itis.master.party.dormdeals.services.JwtService;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -59,12 +61,26 @@ public class JwtServiceImpl implements JwtService {
         redisUserOptional.ifPresent(redisUser -> {
             if (redisUser.getRefreshTokens() != null)
                 jwtRepository.saveAllToBlackList(redisUser.getRefreshTokens().stream()
-                        .map(jwtUtil::from)
+                        .map(token -> {
+                            try {
+                                return jwtUtil.from(token);
+                            } catch (JWTVerificationException ignored) {
+                                return null;
+                            }
+                        })
+                        .filter(Objects::nonNull)
                         .toList());
 
             if (redisUser.getAccessTokens() != null)
                 jwtRepository.saveAllToBlackList(redisUser.getAccessTokens().stream()
-                        .map(jwtUtil::from)
+                        .map(token -> {
+                            try {
+                                return jwtUtil.from(token);
+                            } catch (JWTVerificationException ignored) {
+                                return null;
+                            }
+                        })
+                        .filter(Objects::nonNull)
                         .toList());
 
             redisUserRepository.delete(redisUser);
