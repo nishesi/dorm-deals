@@ -23,11 +23,11 @@ function App() {
 
     // Authorization
 
-    // useEffect( () => {
-    //     if (localStorage.getItem("token")) {
-    //          store.checkAuth()
-    //     }
-    // }, [])
+    useEffect( () => {
+        if (localStorage.getItem("token")) {
+             store.checkAuth()
+        }
+    }, [])
 
     return (
         <div className="App">

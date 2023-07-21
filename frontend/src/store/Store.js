@@ -24,24 +24,23 @@ export default class Store {
     }
 
     async login(email: string, password: string) {
-        AuthService.login(email, password)
+        await AuthService.login(email, password)
             .then(response => {
-                // console.log(response)
                 localStorage.setItem("token", response.data.accessToken)
                 this.setAuth(true)
                 this.setUser(response.data.user)
 
             }).catch(e => {
-                this.setAlerts([...this.alerts, {type: "danger", children: e.response.status + "Authorization failed :("}])
+                document.querySelector("#loginForm div.alert").removeAttribute("hidden")
+                throw e;
         })
     }
 
     async logout() {
         this.user = null;
         this.isAuth = false;
-        const resp = await api.post(API_URL + "/logout");
+        await AuthService.logout();
         localStorage.removeItem("token")
-        console.log(resp)
     }
 
     async register(newUser) {

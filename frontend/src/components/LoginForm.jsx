@@ -1,7 +1,7 @@
 import React, {useContext, useState} from "react";
 import {AuthContext} from "../context";
-import bootstrap from "../../node_modules/bootstrap/dist/js/bootstrap.bundle.min";
-import {Button, Modal} from "react-bootstrap";
+import {Alert, Button, Container, InputGroup, Modal} from "react-bootstrap";
+import Form from 'react-bootstrap/Form';
 
 const LoginForm = () => {
     const [show, setShow] = useState(false)
@@ -9,9 +9,12 @@ const LoginForm = () => {
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
 
-    async function onLogin(e) {
-        setShow(false)
-        await store.login(email, password)
+    async function onSubmit() {
+        store.login(email, password)
+            .then(() => {
+                setShow(false)
+            }).catch(e => {
+        })
     }
 
     return (
@@ -22,23 +25,32 @@ const LoginForm = () => {
             <Modal show={show} onHide={() => setShow(false)}>
                 <Modal.Header closeButton>
                     <Modal.Title>
-                        <h1 className="modal-title fs-5" id="LogInModalLabel">Вход в аккаунт</h1>
+                        Вход в аккаунт
                     </Modal.Title>
                 </Modal.Header>
-                <Modal.Body>
-                    <div className="input-group mb-3">
-                        <div className="input-group-text">Email</div>
-                        <input type="text" className="form-control" placeholder="Email..."
-                               name="email" value={email} onChange={e => setEmail(e.target.value)}/>
-                    </div>
-                    <div className="input-group">
-                        <div className="input-group-text">Password</div>
-                        <input type="password" className="form-control" placeholder="Password"
-                               name="password" value={password} onChange={e => setPassword(e.target.value)}/>
-                    </div>
+                <Modal.Body id="loginForm">
+                    <Alert
+                        variant="warning"
+                        className="p-1 text-center" hidden>
+                        Invalid email or password.
+                    </Alert>
+
+                    <InputGroup className="mb-3">
+                        <InputGroup.Text>Email</InputGroup.Text>
+                        <Form.Control placeholder="Email..."
+                                      value={email}
+                                      onChange={e => setEmail(e.target.value)}></Form.Control>
+                    </InputGroup>
+
+                    <InputGroup className="mb-3">
+                        <InputGroup.Text>Password</InputGroup.Text>
+                        <Form.Control placeholder="Password..."
+                                      value={password}
+                                      onChange={e => setPassword(e.target.value)}></Form.Control>
+                    </InputGroup>
                 </Modal.Body>
                 <Modal.Footer>
-                    <Button className="btn btn-primary" onClick={onLogin}>
+                    <Button onClick={onSubmit}>
                         Войти
                     </Button>
                 </Modal.Footer>

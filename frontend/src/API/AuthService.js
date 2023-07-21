@@ -1,5 +1,5 @@
 import api from "./index"
-import {AxiosError, AxiosResponse} from "axios";
+import {AxiosResponse} from "axios";
 import {AuthResponse} from "../models/AuthResponse"
 import {API_URL} from "../App";
 
@@ -15,6 +15,6 @@ export default class AuthService {
     }
 
     static async logout(): Promise<void> {
-
+        return await api.post(API_URL + "/logout");
     }
 }
