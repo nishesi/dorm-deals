@@ -44,7 +44,15 @@ export default class Store {
     }
 
     async register(newUser) {
-        console.log(newUser)
+        return await AuthService.registration(newUser)
+            .then(resp => {
+                console.log("then")
+                return resp.data.message
+            })
+            .catch(e => {
+                console.log("catch")
+                throw e
+            })
     }
 
     async checkAuth() {

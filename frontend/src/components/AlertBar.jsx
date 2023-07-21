@@ -3,7 +3,7 @@ import {Toast, ToastContainer} from "react-bootstrap";
 import {AuthContext} from "../context";
 
 
-const CustomToast = ({children, type}) => {
+export const CustomToast = ({children, type}) => {
     return (
         <Toast autohide={true}>
             <div className={"d-flex alert alert-" + type + " m-0 p-0"}>
@@ -36,4 +36,4 @@ const AlertBar = () => {
 }
 
 
-export default AlertBar
+export default AlertBar;
