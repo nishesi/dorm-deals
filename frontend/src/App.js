@@ -6,6 +6,10 @@ import Store from "./store/Store";
 import Header from "./components/Header";
 import ProductsList from "./components/ProductsList";
 import AlertBar from "./components/AlertBar";
+import ShopPage from "./components/ShopPage";
+import {Button, InputGroup} from "react-bootstrap";
+import Form from "react-bootstrap/Form";
+import ShopService from "./API/ShopService";
 
 export const API_URL = "http://localhost/app"
 const store = new Store();
@@ -23,11 +27,20 @@ function App() {
 
     // Authorization
 
-    useEffect( () => {
+    useEffect(() => {
         if (localStorage.getItem("token")) {
-             store.checkAuth()
+            store.checkAuth()
         }
     }, [])
+
+    useEffect(() => {
+        f()
+    }, [])
+    const [shopWithProducts, setShop] = useState({shop: {}, productsPage: {}})
+    async function f() {
+        const resp = await ShopService.getMainPage(10)
+        setShop(resp.data)
+    }
 
     return (
         <div className="App">
@@ -36,7 +49,7 @@ function App() {
             }}>
                 <AlertBar></AlertBar>
                 <Header updateProducts={(pr) => setProducts(pr)}></Header>
-                <ProductsList products={products}></ProductsList>
+                <ShopPage shopWithProducts={shopWithProducts}></ShopPage>
             </AuthContext.Provider>
         </div>
     );
