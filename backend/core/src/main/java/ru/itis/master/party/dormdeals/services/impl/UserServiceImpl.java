@@ -59,6 +59,7 @@ public class UserServiceImpl implements UserService {
                 .state(NOT_CONFIRMED)
                 .hashForConfirm(DigestUtils.sha256Hex(userDto.getEmail() + UUID.randomUUID()))
                 .authorities(List.of(Authority.ROLE_USER))
+                .countUnreadNotifications(0)
                 .build());
 
         String confirmationUrl = "http://localhost/email/confirm?accept=" +
@@ -66,12 +67,10 @@ public class UserServiceImpl implements UserService {
 
         ExecutorService executorService = Executors.newSingleThreadExecutor();
 
-        executorService.submit(() -> {
-            emailUtil.sendMail(userDto.getEmail(),
-                    "confirm",
-                    "confirmation-mail.ftlh",
-                    Map.of("confirmationUrl", confirmationUrl));
-        });
+        executorService.submit(() -> emailUtil.sendMail(userDto.getEmail(),
+                "confirm",
+                "confirmation-mail.ftlh",
+                Map.of("confirmationUrl", confirmationUrl)));
 
         executorService.shutdown();
 

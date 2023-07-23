@@ -79,6 +79,10 @@ public class SecurityConfig {
 
                         .requestMatchers("/orders/**").authenticated()
 
+                        // notifications
+
+                        .requestMatchers("/notifications/**").authenticated()
+
                         // base pages
 
                         .requestMatchers("/", "/home").permitAll()

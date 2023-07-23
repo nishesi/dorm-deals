@@ -42,6 +42,8 @@ public class User {
     @Enumerated(EnumType.STRING)
     private List<Authority> authorities;
 
+    private Integer countUnreadNotifications;
+
     @ManyToMany
     @JoinTable(name = "favorites",
             joinColumns = @JoinColumn(name = "user_id"),
