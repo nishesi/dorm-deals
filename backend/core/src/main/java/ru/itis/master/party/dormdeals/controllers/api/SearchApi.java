@@ -13,6 +13,7 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import ru.itis.master.party.dormdeals.dto.CatalogueElastic;
 import ru.itis.master.party.dormdeals.dto.ExceptionDto;
 import ru.itis.master.party.dormdeals.dto.product.ProductDto;
 
@@ -47,4 +48,21 @@ public interface SearchApi {
                     defaultValue = "0")
             Integer pageIndex);
 
+
+    @Operation(description = "Найти каталоги и товары с ценами соответствующего региона")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Результаты поиска",
+                    content = {@Content(mediaType = "application/json",
+                            schema = @Schema(implementation = List.class))}),
+            @ApiResponse(responseCode = "400", description = "Ошибка обработки",
+                    content = @Content),
+            @ApiResponse(responseCode = "404", description = "Регион не найден",
+                    content = @Content)
+    })
+    @GetMapping("/by-text")
+    List<CatalogueElastic> searchByText(
+            @Parameter(description = "Поисковый запрос")
+            @RequestParam
+            String text
+    );
 }

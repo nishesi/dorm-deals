@@ -8,12 +8,16 @@ import ru.itis.master.party.dormdeals.dto.product.ProductDtoForShop;
 import ru.itis.master.party.dormdeals.dto.shop.ShopDto;
 import ru.itis.master.party.dormdeals.enums.EntityType;
 import ru.itis.master.party.dormdeals.enums.FileType;
+import ru.itis.master.party.dormdeals.models.ItemElastic;
 import ru.itis.master.party.dormdeals.models.Product;
 import ru.itis.master.party.dormdeals.models.Shop;
 import ru.itis.master.party.dormdeals.utils.ResourceUrlResolver;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
+import java.util.stream.Collectors;
 
 @Component
 @RequiredArgsConstructor
@@ -92,5 +96,31 @@ public class ProductConverter {
                 .price(product.getPrice())
                 .resources(new ArrayList<>(product.getResources()))
                 .build());
+    }
+
+    public ItemElastic toItemElastic(Product p) {
+        String desc = buildDescription(p.getDescription());
+        return ItemElastic.builder()
+
+                .itemId(p.getId())
+                .name(p.getName())
+                .catalogueId(p.getCatalogue().getId())
+                .catalogue(p.getCatalogue().getName())
+                .brand(p.getBrand())
+                .type(p.getCategory())
+                .description(desc)
+                .fulltext(p.getCatalogue().getName() + " " + p.getCategory() + " " + p.getName() + " " + desc)
+                .build();
+    }
+
+    private static String buildDescription(String description) {
+        return Arrays.stream(description.split(";"))
+                .filter(s -> !s.contains(": нет")
+                        && !s.contains(": -")
+                        && !s.contains(": 0"))
+                .map(s -> s.toLowerCase(Locale.ROOT)
+                        .replace(": есть", "")
+                        .replace(":", ""))
+                .collect(Collectors.joining());
     }
 }

@@ -26,6 +26,11 @@ public class Product {
 
     private String category;
 
+    private String brand;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    private Catalogue catalogue;
+
     @Column(columnDefinition = "numeric(7, 2)", nullable = false)
     private float price;
 

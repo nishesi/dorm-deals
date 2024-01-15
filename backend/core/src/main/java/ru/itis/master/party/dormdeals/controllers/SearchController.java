@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.RestController;
 import ru.itis.master.party.dormdeals.controllers.api.SearchApi;
+import ru.itis.master.party.dormdeals.dto.CatalogueElastic;
 import ru.itis.master.party.dormdeals.dto.product.ProductDto;
 import ru.itis.master.party.dormdeals.services.SearchService;
 
@@ -42,5 +43,10 @@ public class SearchController implements SearchApi {
                 .stream()
                 .flatMap(value -> Stream.of(value.split(",")))
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<CatalogueElastic> searchByText(String text) {
+        return searchService.searchByText(text);
     }
 }
