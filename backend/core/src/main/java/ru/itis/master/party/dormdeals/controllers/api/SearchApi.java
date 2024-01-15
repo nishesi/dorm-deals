@@ -8,6 +8,8 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import io.swagger.v3.oas.annotations.tags.Tags;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -42,11 +44,8 @@ public interface SearchApi {
                             {"name-query":["Товар","Cheetos"],"category":"chips"}
                             """)
             @RequestParam MultiValueMap<String, String> criteria,
-            @Parameter(description = "Номер страницы", example = "1")
-            @RequestParam(value = "pageIndex",
-                    required = false,
-                    defaultValue = "0")
-            Integer pageIndex);
+            @PageableDefault
+            Pageable pageable);
 
 
     @Operation(description = "Найти каталоги и товары с ценами соответствующего региона")

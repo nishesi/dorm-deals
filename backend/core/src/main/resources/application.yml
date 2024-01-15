@@ -1,0 +1,65 @@
+logging.level:
+  org.springframework.web: TRACE
+
+server:
+  port: ${SERVER_PORT}
+  servlet.context-path: /api
+  error:
+    include-stacktrace: always
+    include-message: always
+    include-exception: true
+    include-binding-errors: always
+
+spring:
+  servlet.multipart.max-file-size: 5MB
+
+  datasource:
+    url: ${SPRING_DATASOURCE_URL}
+    username: ${SPRING_DATASOURCE_USERNAME}
+    password: ${SPRING_DATASOURCE_PASSWORD}
+
+    driver-class-name: org.postgresql.Driver
+    hikari.maximum-pool-size: 20
+
+  jpa:
+    hibernate.ddl-auto: update
+    properties:
+      hibernate.format_sql: true
+    open-in-view: false
+    show-sql: true
+
+  mail:
+    host: ${SPRING_MAIL_HOST}
+    username: ${SPRING_MAIL_USERNAME}
+    password: ${SPRING_MAIL_PASSWORD}
+    port: ${SPRING_MAIL_PORT}
+
+    properties.mail:
+      debug: true
+      smtp:
+        starttls.enable: true
+        allow8bitmime: true
+        ssl.trust: ${SPRING_MAIL_HOST}
+
+  data.redis.url: ${SPRING_REDIS_URL}
+
+  elasticsearch:
+    username: ${SPRING_ELASTICSEARCH_USERNAME}
+    password: ${SPRING_ELASTICSEARCH_PASSWORD}
+    uris: ${SPRING_ELASTICSEARCH_URI}
+    socket-timeout: 1m
+    connection-timeout: 1s
+
+app:
+  password:
+    encoder:
+      strength: 10
+    salt: dev
+
+  resource:
+    max-return-size: 524288
+    storage:
+      path: ${APP_RESOURCE_STORAGE_PATH}
+
+  jwt:
+    secret: ${APP_JWT_SECRET}

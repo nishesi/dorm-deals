@@ -31,7 +31,7 @@ public class JwtUtilImpl implements JwtUtil {
     private static final Duration ACCESS_TOKEN_EXPIRATION = Duration.ofHours(12);
     private static final Duration REFRESH_TOKEN_EXPIRATION = Duration.ofHours(24);
 
-    @Value("${jwt.secret}")
+    @Value("${app.jwt.secret}")
     private String secret;
 
     @Override

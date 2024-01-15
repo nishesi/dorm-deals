@@ -8,32 +8,28 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import ru.itis.master.party.dormdeals.dto.ExceptionDto;
 import ru.itis.master.party.dormdeals.exceptions.*;
 
+import static org.springframework.http.HttpStatus.*;
+
 @RestControllerAdvice
 public class RestExceptionHandler {
     @ExceptionHandler(NotFoundException.class)
     public ResponseEntity<ExceptionDto> handle(NotFoundException ex) {
-        return formResponse(HttpStatus.NOT_FOUND, ex.getMessage());
+        return formResponse(NOT_FOUND, ex.getMessage());
     }
 
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<ExceptionDto> handle(IllegalArgumentException ex) {
-        return formResponse(HttpStatus.BAD_REQUEST, ex.getMessage());
+        return formResponse(BAD_REQUEST, ex.getMessage());
     }
 
 
-    @ExceptionHandler(NotAcceptableException.class)
+    @ExceptionHandler({
+            NotAcceptableException.class,
+            DataIntegrityViolationException.class,
+            NotEnoughException.class
+    })
     public ResponseEntity<ExceptionDto> handle(NotAcceptableException ex) {
-        return formResponse(HttpStatus.NOT_ACCEPTABLE, ex.getMessage());
-    }
-
-    @ExceptionHandler(DataIntegrityViolationException.class)
-    public ResponseEntity<ExceptionDto> handle(DataIntegrityViolationException ex) {
-        return formResponse(HttpStatus.NOT_ACCEPTABLE, ex.getMessage());
-    }
-
-    @ExceptionHandler(NotEnoughException.class)
-    public ResponseEntity<ExceptionDto> handle(NotEnoughException ex) {
-        return formResponse(HttpStatus.NOT_ACCEPTABLE, ex.getMessage());
+        return formResponse(NOT_ACCEPTABLE, ex.getMessage());
     }
 
     private static ResponseEntity<ExceptionDto> formResponse(HttpStatus notAcceptable, String ex) {

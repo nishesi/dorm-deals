@@ -30,7 +30,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
     private final JwtService jwtService;
     private final JwtUtil jwtUtil;
 
-    @Value("${password.salt}")
+    @Value("${app.password.salt}")
     private String salt;
 
 

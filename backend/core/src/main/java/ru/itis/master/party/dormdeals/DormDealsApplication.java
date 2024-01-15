@@ -10,13 +10,12 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.freemarker.FreeMarkerAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Primary;
+import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
-
+@EnableScheduling
 @SpringBootApplication(exclude = FreeMarkerAutoConfiguration.class)
 public class DormDealsApplication {
 
@@ -28,7 +27,7 @@ public class DormDealsApplication {
     }
     @Bean
     @Primary
-    PasswordEncoder passwordEncoder(@Value("${password.encoder.strength}") int value) {
+    PasswordEncoder passwordEncoder(@Value("${app.password.encoder.strength}") int value) {
         return new BCryptPasswordEncoder(value);
     }
 
@@ -42,11 +41,6 @@ public class DormDealsApplication {
     @Bean
     Tika tika() {
         return new Tika();
-    }
-
-    @Bean
-    ExecutorService executorService() {
-        return Executors.newVirtualThreadPerTaskExecutor();
     }
 
     public static void main(String[] args) {

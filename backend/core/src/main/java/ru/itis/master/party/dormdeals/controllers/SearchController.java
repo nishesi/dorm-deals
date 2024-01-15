@@ -2,8 +2,8 @@ package ru.itis.master.party.dormdeals.controllers;
 
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.RestController;
@@ -21,11 +21,10 @@ import java.util.stream.Stream;
 public class SearchController implements SearchApi {
     //TODO: сделать 404 нормальную ошибку отлавливать если на странице нет товара вообще, переделать List<> на Page<>
     private final SearchService searchService;
-    @Value("${default.page-size}")
-    private int defaultPageSize;
 
     @Override
-    public ResponseEntity<List<ProductDto>> searchProducts(MultiValueMap<String, String> criteria, Integer pageIndex) {
+    public ResponseEntity<List<ProductDto>> searchProducts(MultiValueMap<String, String> criteria,
+                                                           @PageableDefault Pageable pageable) {
         List<String> nameQueries = extractCriteriaValues(criteria, "name-query");
         List<String> categories = extractCriteriaValues(criteria, "category");
         List<Long> shopIds = extractCriteriaValues(criteria, "shop-id")
@@ -33,8 +32,7 @@ public class SearchController implements SearchApi {
                 .map(Long::parseLong)
                 .collect(Collectors.toList());
 
-        return ResponseEntity.ok(searchService.getProductSearch(nameQueries, categories, shopIds,
-                PageRequest.of(pageIndex, defaultPageSize)));
+        return ResponseEntity.ok(searchService.getProductSearch(nameQueries, categories, shopIds, pageable));
 
     }
 

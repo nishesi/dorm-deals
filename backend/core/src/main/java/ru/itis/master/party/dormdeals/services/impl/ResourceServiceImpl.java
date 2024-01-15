@@ -19,10 +19,10 @@ import java.util.Arrays;
 @Service
 @RequiredArgsConstructor
 public class ResourceServiceImpl implements ResourceService {
-    @Value("${storage.path}")
+    @Value("${app.resource.storage.path}")
     private String storagePath;
 
-    @Value("${resource.max-return-size}")
+    @Value("${app.resource.max-return-size}")
     private int maxReturnSize;
 
     private static String validateExtension(FileType fileType,
