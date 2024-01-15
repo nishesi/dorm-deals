@@ -17,8 +17,6 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
 
     void deleteAllByShopId(Long shopId);
 
-//    @Query(nativeQuery = true, value =
-//    "select p.*, pr.* from (select * from products where id in :ids) as p left join products_resources as pr on p.id = pr.product_id")
     @Query("select p from Product p left join fetch p.resources where p.id in :ids")
     List<Product> findAllWithResourcesByIdIn(List<Long> ids);
 
