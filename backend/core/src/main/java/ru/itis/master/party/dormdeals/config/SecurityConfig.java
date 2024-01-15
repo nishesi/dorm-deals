@@ -9,6 +9,7 @@ import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -36,10 +37,10 @@ public class SecurityConfig {
                               JwtAuthorizationFilter jwtAuthorizationFilter,
                               JwtLogoutFilter jwtLogoutFilter
     ) throws Exception {
-        http
-                .cors()
-                .and()
-                .csrf().disable()
+        return http
+                .cors(configurer -> {
+                })
+                .csrf(AbstractHttpConfigurer::disable)
                 .addFilter(jwtAuthenticationFilter)
                 .addFilterBefore(jwtAuthorizationFilter, UsernamePasswordAuthenticationFilter.class)
                 .addFilterAt(jwtLogoutFilter, LogoutFilter.class)
@@ -47,8 +48,6 @@ public class SecurityConfig {
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
                 .authorizeHttpRequests(requests -> requests
-                        .shouldFilterAllDispatcherTypes(false)
-
                         // User
 
                         .requestMatchers("/auth/token", "/email/confirm/**").permitAll()
@@ -94,11 +93,12 @@ public class SecurityConfig {
                 .exceptionHandling(configurer -> configurer
                         .authenticationEntryPoint(new Http403ForbiddenEntryPoint())
                 )
-                .headers().xssProtection()
-                .and()
-                .contentSecurityPolicy("script-src 'self'");
-
-        return http.build();
+                .headers(configurer -> configurer
+                        .xssProtection(c -> {
+                        })
+                        .contentSecurityPolicy(c -> c
+                                .policyDirectives("script-src 'self'")))
+                .build();
     }
 
     @Autowired
