@@ -20,10 +20,14 @@ import ru.itis.master.party.dormdeals.models.order.Order;
 import ru.itis.master.party.dormdeals.models.order.OrderMessage;
 import ru.itis.master.party.dormdeals.models.order.OrderProduct;
 import ru.itis.master.party.dormdeals.repositories.*;
+import ru.itis.master.party.dormdeals.services.NotificationService;
 import ru.itis.master.party.dormdeals.services.OrderService;
 
 import java.time.ZonedDateTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import static ru.itis.master.party.dormdeals.models.Product.State.ACTIVE;
@@ -34,6 +38,7 @@ import static ru.itis.master.party.dormdeals.models.order.Order.State.*;
 @RequiredArgsConstructor
 public class OrderServiceImpl implements OrderService {
     private final OrderMessageRepository orderMessageRepository;
+    private final NotificationService notificationService;
     private final ProductRepository productRepository;
     private final OrderRepository orderRepository;
     private final ShopRepository shopRepository;
@@ -139,6 +144,7 @@ public class OrderServiceImpl implements OrderService {
             if (state == CANCELLED && order.getState().index() < CONFIRMED.index()) {
                 order.setState(CANCELLED);
                 returnReservedAmounts(order.getProducts());
+                sendNotificationAfterUpdate(orderId);
                 return;
             }
 
@@ -149,12 +155,14 @@ public class OrderServiceImpl implements OrderService {
             if (state.index() > order.getState().index()) {
                 if (order.getState() == CANCELLED) reserveProductAmounts(order.getProducts());
                 order.setState(state);
+                sendNotificationAfterUpdate(orderId);
                 return;
 
                 // cancel order if possible
             } else if (state == CANCELLED && order.getState() != DELIVERED && order.getState() != CANCELLED) {
                 order.setState(CANCELLED);
                 returnReservedAmounts(order.getProducts());
+                sendNotificationAfterUpdate(orderId);
                 return;
             }
         }
@@ -198,5 +206,16 @@ public class OrderServiceImpl implements OrderService {
     public Page<OrderDto> getUserOrders(long userId, Pageable pageable) {
         Page<Order> orders = orderRepository.findAllWithShopByCustomerId(userId, pageable);
         return orderConverter.fromForCustomer(orders);
+    }
+
+    public void sendNotificationAfterUpdate(Long orderId) {
+        Thread.ofVirtual().start(() -> {
+            Order order = orderRepository.findWithShopById(orderId)
+                    .orElseThrow(() -> new NotFoundException(Order.class, "id", orderId));
+
+            notificationService.sendNotificationOrder(order,
+                    "Order " + orderId + " updated. Status: " + order.getState());
+            notificationService.updateUnreadNotificationCountForUser(order.getCustomer().getId());
+        });
     }
 }

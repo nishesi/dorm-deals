@@ -7,10 +7,10 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import ru.itis.master.party.dormdeals.dto.converters.UserConverter;
 import ru.itis.master.party.dormdeals.dto.user.NewUserDto;
 import ru.itis.master.party.dormdeals.dto.user.UpdateUserDto;
 import ru.itis.master.party.dormdeals.dto.user.UserDto;
-import ru.itis.master.party.dormdeals.dto.converters.UserConverter;
 import ru.itis.master.party.dormdeals.enums.EntityType;
 import ru.itis.master.party.dormdeals.enums.FileType;
 import ru.itis.master.party.dormdeals.exceptions.NotAcceptableException;
@@ -27,8 +27,6 @@ import ru.itis.master.party.dormdeals.utils.EmailUtil;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 import static ru.itis.master.party.dormdeals.models.User.State.*;
 
@@ -65,15 +63,11 @@ public class UserServiceImpl implements UserService {
         String confirmationUrl = "http://localhost/email/confirm?accept=" +
                 returnedUser.getHashForConfirm();
 
-        ExecutorService executorService = Executors.newSingleThreadExecutor();
-
-        executorService.submit(() -> emailUtil.sendMail(userDto.getEmail(),
-                "confirm",
-                "confirmation-mail.ftlh",
-                Map.of("confirmationUrl", confirmationUrl)));
-
-        executorService.shutdown();
-
+        Thread.ofVirtual().start(() -> emailUtil
+                .sendMail(userDto.getEmail(),
+                        "confirm",
+                        "confirmation-mail.ftlh",
+                        Map.of("confirmationUrl", confirmationUrl)));
 
         return "Please, check your email to confirm account.";
     }
