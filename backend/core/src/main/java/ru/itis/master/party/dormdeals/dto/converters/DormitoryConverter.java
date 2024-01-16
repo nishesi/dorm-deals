@@ -3,7 +3,7 @@ package ru.itis.master.party.dormdeals.dto.converters;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import ru.itis.master.party.dormdeals.dto.DormitoryDto;
-import ru.itis.master.party.dormdeals.models.Dormitory;
+import ru.itis.master.party.dormdeals.models.jpa.Dormitory;
 
 import java.util.List;
 

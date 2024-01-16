@@ -5,7 +5,7 @@ import org.springframework.stereotype.Component;
 import ru.itis.master.party.dormdeals.dto.user.UserDto;
 import ru.itis.master.party.dormdeals.enums.EntityType;
 import ru.itis.master.party.dormdeals.enums.FileType;
-import ru.itis.master.party.dormdeals.models.User;
+import ru.itis.master.party.dormdeals.models.jpa.User;
 import ru.itis.master.party.dormdeals.utils.ResourceUrlResolver;
 
 @Component

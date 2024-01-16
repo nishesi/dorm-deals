@@ -5,7 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import ru.itis.master.party.dormdeals.models.CartProduct;
+import ru.itis.master.party.dormdeals.models.jpa.CartProduct;
 
 @Data
 @Builder

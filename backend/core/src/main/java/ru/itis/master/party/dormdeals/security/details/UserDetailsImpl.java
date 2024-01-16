@@ -4,7 +4,7 @@ import lombok.Getter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-import ru.itis.master.party.dormdeals.models.User;
+import ru.itis.master.party.dormdeals.models.jpa.User;
 
 import java.util.Collection;
 

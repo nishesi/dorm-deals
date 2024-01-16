@@ -16,7 +16,7 @@ import ru.itis.master.party.dormdeals.dto.*;
 import ru.itis.master.party.dormdeals.dto.product.NewProduct;
 import ru.itis.master.party.dormdeals.dto.product.ProductDto;
 import ru.itis.master.party.dormdeals.dto.product.UpdateProduct;
-import ru.itis.master.party.dormdeals.models.Product;
+import ru.itis.master.party.dormdeals.models.jpa.Product;
 import ru.itis.master.party.dormdeals.security.details.UserDetailsImpl;
 import ru.itis.master.party.dormdeals.validation.responses.ValidationErrorsDto;
 

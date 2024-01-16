@@ -2,7 +2,7 @@ package ru.itis.master.party.dormdeals.utils;
 
 
 import ru.itis.master.party.dormdeals.dto.CatalogueElastic;
-import ru.itis.master.party.dormdeals.models.ItemElastic;
+import ru.itis.master.party.dormdeals.models.elasticsearch.ItemElastic;
 
 import java.util.List;
 import java.util.Objects;

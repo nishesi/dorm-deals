@@ -16,7 +16,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 import ru.itis.master.party.dormdeals.models.Authority;
-import ru.itis.master.party.dormdeals.models.User;
+import ru.itis.master.party.dormdeals.models.jpa.User;
 import ru.itis.master.party.dormdeals.security.details.UserDetailsImpl;
 
 import java.nio.charset.StandardCharsets;

@@ -5,7 +5,7 @@ import org.springframework.data.domain.Pageable;
 import ru.itis.master.party.dormdeals.dto.order.NewOrderDto;
 import ru.itis.master.party.dormdeals.dto.order.NewOrderMessageDto;
 import ru.itis.master.party.dormdeals.dto.order.OrderDto;
-import ru.itis.master.party.dormdeals.models.order.Order;
+import ru.itis.master.party.dormdeals.models.jpa.order.Order;
 
 public interface OrderService {
     void createOrder(long userId, NewOrderDto newOrderDto);

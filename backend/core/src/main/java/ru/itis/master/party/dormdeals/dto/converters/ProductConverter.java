@@ -8,9 +8,9 @@ import ru.itis.master.party.dormdeals.dto.product.ProductDtoForShop;
 import ru.itis.master.party.dormdeals.dto.shop.ShopDto;
 import ru.itis.master.party.dormdeals.enums.EntityType;
 import ru.itis.master.party.dormdeals.enums.FileType;
-import ru.itis.master.party.dormdeals.models.ItemElastic;
-import ru.itis.master.party.dormdeals.models.Product;
-import ru.itis.master.party.dormdeals.models.Shop;
+import ru.itis.master.party.dormdeals.models.elasticsearch.ItemElastic;
+import ru.itis.master.party.dormdeals.models.jpa.Product;
+import ru.itis.master.party.dormdeals.models.jpa.Shop;
 import ru.itis.master.party.dormdeals.utils.ResourceUrlResolver;
 
 import java.util.ArrayList;

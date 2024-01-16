@@ -9,7 +9,7 @@ import ru.itis.master.party.dormdeals.search.SearchChain;
 import ru.itis.master.party.dormdeals.dto.CatalogueElastic;
 import ru.itis.master.party.dormdeals.dto.converters.ProductConverter;
 import ru.itis.master.party.dormdeals.dto.product.ProductDto;
-import ru.itis.master.party.dormdeals.repositories.SearchRepository;
+import ru.itis.master.party.dormdeals.repositories.impl.SearchRepository;
 import ru.itis.master.party.dormdeals.services.SearchService;
 
 import java.util.List;

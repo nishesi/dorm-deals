@@ -6,7 +6,7 @@ import ru.itis.master.party.dormdeals.dto.shop.ShopDto;
 import ru.itis.master.party.dormdeals.dto.user.UserDtoForShopAndReview;
 import ru.itis.master.party.dormdeals.enums.EntityType;
 import ru.itis.master.party.dormdeals.enums.FileType;
-import ru.itis.master.party.dormdeals.models.Shop;
+import ru.itis.master.party.dormdeals.models.jpa.Shop;
 import ru.itis.master.party.dormdeals.utils.ResourceUrlResolver;
 
 import java.util.List;

@@ -5,9 +5,9 @@ import org.springframework.stereotype.Component;
 import ru.itis.master.party.dormdeals.dto.product.ProductDtoForReview;
 import ru.itis.master.party.dormdeals.dto.review.ReviewDto;
 import ru.itis.master.party.dormdeals.dto.user.UserDtoForShopAndReview;
-import ru.itis.master.party.dormdeals.models.Product;
-import ru.itis.master.party.dormdeals.models.Review;
-import ru.itis.master.party.dormdeals.models.User;
+import ru.itis.master.party.dormdeals.models.jpa.Product;
+import ru.itis.master.party.dormdeals.models.jpa.Review;
+import ru.itis.master.party.dormdeals.models.jpa.User;
 
 @Component
 @RequiredArgsConstructor

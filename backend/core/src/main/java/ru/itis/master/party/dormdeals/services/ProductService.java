@@ -2,7 +2,7 @@ package ru.itis.master.party.dormdeals.services;
 
 import org.springframework.web.multipart.MultipartFile;
 import ru.itis.master.party.dormdeals.dto.product.*;
-import ru.itis.master.party.dormdeals.models.Product;
+import ru.itis.master.party.dormdeals.models.jpa.Product;
 
 import java.util.List;
 

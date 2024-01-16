@@ -6,7 +6,7 @@ import org.springframework.stereotype.Component;
 import ru.itis.master.party.dormdeals.search.SearchLink;
 import ru.itis.master.party.dormdeals.search.TypeMatchingAbstractSearch;
 import ru.itis.master.party.dormdeals.dto.CatalogueElastic;
-import ru.itis.master.party.dormdeals.models.ItemElastic;
+import ru.itis.master.party.dormdeals.models.elasticsearch.ItemElastic;
 import ru.itis.master.party.dormdeals.repositories.ItemElasticRepository;
 
 import java.util.ArrayList;

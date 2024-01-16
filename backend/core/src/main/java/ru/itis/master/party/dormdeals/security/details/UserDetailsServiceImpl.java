@@ -6,8 +6,8 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
-import ru.itis.master.party.dormdeals.models.User;
-import ru.itis.master.party.dormdeals.repositories.UserRepository;
+import ru.itis.master.party.dormdeals.models.jpa.User;
+import ru.itis.master.party.dormdeals.repositories.jpa.UserRepository;
 
 @Service
 @Primary

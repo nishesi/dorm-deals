@@ -14,12 +14,12 @@ import ru.itis.master.party.dormdeals.dto.order.OrderDto;
 import ru.itis.master.party.dormdeals.exceptions.NotAcceptableException;
 import ru.itis.master.party.dormdeals.exceptions.NotEnoughException;
 import ru.itis.master.party.dormdeals.exceptions.NotFoundException;
-import ru.itis.master.party.dormdeals.models.Product;
-import ru.itis.master.party.dormdeals.models.Shop;
-import ru.itis.master.party.dormdeals.models.order.Order;
-import ru.itis.master.party.dormdeals.models.order.OrderMessage;
-import ru.itis.master.party.dormdeals.models.order.OrderProduct;
-import ru.itis.master.party.dormdeals.repositories.*;
+import ru.itis.master.party.dormdeals.models.jpa.Product;
+import ru.itis.master.party.dormdeals.models.jpa.Shop;
+import ru.itis.master.party.dormdeals.models.jpa.order.Order;
+import ru.itis.master.party.dormdeals.models.jpa.order.OrderMessage;
+import ru.itis.master.party.dormdeals.models.jpa.order.OrderProduct;
+import ru.itis.master.party.dormdeals.repositories.jpa.*;
 import ru.itis.master.party.dormdeals.services.NotificationService;
 import ru.itis.master.party.dormdeals.services.OrderService;
 
@@ -30,8 +30,8 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-import static ru.itis.master.party.dormdeals.models.Product.State.ACTIVE;
-import static ru.itis.master.party.dormdeals.models.order.Order.State.*;
+import static ru.itis.master.party.dormdeals.models.jpa.Product.State.ACTIVE;
+import static ru.itis.master.party.dormdeals.models.jpa.order.Order.State.*;
 
 
 @Service

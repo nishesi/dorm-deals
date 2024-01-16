@@ -2,7 +2,7 @@ package ru.itis.master.party.dormdeals.dto.user;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
-import ru.itis.master.party.dormdeals.models.User;
+import ru.itis.master.party.dormdeals.models.jpa.User;
 
 @Data
 @AllArgsConstructor

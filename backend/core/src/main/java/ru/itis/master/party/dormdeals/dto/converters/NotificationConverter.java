@@ -4,7 +4,7 @@ package ru.itis.master.party.dormdeals.dto.converters;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import ru.itis.master.party.dormdeals.dto.NotificationDto;
-import ru.itis.master.party.dormdeals.models.Notification;
+import ru.itis.master.party.dormdeals.models.jpa.Notification;
 
 import java.util.List;
 import java.util.stream.Collectors;

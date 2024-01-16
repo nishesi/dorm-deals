@@ -16,10 +16,10 @@ import ru.itis.master.party.dormdeals.enums.FileType;
 import ru.itis.master.party.dormdeals.exceptions.NotAcceptableException;
 import ru.itis.master.party.dormdeals.exceptions.NotFoundException;
 import ru.itis.master.party.dormdeals.models.Authority;
-import ru.itis.master.party.dormdeals.models.Cart;
-import ru.itis.master.party.dormdeals.models.User;
-import ru.itis.master.party.dormdeals.repositories.CartRepository;
-import ru.itis.master.party.dormdeals.repositories.UserRepository;
+import ru.itis.master.party.dormdeals.models.jpa.Cart;
+import ru.itis.master.party.dormdeals.models.jpa.User;
+import ru.itis.master.party.dormdeals.repositories.jpa.CartRepository;
+import ru.itis.master.party.dormdeals.repositories.jpa.UserRepository;
 import ru.itis.master.party.dormdeals.services.ResourceService;
 import ru.itis.master.party.dormdeals.services.UserService;
 import ru.itis.master.party.dormdeals.utils.EmailUtil;
@@ -28,7 +28,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import static ru.itis.master.party.dormdeals.models.User.State.*;
+import static ru.itis.master.party.dormdeals.models.jpa.User.State.*;
 
 @Service
 @RequiredArgsConstructor

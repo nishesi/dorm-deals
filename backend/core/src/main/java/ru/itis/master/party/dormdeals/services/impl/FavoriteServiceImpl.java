@@ -7,9 +7,9 @@ import ru.itis.master.party.dormdeals.dto.product.ProductDto;
 import ru.itis.master.party.dormdeals.dto.converters.ProductConverter;
 import ru.itis.master.party.dormdeals.exceptions.NotAcceptableException;
 import ru.itis.master.party.dormdeals.exceptions.NotFoundException;
-import ru.itis.master.party.dormdeals.models.User;
-import ru.itis.master.party.dormdeals.repositories.ProductRepository;
-import ru.itis.master.party.dormdeals.repositories.UserRepository;
+import ru.itis.master.party.dormdeals.models.jpa.User;
+import ru.itis.master.party.dormdeals.repositories.jpa.ProductRepository;
+import ru.itis.master.party.dormdeals.repositories.jpa.UserRepository;
 import ru.itis.master.party.dormdeals.services.FavoriteService;
 
 import java.util.List;

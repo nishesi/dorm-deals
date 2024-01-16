@@ -7,9 +7,9 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import ru.itis.master.party.dormdeals.dto.converters.ProductConverter;
-import ru.itis.master.party.dormdeals.models.ItemElastic;
+import ru.itis.master.party.dormdeals.models.elasticsearch.ItemElastic;
 import ru.itis.master.party.dormdeals.repositories.ItemElasticRepository;
-import ru.itis.master.party.dormdeals.repositories.ProductRepository;
+import ru.itis.master.party.dormdeals.repositories.jpa.ProductRepository;
 
 import java.util.List;
 import java.util.concurrent.*;

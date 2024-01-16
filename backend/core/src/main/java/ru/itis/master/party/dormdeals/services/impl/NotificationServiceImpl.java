@@ -7,11 +7,11 @@ import ru.itis.master.party.dormdeals.dto.NotificationDto;
 import ru.itis.master.party.dormdeals.dto.converters.NotificationConverter;
 import ru.itis.master.party.dormdeals.exceptions.NotAcceptableException;
 import ru.itis.master.party.dormdeals.exceptions.NotFoundException;
-import ru.itis.master.party.dormdeals.models.Notification;
-import ru.itis.master.party.dormdeals.models.User;
-import ru.itis.master.party.dormdeals.models.order.Order;
-import ru.itis.master.party.dormdeals.repositories.NotificationRepository;
-import ru.itis.master.party.dormdeals.repositories.UserRepository;
+import ru.itis.master.party.dormdeals.models.jpa.Notification;
+import ru.itis.master.party.dormdeals.models.jpa.User;
+import ru.itis.master.party.dormdeals.models.jpa.order.Order;
+import ru.itis.master.party.dormdeals.repositories.jpa.NotificationRepository;
+import ru.itis.master.party.dormdeals.repositories.jpa.UserRepository;
 import ru.itis.master.party.dormdeals.services.NotificationService;
 
 import java.time.ZonedDateTime;

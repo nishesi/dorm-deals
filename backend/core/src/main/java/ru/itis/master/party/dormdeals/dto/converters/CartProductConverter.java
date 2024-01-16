@@ -6,8 +6,8 @@ import ru.itis.master.party.dormdeals.dto.product.CartProductDto;
 import ru.itis.master.party.dormdeals.dto.product.ProductDto;
 import ru.itis.master.party.dormdeals.enums.EntityType;
 import ru.itis.master.party.dormdeals.enums.FileType;
-import ru.itis.master.party.dormdeals.models.CartProduct;
-import ru.itis.master.party.dormdeals.models.Product;
+import ru.itis.master.party.dormdeals.models.jpa.CartProduct;
+import ru.itis.master.party.dormdeals.models.jpa.Product;
 import ru.itis.master.party.dormdeals.utils.ResourceUrlResolver;
 
 import java.util.List;

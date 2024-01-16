@@ -3,7 +3,7 @@ package ru.itis.master.party.dormdeals.search;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import ru.itis.master.party.dormdeals.models.ItemElastic;
+import ru.itis.master.party.dormdeals.models.elasticsearch.ItemElastic;
 import ru.itis.master.party.dormdeals.repositories.ItemElasticRepository;
 
 import java.util.Comparator;

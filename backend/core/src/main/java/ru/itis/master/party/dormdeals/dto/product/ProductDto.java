@@ -8,7 +8,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import ru.itis.master.party.dormdeals.dto.review.ReviewDto;
 import ru.itis.master.party.dormdeals.dto.shop.ShopDto;
-import ru.itis.master.party.dormdeals.models.Product;
+import ru.itis.master.party.dormdeals.models.jpa.Product;
 
 import java.util.List;
 

@@ -9,11 +9,11 @@ import ru.itis.master.party.dormdeals.dto.shop.ShopDto;
 import ru.itis.master.party.dormdeals.dto.user.UserDto;
 import ru.itis.master.party.dormdeals.dto.order.OrderDto;
 import ru.itis.master.party.dormdeals.dto.order.OrderMessageDto;
-import ru.itis.master.party.dormdeals.models.Shop;
-import ru.itis.master.party.dormdeals.models.User;
-import ru.itis.master.party.dormdeals.models.order.Order;
-import ru.itis.master.party.dormdeals.models.order.OrderMessage;
-import ru.itis.master.party.dormdeals.models.order.OrderProduct;
+import ru.itis.master.party.dormdeals.models.jpa.Shop;
+import ru.itis.master.party.dormdeals.models.jpa.User;
+import ru.itis.master.party.dormdeals.models.jpa.order.Order;
+import ru.itis.master.party.dormdeals.models.jpa.order.OrderMessage;
+import ru.itis.master.party.dormdeals.models.jpa.order.OrderProduct;
 
 import java.util.List;
 

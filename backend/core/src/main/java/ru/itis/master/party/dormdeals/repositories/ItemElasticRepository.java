@@ -3,7 +3,8 @@ package ru.itis.master.party.dormdeals.repositories;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.elasticsearch.annotations.Query;
 import org.springframework.data.elasticsearch.repository.ElasticsearchRepository;
-import ru.itis.master.party.dormdeals.models.ItemElastic;
+import ru.itis.master.party.dormdeals.models.elasticsearch.ItemElastic;
+import ru.itis.master.party.dormdeals.repositories.jpa.CustomItemElasticRepository;
 
 import java.util.List;
 

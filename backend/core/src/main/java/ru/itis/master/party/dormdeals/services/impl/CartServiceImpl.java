@@ -6,10 +6,10 @@ import ru.itis.master.party.dormdeals.dto.CartCookie;
 import ru.itis.master.party.dormdeals.dto.product.CartProductDto;
 import ru.itis.master.party.dormdeals.dto.converters.CartProductConverter;
 import ru.itis.master.party.dormdeals.exceptions.NotEnoughException;
-import ru.itis.master.party.dormdeals.models.Cart;
-import ru.itis.master.party.dormdeals.models.CartProduct;
-import ru.itis.master.party.dormdeals.repositories.CartRepository;
-import ru.itis.master.party.dormdeals.repositories.ProductRepository;
+import ru.itis.master.party.dormdeals.models.jpa.Cart;
+import ru.itis.master.party.dormdeals.models.jpa.CartProduct;
+import ru.itis.master.party.dormdeals.repositories.jpa.CartRepository;
+import ru.itis.master.party.dormdeals.repositories.jpa.ProductRepository;
 import ru.itis.master.party.dormdeals.services.CartService;
 
 import java.util.List;

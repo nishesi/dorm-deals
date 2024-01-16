@@ -12,7 +12,7 @@ import ru.itis.master.party.dormdeals.controllers.api.OrderApi;
 import ru.itis.master.party.dormdeals.dto.order.OrderDto;
 import ru.itis.master.party.dormdeals.dto.order.NewOrderDto;
 import ru.itis.master.party.dormdeals.dto.order.NewOrderMessageDto;
-import ru.itis.master.party.dormdeals.models.order.Order;
+import ru.itis.master.party.dormdeals.models.jpa.order.Order;
 import ru.itis.master.party.dormdeals.security.details.UserDetailsImpl;
 import ru.itis.master.party.dormdeals.services.OrderService;
 

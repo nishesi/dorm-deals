@@ -1,7 +1,7 @@
 package ru.itis.master.party.dormdeals.services;
 
 import ru.itis.master.party.dormdeals.dto.NotificationDto;
-import ru.itis.master.party.dormdeals.models.order.Order;
+import ru.itis.master.party.dormdeals.models.jpa.order.Order;
 
 import java.util.List;
 

@@ -5,23 +5,21 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-import ru.itis.master.party.dormdeals.dto.product.*;
 import ru.itis.master.party.dormdeals.dto.converters.ProductConverter;
 import ru.itis.master.party.dormdeals.enums.EntityType;
 import ru.itis.master.party.dormdeals.enums.FileType;
 import ru.itis.master.party.dormdeals.dto.converters.CartProductConverter;
-import ru.itis.master.party.dormdeals.dto.converters.ProductConverter;
 import ru.itis.master.party.dormdeals.dto.product.CartProductDto;
 import ru.itis.master.party.dormdeals.dto.product.NewProduct;
 import ru.itis.master.party.dormdeals.dto.product.ProductDto;
 import ru.itis.master.party.dormdeals.dto.product.UpdateProduct;
 import ru.itis.master.party.dormdeals.exceptions.NotAcceptableException;
 import ru.itis.master.party.dormdeals.exceptions.NotFoundException;
-import ru.itis.master.party.dormdeals.models.Product;
-import ru.itis.master.party.dormdeals.models.Review;
-import ru.itis.master.party.dormdeals.models.Shop;
-import ru.itis.master.party.dormdeals.repositories.ProductRepository;
-import ru.itis.master.party.dormdeals.repositories.ShopRepository;
+import ru.itis.master.party.dormdeals.models.jpa.Product;
+import ru.itis.master.party.dormdeals.models.jpa.Review;
+import ru.itis.master.party.dormdeals.models.jpa.Shop;
+import ru.itis.master.party.dormdeals.repositories.jpa.ProductRepository;
+import ru.itis.master.party.dormdeals.repositories.jpa.ShopRepository;
 import ru.itis.master.party.dormdeals.services.ProductService;
 import ru.itis.master.party.dormdeals.services.ResourceService;
 
@@ -29,7 +27,7 @@ import java.util.List;
 import java.util.UUID;
 import java.util.Objects;
 
-import static ru.itis.master.party.dormdeals.models.Product.State.ACTIVE;
+import static ru.itis.master.party.dormdeals.models.jpa.Product.State.ACTIVE;
 
 @Service
 @RequiredArgsConstructor
