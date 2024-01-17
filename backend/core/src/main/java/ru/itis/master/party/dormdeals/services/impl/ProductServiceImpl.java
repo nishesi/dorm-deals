@@ -3,12 +3,11 @@ package ru.itis.master.party.dormdeals.services.impl;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-import ru.itis.master.party.dormdeals.dto.product.CartProductDto;
-import ru.itis.master.party.dormdeals.dto.product.NewProductForm;
-import ru.itis.master.party.dormdeals.dto.product.ProductDto;
-import ru.itis.master.party.dormdeals.dto.product.UpdateProductForm;
+import ru.itis.master.party.dormdeals.dto.product.*;
 import ru.itis.master.party.dormdeals.enums.EntityType;
 import ru.itis.master.party.dormdeals.enums.FileType;
 import ru.itis.master.party.dormdeals.exceptions.NotAcceptableException;
@@ -41,16 +40,16 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     @Transactional
-    public ProductDto addProduct(long userId, NewProductForm newProductForm) {
+    public ProductDto createProduct(long userId, NewProductForm form) {
         Shop shop = shopRepository.findByOwnerId(userId)
                 .orElseThrow(() -> new NotFoundException(Shop.class, "ownerId", userId));
 
         Product product = Product.builder()
-                .name(newProductForm.name())
-                .description(newProductForm.description())
-                .type(newProductForm.type())
-                .price(newProductForm.price())
-                .countInStorage(newProductForm.countInStorage())
+                .name(form.name())
+                .description(form.description())
+                .type(form.type())
+                .price(form.price())
+                .countInStorage(form.countInStorage())
                 .shop(shop)
                 .state(ACTIVE)
                 .rating(0)
@@ -83,17 +82,17 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     @Transactional
-    public ProductDto updateProduct(long userId, Long productId, UpdateProductForm updatedProduct) {
+    public ProductDto updateProduct(long userId, Long productId, UpdateProductForm form) {
         Product product = productRepository.findWithShopById(productId)
                 .orElseThrow(() -> new NotFoundException(Product.class, "id", productId));
 
         if (product.getShop().getOwner().getId() != userId)
             throw new NotAcceptableException("have not permission");
 
-        product.setName(updatedProduct.name());
-        product.setDescription(updatedProduct.description());
-        product.setPrice(updatedProduct.price());
-        product.setCountInStorage(updatedProduct.countInStorage());
+        product.setName(form.name());
+        product.setDescription(form.description());
+        product.setPrice(form.price());
+        product.setCountInStorage(form.countInStorage());
 
         return productMapper.toProductDto(product);
     }
@@ -145,5 +144,12 @@ public class ProductServiceImpl implements ProductService {
 
         resourceService.deleteFile(FileType.IMAGE, EntityType.PRODUCT, imageId);
         product.getResources().remove(imageId);
+    }
+
+    @Override
+    public ProductPage getShopsActiveProductsPage(Long shopId, Pageable pageable) {
+        Page<Product> products = productRepository
+                .findAllByShopIdAndStateOrderById(shopId, ACTIVE, pageable);
+        return productMapper.toProductPage(products);
     }
 }

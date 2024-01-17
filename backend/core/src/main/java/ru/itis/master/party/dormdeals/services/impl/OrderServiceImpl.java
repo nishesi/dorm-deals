@@ -183,7 +183,7 @@ public class OrderServiceImpl implements OrderService {
 
         OrderMessage message = OrderMessage.builder()
                 .order(order)
-                .user(userRepository.getReferenceById(userId))
+                .author(userRepository.getReferenceById(userId))
                 .message(orderMessage.message())
                 .addedDate(ZonedDateTime.now())
                 .build();

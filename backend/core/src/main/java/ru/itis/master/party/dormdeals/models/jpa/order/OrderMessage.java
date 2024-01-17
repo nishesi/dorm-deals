@@ -31,7 +31,7 @@ public class OrderMessage extends AbstractEntity {
     @Access(AccessType.PROPERTY)
     @JoinColumn(name = "user_id", nullable = false)
     @ToString.Exclude
-    private User user;
+    private User author;
 
     @Column(nullable = false)
     private String message;

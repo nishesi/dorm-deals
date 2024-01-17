@@ -19,7 +19,4 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
 
     @Query("select p from Product p left join fetch p.resources where p.id in :ids")
     List<Product> findAllWithResourcesByIdIn(List<Long> ids);
-
-    @Query("select p.resources from Product p where p.id=:id")
-    List<String> getResourceById(Long id);
 }

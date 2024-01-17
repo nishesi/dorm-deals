@@ -1,5 +1,6 @@
 package ru.itis.master.party.dormdeals.mapper;
 
+import lombok.Setter;
 import org.mapstruct.BeanMapping;
 import org.mapstruct.Builder;
 import org.mapstruct.Mapper;
@@ -17,10 +18,10 @@ import static org.mapstruct.MappingConstants.ComponentModel.SPRING;
         builder = @Builder(disableBuilder = true))
 public abstract class OrderMapper {
 
-    @Autowired
+    @Setter(onMethod_={@Autowired})
     protected UserMapper userMapper;
 
-    @Autowired
+    @Setter(onMethod_={@Autowired})
     protected ShopMapper shopMapper;
 
     @Mapping(target = "products")
@@ -43,5 +44,6 @@ public abstract class OrderMapper {
         return orderMessages.map(this::toOrderDtoMessage);
     }
 
+    @Mapping(target = "userId", source = "author.id")
     protected abstract OrderDto.Message toOrderDtoMessage(OrderMessage orderMessage);
 }

@@ -14,6 +14,9 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
 
 @EnableScheduling
 @SpringBootApplication(exclude = FreeMarkerAutoConfiguration.class)
@@ -41,6 +44,11 @@ public class DormDealsApplication {
     @Bean
     Tika tika() {
         return new Tika();
+    }
+
+    @Bean
+    ExecutorService executorService() {
+        return Executors.newVirtualThreadPerTaskExecutor();
     }
 
     public static void main(String[] args) {

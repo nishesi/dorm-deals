@@ -24,7 +24,7 @@ public class Review extends AbstractEntity {
     @JoinColumn(name = "user_id")
     @Access(AccessType.PROPERTY)
     @ToString.Exclude
-    private User user;
+    private User author;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "product_id")

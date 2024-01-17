@@ -1,5 +1,6 @@
 package ru.itis.master.party.dormdeals.mapper;
 
+import lombok.Setter;
 import org.mapstruct.Builder;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -17,7 +18,7 @@ import static ru.itis.master.party.dormdeals.enums.FileType.IMAGE;
         builder = @Builder(disableBuilder = true))
 public abstract class UserMapper {
 
-    @Autowired
+    @Setter(onMethod_={@Autowired})
     protected ResourceUrlResolver resolver;
 
     @Mapping(target = "resourceUrl", source = "id", qualifiedByName = "userIdToResourceUrl")

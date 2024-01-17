@@ -26,7 +26,7 @@ public class ProductController implements ProductApi {
     public ResponseEntity<ProductDto> addProduct(@Valid NewProductForm newProductForm,
                                                  @AuthenticationPrincipal UserDetailsImpl userDetails) {
         long userId = userDetails.getUser().getId();
-        ProductDto productDto = productService.addProduct(userId, newProductForm);
+        ProductDto productDto = productService.createProduct(userId, newProductForm);
         return ResponseEntity.status(HttpStatus.CREATED).body(productDto);
     }
 

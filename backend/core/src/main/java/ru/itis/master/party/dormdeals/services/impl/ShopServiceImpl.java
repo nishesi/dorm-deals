@@ -2,23 +2,17 @@ package ru.itis.master.party.dormdeals.services.impl;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import ru.itis.master.party.dormdeals.dto.shop.NewShopForm;
 import ru.itis.master.party.dormdeals.dto.shop.ShopDto;
-import ru.itis.master.party.dormdeals.dto.shop.ShopWithProductsDto;
 import ru.itis.master.party.dormdeals.dto.shop.UpdateShopForm;
 import ru.itis.master.party.dormdeals.enums.EntityType;
 import ru.itis.master.party.dormdeals.enums.FileType;
 import ru.itis.master.party.dormdeals.exceptions.NotAcceptableException;
 import ru.itis.master.party.dormdeals.exceptions.NotFoundException;
-import ru.itis.master.party.dormdeals.mapper.ProductMapper;
 import ru.itis.master.party.dormdeals.mapper.ShopMapper;
 import ru.itis.master.party.dormdeals.models.jpa.Dormitory;
-import ru.itis.master.party.dormdeals.models.jpa.Product;
 import ru.itis.master.party.dormdeals.models.jpa.Shop;
 import ru.itis.master.party.dormdeals.models.jpa.User;
 import ru.itis.master.party.dormdeals.repositories.jpa.DormitoryRepository;
@@ -30,8 +24,6 @@ import ru.itis.master.party.dormdeals.services.ShopService;
 
 import java.util.List;
 import java.util.Optional;
-
-import static ru.itis.master.party.dormdeals.models.jpa.Product.State.ACTIVE;
 
 @Service
 @RequiredArgsConstructor
@@ -48,59 +40,61 @@ public class ShopServiceImpl implements ShopService {
 
     private final UserRepository userRepository;
 
-    private final ProductMapper productMapper;
-
     private final ShopMapper shopMapper;
 
-    @Value("${default.page-size}")
-    private int defaultPageSize;
+    @Override
+    public ShopDto getShop(Long shopId) {
+        Shop shop = shopRepository.findById(shopId)
+                .orElseThrow(() -> new NotFoundException(Shop.class, "id", shopId));
+        return shopMapper.toShopDto(shop);
+    }
 
     @Override
-    public ShopDto createShop(long userId, NewShopForm newShopForm) {
+    public ShopDto createShop(long userId, NewShopForm form) {
         User user = userRepository.findById(userId).orElseThrow(() ->
                 new NotFoundException(User.class, "email", userId));
 
         if (shopRepository.existsByOwnerId(user.getId()))
             throw new NotAcceptableException("Вы не можете иметь больше одного магазина");
 
-        List<Dormitory> dormitories = dormitoryRepository.findByIdIn(newShopForm.getDormitoryIdList());
+        List<Dormitory> dormitories = dormitoryRepository.findByIdIn(form.dormitoryIdList());
 
         Shop shop = Shop.builder()
-                .name(newShopForm.getName())
-                .description(newShopForm.getDescription())
+                .name(form.name())
+                .description(form.description())
                 .dormitories(dormitories)
                 .owner(user)
                 .build();
 
         shopRepository.save(shop);
 
-        return shopMapper.toShopDtoWithPureInfo(shop);
+        return shopMapper.toShopDto(shop);
     }
 
     @Override
     @Transactional
-    public ShopDto updateShop(long userId, Long shopId, UpdateShopForm newShopData) {
+    public ShopDto updateShop(long userId, Long shopId, UpdateShopForm form) {
         Shop shop = shopRepository.findById(shopId)
                 .orElseThrow(() -> new NotFoundException(Shop.class, "id", shopId));
 
         if (shop.getOwner().getId() != userId)
             throw new NotAcceptableException("have not permission");
 
-        String newShopName = newShopData.getName();
+        String newShopName = form.name();
 
         if (!shop.getName().equals(newShopName) &&
                 shopRepository.existsByName(newShopName))
             throw new IllegalArgumentException("shop with name <" + newShopName + "> already exists");
 
-        List<Dormitory> dormitories = dormitoryRepository.findByIdIn(newShopData.getDormitoryIdList());
+        List<Dormitory> dormitories = dormitoryRepository.findByIdIn(form.dormitoryIdList());
 
         shop.setName(newShopName);
-        shop.setDescription(newShopData.getDescription());
+        shop.setDescription(form.description());
         shop.setDormitories(dormitories);
 
         shopRepository.save(shop);
 
-        return shopMapper.toShopDtoWithPureInfo(shop);
+        return shopMapper.toShopDto(shop);
     }
 
     @Override
@@ -111,17 +105,6 @@ public class ShopServiceImpl implements ShopService {
             productRepository.deleteAllByShopId(shop.getId());
             shopRepository.deleteById(shop.getId());
         });
-    }
-
-    @Override
-    @Transactional
-    public ShopWithProductsDto getAllProductsThisShop(Long shopId, int page) {
-        Shop thisShop = shopRepository.findById(shopId)
-                .orElseThrow(() -> new NotFoundException(Shop.class, "id", shopId));
-        Page<Product> products = productRepository
-                .findAllByShopIdAndStateOrderById(shopId, ACTIVE, PageRequest.of(page, defaultPageSize));
-
-        return shopMapper.toShopWithProductsDto(thisShop, products);
     }
 
     @Override

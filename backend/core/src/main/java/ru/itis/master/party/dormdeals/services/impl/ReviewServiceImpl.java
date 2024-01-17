@@ -43,9 +43,9 @@ public class ReviewServiceImpl implements ReviewService {
         Shop shop = product.getShop();
 
         Review review = reviewRepository.save(Review.builder()
-                .message(newReviewForm.getMessage())
-                .score(newReviewForm.getScore())
-                .user(user)
+                .message(newReviewForm.message())
+                .score(newReviewForm.score())
+                .author(user)
                 .product(product)
                 .build());
 
@@ -64,8 +64,8 @@ public class ReviewServiceImpl implements ReviewService {
     public ReviewDto updateReview(NewReviewForm newReviewForm, Long productId, Long userId) {
         Review review = reviewRepository.findByProductIdAndUserId(productId, userId)
                 .orElseThrow(() -> new NotFoundException(Review.class, "id", productId));
-        review.setScore(newReviewForm.getScore());
-        review.setMessage(newReviewForm.getMessage());
+        review.setScore(newReviewForm.score());
+        review.setMessage(newReviewForm.message());
         reviewRepository.save(review);
 
         updateRatingProductAndShop(review);
@@ -79,7 +79,7 @@ public class ReviewServiceImpl implements ReviewService {
         Optional<Review> reviewOptional = reviewRepository.findByProductIdAndUserId(productId, userId);
         reviewOptional.ifPresent(review -> {
 
-            if (review.getUser().getId() != userId) {
+            if (review.getAuthor().getId() != userId) {
                 throw new NotAcceptableException("have not permission");
             }
 

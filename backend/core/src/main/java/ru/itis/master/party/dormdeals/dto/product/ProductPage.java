@@ -1,33 +1,16 @@
-package ru.itis.master.party.dormdeals.dto.shop;
+package ru.itis.master.party.dormdeals.dto.product;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
+
 import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
 import org.springframework.data.domain.Page;
+import ru.itis.master.party.dormdeals.models.jpa.Product.State;
 
 import java.util.List;
 
-import static ru.itis.master.party.dormdeals.models.jpa.Product.State;
-
-@Data
-@Builder
-@AllArgsConstructor
-@NoArgsConstructor
-public class ShopWithProductsDto {
-
-    private Shop shop;
-
-    private Page<Product> productsPage;
-
-    public record Shop(
-            Long id,
-            String name
-    ) {
-    }
-
+public record ProductPage(
+        Page<Product> page
+) {
     @Builder
     public record Product(
             @Schema(description = "идентификатор товара", example = "1")
@@ -37,11 +20,9 @@ public class ShopWithProductsDto {
             String name,
 
             @Schema(description = "описание товара", example = "бодрит")
-            @JsonInclude(JsonInclude.Include.NON_NULL)
             String description,
 
             @Schema(description = "категория товара", example = "продукты/напитки")
-            @JsonInclude(JsonInclude.Include.NON_NULL)
             String type,
 
             @Schema(description = "цена товара", example = "100")
@@ -54,7 +35,6 @@ public class ShopWithProductsDto {
             State state,
 
             @Schema(description = "фотографии/видео")
-            @JsonInclude(JsonInclude.Include.NON_NULL)
             List<String> resources
     ) {
     }
