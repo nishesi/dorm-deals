@@ -5,8 +5,8 @@ import org.springframework.stereotype.Service;
 import ru.itis.master.party.dormdeals.models.redis.RedisUser;
 import ru.itis.master.party.dormdeals.repositories.JwtRepository;
 import ru.itis.master.party.dormdeals.repositories.UserRedisRepository;
-import ru.itis.master.party.dormdeals.services.JwtService;
 import ru.itis.master.party.dormdeals.security.service.JwtUtil;
+import ru.itis.master.party.dormdeals.services.JwtService;
 
 import java.util.List;
 import java.util.Optional;

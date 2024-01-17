@@ -6,7 +6,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestController;
-import ru.itis.master.party.dormdeals.aspects.RestExceptionHandler;
 import ru.itis.master.party.dormdeals.aspects.RestExceptionHandler.ExceptionDto;
 import ru.itis.master.party.dormdeals.controllers.api.ResourceApi;
 import ru.itis.master.party.dormdeals.enums.EntityType;

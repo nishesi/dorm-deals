@@ -3,9 +3,9 @@ package ru.itis.master.party.dormdeals.search.links;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
-import ru.itis.master.party.dormdeals.search.SearchLink;
 import ru.itis.master.party.dormdeals.dto.CatalogueElastic;
 import ru.itis.master.party.dormdeals.repositories.ItemElasticRepository;
+import ru.itis.master.party.dormdeals.search.SearchLink;
 
 import java.util.List;
 

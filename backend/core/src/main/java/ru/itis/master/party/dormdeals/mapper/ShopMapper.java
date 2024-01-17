@@ -1,6 +1,9 @@
 package ru.itis.master.party.dormdeals.mapper;
 
-import org.mapstruct.*;
+import org.mapstruct.Builder;
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.Named;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import ru.itis.master.party.dormdeals.dto.product.ProductDto;
@@ -11,8 +14,6 @@ import ru.itis.master.party.dormdeals.enums.FileType;
 import ru.itis.master.party.dormdeals.models.jpa.Product;
 import ru.itis.master.party.dormdeals.models.jpa.Shop;
 import ru.itis.master.party.dormdeals.utils.ResourceUrlResolver;
-
-import java.util.List;
 
 import static org.mapstruct.MappingConstants.ComponentModel.SPRING;
 

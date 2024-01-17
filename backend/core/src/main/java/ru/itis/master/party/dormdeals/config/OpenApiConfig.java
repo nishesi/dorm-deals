@@ -13,7 +13,6 @@ import io.swagger.v3.oas.models.security.SecurityScheme;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-
 import static ru.itis.master.party.dormdeals.security.filters.JwtAuthenticationFilter.AUTHENTICATION_URL;
 import static ru.itis.master.party.dormdeals.security.filters.JwtAuthenticationFilter.USERNAME_PARAMETER;
 

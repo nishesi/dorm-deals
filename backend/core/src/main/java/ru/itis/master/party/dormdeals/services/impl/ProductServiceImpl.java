@@ -5,12 +5,12 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-import ru.itis.master.party.dormdeals.enums.EntityType;
-import ru.itis.master.party.dormdeals.enums.FileType;
 import ru.itis.master.party.dormdeals.dto.product.CartProductDto;
 import ru.itis.master.party.dormdeals.dto.product.NewProductForm;
 import ru.itis.master.party.dormdeals.dto.product.ProductDto;
 import ru.itis.master.party.dormdeals.dto.product.UpdateProductForm;
+import ru.itis.master.party.dormdeals.enums.EntityType;
+import ru.itis.master.party.dormdeals.enums.FileType;
 import ru.itis.master.party.dormdeals.exceptions.NotAcceptableException;
 import ru.itis.master.party.dormdeals.exceptions.NotFoundException;
 import ru.itis.master.party.dormdeals.mapper.ProductMapper;
@@ -23,8 +23,8 @@ import ru.itis.master.party.dormdeals.services.ProductService;
 import ru.itis.master.party.dormdeals.services.ResourceService;
 
 import java.util.List;
-import java.util.UUID;
 import java.util.Objects;
+import java.util.UUID;
 
 import static ru.itis.master.party.dormdeals.models.jpa.Product.State.ACTIVE;
 

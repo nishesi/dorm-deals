@@ -1,7 +1,10 @@
 package ru.itis.master.party.dormdeals.services;
 
 import org.springframework.web.multipart.MultipartFile;
-import ru.itis.master.party.dormdeals.dto.product.*;
+import ru.itis.master.party.dormdeals.dto.product.CartProductDto;
+import ru.itis.master.party.dormdeals.dto.product.NewProductForm;
+import ru.itis.master.party.dormdeals.dto.product.ProductDto;
+import ru.itis.master.party.dormdeals.dto.product.UpdateProductForm;
 import ru.itis.master.party.dormdeals.models.jpa.Product;
 
 import java.util.List;

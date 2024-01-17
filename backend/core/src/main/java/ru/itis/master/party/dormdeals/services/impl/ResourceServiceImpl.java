@@ -5,7 +5,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-import ru.itis.master.party.dormdeals.controllers.api.ResourceApi;
 import ru.itis.master.party.dormdeals.controllers.api.ResourceApi.ResourceDto;
 import ru.itis.master.party.dormdeals.enums.EntityType;
 import ru.itis.master.party.dormdeals.enums.FileType;

@@ -1,6 +1,9 @@
 package ru.itis.master.party.dormdeals.mapper;
 
-import org.mapstruct.*;
+import org.mapstruct.Builder;
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.Named;
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.itis.master.party.dormdeals.dto.user.UserDto;
 import ru.itis.master.party.dormdeals.models.jpa.User;

@@ -3,18 +3,19 @@ package ru.itis.master.party.dormdeals.search.links;
 import org.springframework.core.annotation.Order;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
-import ru.itis.master.party.dormdeals.search.SearchLink;
-import ru.itis.master.party.dormdeals.search.TypeMatchingAbstractSearch;
 import ru.itis.master.party.dormdeals.dto.CatalogueElastic;
 import ru.itis.master.party.dormdeals.models.elasticsearch.ItemElastic;
 import ru.itis.master.party.dormdeals.repositories.ItemElasticRepository;
+import ru.itis.master.party.dormdeals.search.SearchLink;
+import ru.itis.master.party.dormdeals.search.TypeMatchingAbstractSearch;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 import static ru.itis.master.party.dormdeals.utils.SearchUtils.*;
-import static ru.itis.master.party.dormdeals.utils.StringUtils.*;
+import static ru.itis.master.party.dormdeals.utils.StringUtils.createQuery;
+import static ru.itis.master.party.dormdeals.utils.StringUtils.parseAndAssertNeedConvert;
 
 @Order(10)
 @Component

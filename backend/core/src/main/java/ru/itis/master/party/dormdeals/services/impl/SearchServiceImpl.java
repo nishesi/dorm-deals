@@ -5,11 +5,11 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.itis.master.party.dormdeals.mapper.ProductMapper;
-import ru.itis.master.party.dormdeals.search.SearchChain;
 import ru.itis.master.party.dormdeals.dto.CatalogueElastic;
 import ru.itis.master.party.dormdeals.dto.product.ProductDto;
+import ru.itis.master.party.dormdeals.mapper.ProductMapper;
 import ru.itis.master.party.dormdeals.repositories.impl.SearchRepository;
+import ru.itis.master.party.dormdeals.search.SearchChain;
 import ru.itis.master.party.dormdeals.services.SearchService;
 
 import java.util.List;

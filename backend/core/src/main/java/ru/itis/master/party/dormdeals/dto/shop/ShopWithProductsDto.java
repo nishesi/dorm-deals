@@ -10,7 +10,7 @@ import org.springframework.data.domain.Page;
 
 import java.util.List;
 
-import static ru.itis.master.party.dormdeals.models.jpa.Product.*;
+import static ru.itis.master.party.dormdeals.models.jpa.Product.State;
 
 @Data
 @Builder
