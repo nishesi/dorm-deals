@@ -8,11 +8,11 @@ import java.util.List;
 
 public interface ProductService {
 
-    ProductDto addProduct(long userId, NewProduct newProduct);
+    ProductDto addProduct(long userId, NewProductForm newProductForm);
 
     ProductDto getProduct(Long productId, Long userId, int pageIndex);
 
-    ProductDto updateProduct(long userId, Long productId, UpdateProduct updatedProduct);
+    ProductDto updateProduct(long userId, Long productId, UpdateProductForm updatedProduct);
 
     void updateProductState(long userId, long productId, Product.State state);
     List<CartProductDto> getCartProducts(List<Long> productsId);

@@ -15,8 +15,8 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import ru.itis.master.party.dormdeals.aspects.RestExceptionHandler;
 import ru.itis.master.party.dormdeals.dto.CatalogueElastic;
-import ru.itis.master.party.dormdeals.dto.ExceptionDto;
 import ru.itis.master.party.dormdeals.dto.product.ProductDto;
 
 import java.util.List;
@@ -34,7 +34,7 @@ public interface SearchApi {
                     }),
             @ApiResponse(responseCode = "404", description = "Таких товаров нет",
                     content = {
-                            @Content(mediaType = "application/json", schema = @Schema(implementation = ExceptionDto.class))
+                            @Content(mediaType = "application/json", schema = @Schema(implementation = RestExceptionHandler.ExceptionDto.class))
                     })
     })
     @GetMapping("/products")

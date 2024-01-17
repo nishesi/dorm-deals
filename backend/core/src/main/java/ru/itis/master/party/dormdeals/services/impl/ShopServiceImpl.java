@@ -7,17 +7,16 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-import ru.itis.master.party.dormdeals.dto.product.ProductsPage;
-import ru.itis.master.party.dormdeals.dto.shop.NewShop;
+import ru.itis.master.party.dormdeals.dto.shop.NewShopForm;
 import ru.itis.master.party.dormdeals.dto.shop.ShopDto;
-import ru.itis.master.party.dormdeals.dto.shop.UpdateShop;
-import ru.itis.master.party.dormdeals.dto.ShopWithProducts;
-import ru.itis.master.party.dormdeals.dto.converters.ProductConverter;
-import ru.itis.master.party.dormdeals.dto.converters.ShopConverter;
+import ru.itis.master.party.dormdeals.dto.shop.ShopWithProductsDto;
+import ru.itis.master.party.dormdeals.dto.shop.UpdateShopForm;
 import ru.itis.master.party.dormdeals.enums.EntityType;
 import ru.itis.master.party.dormdeals.enums.FileType;
 import ru.itis.master.party.dormdeals.exceptions.NotAcceptableException;
 import ru.itis.master.party.dormdeals.exceptions.NotFoundException;
+import ru.itis.master.party.dormdeals.mapper.ProductMapper;
+import ru.itis.master.party.dormdeals.mapper.ShopMapper;
 import ru.itis.master.party.dormdeals.models.jpa.Dormitory;
 import ru.itis.master.party.dormdeals.models.jpa.Product;
 import ru.itis.master.party.dormdeals.models.jpa.Shop;
@@ -31,6 +30,8 @@ import ru.itis.master.party.dormdeals.services.ShopService;
 
 import java.util.List;
 import java.util.Optional;
+
+import static ru.itis.master.party.dormdeals.models.jpa.Product.State.ACTIVE;
 
 @Service
 @RequiredArgsConstructor
@@ -47,38 +48,38 @@ public class ShopServiceImpl implements ShopService {
 
     private final UserRepository userRepository;
 
-    private final ProductConverter productConverter;
+    private final ProductMapper productMapper;
 
-    private final ShopConverter shopConverter;
+    private final ShopMapper shopMapper;
 
     @Value("${default.page-size}")
     private int defaultPageSize;
 
     @Override
-    public ShopDto createShop(long userId, NewShop newShop) {
+    public ShopDto createShop(long userId, NewShopForm newShopForm) {
         User user = userRepository.findById(userId).orElseThrow(() ->
                 new NotFoundException(User.class, "email", userId));
 
         if (shopRepository.existsByOwnerId(user.getId()))
             throw new NotAcceptableException("Вы не можете иметь больше одного магазина");
 
-        List<Dormitory> dormitories = dormitoryRepository.findByIdIn(newShop.getDormitoryIdList());
+        List<Dormitory> dormitories = dormitoryRepository.findByIdIn(newShopForm.getDormitoryIdList());
 
         Shop shop = Shop.builder()
-                .name(newShop.getName())
-                .description(newShop.getDescription())
+                .name(newShopForm.getName())
+                .description(newShopForm.getDescription())
                 .dormitories(dormitories)
                 .owner(user)
                 .build();
 
         shopRepository.save(shop);
 
-        return shopConverter.from(shop);
+        return shopMapper.toShopDtoWithPureInfo(shop);
     }
 
     @Override
     @Transactional
-    public ShopDto updateShop(long userId, Long shopId, UpdateShop newShopData) {
+    public ShopDto updateShop(long userId, Long shopId, UpdateShopForm newShopData) {
         Shop shop = shopRepository.findById(shopId)
                 .orElseThrow(() -> new NotFoundException(Shop.class, "id", shopId));
 
@@ -99,7 +100,7 @@ public class ShopServiceImpl implements ShopService {
 
         shopRepository.save(shop);
 
-        return shopConverter.from(shop);
+        return shopMapper.toShopDtoWithPureInfo(shop);
     }
 
     @Override
@@ -114,23 +115,13 @@ public class ShopServiceImpl implements ShopService {
 
     @Override
     @Transactional
-    public ShopWithProducts getAllProductsThisShop(Long shopId, int page) {
-        Shop thisShop = shopRepository.findById(shopId).orElseThrow(() -> new NotFoundException(Shop.class, "id", shopId));
-        PageRequest pageRequest = PageRequest.of(page, defaultPageSize);
-        Page<Product> productsPageTemp = productRepository
-                .findAllByShopIdAndStateOrderById(shopId, Product.State.ACTIVE, pageRequest);
+    public ShopWithProductsDto getAllProductsThisShop(Long shopId, int page) {
+        Shop thisShop = shopRepository.findById(shopId)
+                .orElseThrow(() -> new NotFoundException(Shop.class, "id", shopId));
+        Page<Product> products = productRepository
+                .findAllByShopIdAndStateOrderById(shopId, ACTIVE, PageRequest.of(page, defaultPageSize));
 
-        ProductsPage productsPage = ProductsPage.builder()
-                .products(productConverter
-                        .convertListProductInListProductDtoForShop(productsPageTemp
-                                .getContent()))
-                .totalPageCount(productsPageTemp.getTotalPages())
-                .build();
-
-        return ShopWithProducts.builder()
-                .shop(shopConverter.from(thisShop))
-                .productsPage(productsPage)
-                .build();
+        return shopMapper.toShopWithProductsDto(thisShop, products);
     }
 
     @Override

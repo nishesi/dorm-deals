@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Schema(description = "user")
+@Schema(description = "author")
 public class UserDto {
 
     private Long id;
@@ -27,7 +27,6 @@ public class UserDto {
     @Schema(description = "телефонный номер пользователя", example = "89993335566")
     private String telephone;
 
-//    @Schema(description = "url фото пользователя", example = "https://resource/1235lk1425lkj")
-//    private String userImageUrl;
+    @Schema(description = "url фото пользователя", example = "https://resource/1235lk1425lkj")
     private String resourceUrl;
 }

@@ -37,7 +37,7 @@ public class SearchRepository {
         }
 
         if (!categories.isEmpty()) {
-            predicates.add(root.get("category").in(categories));
+            predicates.add(root.get("type").in(categories));
         }
 
         if (!shopIdn.isEmpty()) {

@@ -8,14 +8,14 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import io.swagger.v3.oas.annotations.tags.Tags;
-import org.springframework.core.io.Resource;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
-import ru.itis.master.party.dormdeals.dto.ExceptionDto;
+import ru.itis.master.party.dormdeals.aspects.RestExceptionHandler;
 
+import java.io.File;
 import java.io.IOException;
 
 @RequestMapping("/resource")
@@ -45,7 +45,7 @@ public interface ResourceApi {
             @ApiResponse(responseCode = "404", description = "файл не найден",
                     content = {
                             @Content(mediaType = "application/json",
-                                    schema = @Schema(implementation = ExceptionDto.class))
+                                    schema = @Schema(implementation = RestExceptionHandler.ExceptionDto.class))
                     }
             ),
     })
@@ -54,4 +54,18 @@ public interface ResourceApi {
                                             @PathVariable("entity-type") String dtoType,
                                             @PathVariable("file-id") String fileId,
                                             @RequestHeader(required = false, value = "Range") String range) throws IOException;
+
+    /**
+     *
+     * @param file
+     * @param start inclusive
+     * @param end inclusive
+     * @param content
+     */
+    record ResourceDto(
+            File file,
+            long start,
+            long end,
+            byte[] content) {
+    }
 }

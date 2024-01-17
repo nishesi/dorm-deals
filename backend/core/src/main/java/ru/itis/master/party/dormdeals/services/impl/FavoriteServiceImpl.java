@@ -4,9 +4,9 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.itis.master.party.dormdeals.dto.product.ProductDto;
-import ru.itis.master.party.dormdeals.dto.converters.ProductConverter;
 import ru.itis.master.party.dormdeals.exceptions.NotAcceptableException;
 import ru.itis.master.party.dormdeals.exceptions.NotFoundException;
+import ru.itis.master.party.dormdeals.mapper.ProductMapper;
 import ru.itis.master.party.dormdeals.models.jpa.User;
 import ru.itis.master.party.dormdeals.repositories.jpa.ProductRepository;
 import ru.itis.master.party.dormdeals.repositories.jpa.UserRepository;
@@ -18,7 +18,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class FavoriteServiceImpl implements FavoriteService {
 
-    private final ProductConverter productConverter;
+    private final ProductMapper productMapper;
 
     private final ProductRepository productRepository;
 
@@ -43,7 +43,7 @@ public class FavoriteServiceImpl implements FavoriteService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException(User.class, "id", userId));
 
-        return productConverter.convertListProductInListProductDto(user.getFavorites());
+        return productMapper.toProductDtoList(user.getFavorites());
     }
 
     @Transactional

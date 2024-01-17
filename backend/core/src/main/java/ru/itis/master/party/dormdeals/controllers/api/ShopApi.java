@@ -13,12 +13,12 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import ru.itis.master.party.dormdeals.dto.ExceptionDto;
-import ru.itis.master.party.dormdeals.dto.shop.NewShop;
-import ru.itis.master.party.dormdeals.dto.shop.ShopDto;
-import ru.itis.master.party.dormdeals.dto.shop.UpdateShop;
-import ru.itis.master.party.dormdeals.dto.ShopWithProducts;
+import ru.itis.master.party.dormdeals.aspects.RestExceptionHandler.ExceptionDto;
 import ru.itis.master.party.dormdeals.dto.order.OrderDto;
+import ru.itis.master.party.dormdeals.dto.shop.NewShopForm;
+import ru.itis.master.party.dormdeals.dto.shop.ShopDto;
+import ru.itis.master.party.dormdeals.dto.shop.ShopWithProductsDto;
+import ru.itis.master.party.dormdeals.dto.shop.UpdateShopForm;
 import ru.itis.master.party.dormdeals.security.details.UserDetailsImpl;
 import ru.itis.master.party.dormdeals.validation.responses.ValidationErrorsDto;
 
@@ -45,7 +45,7 @@ public interface ShopApi {
             )
     })
     @GetMapping("/{shop-id}")
-    ResponseEntity<ShopWithProducts> getMainPageShop(
+    ResponseEntity<ShopWithProductsDto> getMainPageShop(
             @Parameter(description = "Идентификатор магазина")
             @PathVariable("shop-id")
             Long shopId,
@@ -71,7 +71,7 @@ public interface ShopApi {
     @PostMapping
     ResponseEntity<ShopDto> createShop(
             @RequestBody
-            NewShop newShop,
+            NewShopForm newShopForm,
             @Parameter(hidden = true)
             UserDetailsImpl userDetails);
 
@@ -103,7 +103,7 @@ public interface ShopApi {
             @PathVariable("shop-id")
             Long shopId,
             @RequestBody
-            UpdateShop updateShop,
+            UpdateShopForm updateShopForm,
             @Parameter(hidden = true)
             UserDetailsImpl userDetails);
 

@@ -53,6 +53,7 @@ public class User extends AbstractEntity {
     @JoinTable(name = "favorites",
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "product_id"))
+    @Builder.Default
     @ToString.Exclude
     private List<Product> favorites = new ArrayList<>();
 

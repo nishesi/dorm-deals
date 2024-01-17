@@ -4,7 +4,7 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.itis.master.party.dormdeals.dto.NotificationDto;
-import ru.itis.master.party.dormdeals.dto.converters.NotificationConverter;
+import ru.itis.master.party.dormdeals.mapper.NotificationMapper;
 import ru.itis.master.party.dormdeals.exceptions.NotAcceptableException;
 import ru.itis.master.party.dormdeals.exceptions.NotFoundException;
 import ru.itis.master.party.dormdeals.models.jpa.Notification;
@@ -23,7 +23,7 @@ import java.util.List;
 public class NotificationServiceImpl implements NotificationService {
     private final NotificationRepository notificationRepository;
     private final UserRepository userRepository;
-    private final NotificationConverter notificationConverter;
+    private final NotificationMapper notificationMapper;
     @Override
     public void sendNotificationOrder(Order order, String message) {
         Notification notification = Notification.builder()
@@ -32,7 +32,7 @@ public class NotificationServiceImpl implements NotificationService {
                 .receiver(order.getCustomer())
                 .receiverRead(false)
                 .message(message)
-                .createdDateTime(ZonedDateTime.now())
+                .createdAt(ZonedDateTime.now())
                 .build();
 
         notificationRepository.save(notification);
@@ -65,6 +65,6 @@ public class NotificationServiceImpl implements NotificationService {
 
     @Override
     public List<NotificationDto> getNotifications(long userId) {
-        return notificationConverter.from(notificationRepository.findAllByReceiverId(userId));
+        return notificationMapper.toNotificationDtoList(notificationRepository.findAllByReceiverId(userId));
     }
 }

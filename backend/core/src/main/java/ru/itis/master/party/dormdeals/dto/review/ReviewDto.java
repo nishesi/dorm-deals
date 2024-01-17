@@ -7,8 +7,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import ru.itis.master.party.dormdeals.dto.product.ProductDtoForReview;
-import ru.itis.master.party.dormdeals.dto.user.UserDtoForShopAndReview;
 
 @Data
 @Builder
@@ -17,14 +15,35 @@ import ru.itis.master.party.dormdeals.dto.user.UserDtoForShopAndReview;
 @Schema(description = "Отзыв")
 public class ReviewDto {
 
+    private Long id;
+
     @Schema(description = "пользователь который оставляет отзыв")
-    private UserDtoForShopAndReview user;
+    private Author author;
 
     @Schema(description = "товар на который оставлен отзыв")
     @JsonInclude(JsonInclude.Include.NON_NULL)
-    private ProductDtoForReview product;
+    private Product product;
+
     @Schema(description = "содержание отзыва")
     private String message;
+
     @Schema(description = "выставленная оценка от 1 до 5")
     private int score;
+
+    public record Author(
+            Long id,
+
+            @Schema(example = "Bob")
+            String firstName,
+
+            @Schema(example = "Martin")
+            String lastName
+    ) {
+    }
+
+    public record Product(
+            Long id,
+            String name
+    ) {
+    }
 }

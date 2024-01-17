@@ -7,9 +7,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-import ru.itis.master.party.dormdeals.dto.converters.UserConverter;
-import ru.itis.master.party.dormdeals.dto.user.NewUserDto;
-import ru.itis.master.party.dormdeals.dto.user.UpdateUserDto;
+import ru.itis.master.party.dormdeals.mapper.UserMapper;
+import ru.itis.master.party.dormdeals.dto.user.NewUserForm;
+import ru.itis.master.party.dormdeals.dto.user.UpdateUserForm;
 import ru.itis.master.party.dormdeals.dto.user.UserDto;
 import ru.itis.master.party.dormdeals.enums.EntityType;
 import ru.itis.master.party.dormdeals.enums.FileType;
@@ -37,25 +37,25 @@ public class UserServiceImpl implements UserService {
     private final CartRepository cartRepository;
     private final ResourceService resourceService;
     private final PasswordEncoder passwordEncoder;
-    private final UserConverter userConverter;
+    private final UserMapper userMapper;
     private final EmailUtil emailUtil;
 
-    @Value("${password.salt}")
+    @Value("${app.password.salt}")
     private String salt;
 
     @Transactional
-    public String register(NewUserDto userDto) {
-        if (userRepository.existsUserByEmail(userDto.getEmail()))
-            throw new IllegalArgumentException("User with email = <" + userDto.getEmail() + "> is exist");
+    public String register(NewUserForm userDto) {
+        if (userRepository.existsUserByEmail(userDto.email()))
+            throw new IllegalArgumentException("Author with email = <" + userDto.email() + "> is exist");
 
         User returnedUser = userRepository.save(User.builder()
-                .email(userDto.getEmail())
-                .hashPassword(passwordEncoder.encode(userDto.getPassword() + salt))
-                .firstName(userDto.getFirstName())
-                .lastName(userDto.getLastName())
-                .telephone(userDto.getTelephone())
+                .email(userDto.email())
+                .hashPassword(passwordEncoder.encode(userDto.password() + salt))
+                .firstName(userDto.firstName())
+                .lastName(userDto.lastName())
+                .telephone(userDto.telephone())
                 .state(NOT_CONFIRMED)
-                .hashForConfirm(DigestUtils.sha256Hex(userDto.getEmail() + UUID.randomUUID()))
+                .hashForConfirm(DigestUtils.sha256Hex(userDto.email() + UUID.randomUUID()))
                 .authorities(List.of(Authority.ROLE_USER))
                 .countUnreadNotifications(0)
                 .build());
@@ -64,7 +64,7 @@ public class UserServiceImpl implements UserService {
                 returnedUser.getHashForConfirm();
 
         Thread.ofVirtual().start(() -> emailUtil
-                .sendMail(userDto.getEmail(),
+                .sendMail(userDto.email(),
                         "confirm",
                         "confirmation-mail.ftlh",
                         Map.of("confirmationUrl", confirmationUrl)));
@@ -75,21 +75,21 @@ public class UserServiceImpl implements UserService {
     public UserDto getUser(long userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException(User.class, "id", userId));
-        return userConverter.from(user);
+        return userMapper.toUserDto(user);
     }
 
     @Override
     @Transactional
-    public UserDto updateUser(long userId, UpdateUserDto userDto) {
+    public UserDto updateUser(long userId, UpdateUserForm userDto) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException(User.class, "id", userId));
 
-        user.setHashPassword(passwordEncoder.encode(userDto.getPassword()));
-        user.setFirstName(userDto.getFirstName());
-        user.setLastName(userDto.getLastName());
-        user.setTelephone(userDto.getTelephone());
+        user.setHashPassword(passwordEncoder.encode(userDto.password()));
+        user.setFirstName(userDto.firstName());
+        user.setLastName(userDto.lastName());
+        user.setTelephone(userDto.telephone());
 
-        return userConverter.from(user);
+        return userMapper.toUserDto(user);
     }
 
     @Override

@@ -11,11 +11,11 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import ru.itis.master.party.dormdeals.controllers.api.ShopApi;
-import ru.itis.master.party.dormdeals.dto.shop.NewShop;
-import ru.itis.master.party.dormdeals.dto.shop.ShopDto;
-import ru.itis.master.party.dormdeals.dto.shop.UpdateShop;
-import ru.itis.master.party.dormdeals.dto.ShopWithProducts;
 import ru.itis.master.party.dormdeals.dto.order.OrderDto;
+import ru.itis.master.party.dormdeals.dto.shop.NewShopForm;
+import ru.itis.master.party.dormdeals.dto.shop.ShopDto;
+import ru.itis.master.party.dormdeals.dto.shop.ShopWithProductsDto;
+import ru.itis.master.party.dormdeals.dto.shop.UpdateShopForm;
 import ru.itis.master.party.dormdeals.security.details.UserDetailsImpl;
 import ru.itis.master.party.dormdeals.services.OrderService;
 import ru.itis.master.party.dormdeals.services.ShopService;
@@ -29,25 +29,25 @@ public class ShopController implements ShopApi {
 
 
     @Override
-    public ResponseEntity<ShopWithProducts> getMainPageShop(Long shopId, int pageIndex) {
+    public ResponseEntity<ShopWithProductsDto> getMainPageShop(Long shopId, int pageIndex) {
         return ResponseEntity.ok()
                 .body(shopService.getAllProductsThisShop(shopId, pageIndex));
     }
 
     @Override
-    public ResponseEntity<ShopDto> createShop(@Valid NewShop newShop,
+    public ResponseEntity<ShopDto> createShop(@Valid NewShopForm newShopForm,
                                               @AuthenticationPrincipal UserDetailsImpl userDetails) {
         long userId = userDetails.getUser().getId();
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(shopService.createShop(userId, newShop));
+                .body(shopService.createShop(userId, newShopForm));
     }
 
     @Override
-    public ResponseEntity<ShopDto> updateShop(Long shopId, @Valid UpdateShop updateShop,
+    public ResponseEntity<ShopDto> updateShop(Long shopId, @Valid UpdateShopForm updateShopForm,
                                               @AuthenticationPrincipal UserDetailsImpl userDetails) {
         long userId = userDetails.getUser().getId();
         return ResponseEntity.accepted()
-                .body(shopService.updateShop(userId, shopId, updateShop));
+                .body(shopService.updateShop(userId, shopId, updateShopForm));
     }
 
     @Override

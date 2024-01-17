@@ -26,7 +26,7 @@ public class SearchController implements SearchApi {
     public ResponseEntity<List<ProductDto>> searchProducts(MultiValueMap<String, String> criteria,
                                                            @PageableDefault Pageable pageable) {
         List<String> nameQueries = extractCriteriaValues(criteria, "name-query");
-        List<String> categories = extractCriteriaValues(criteria, "category");
+        List<String> categories = extractCriteriaValues(criteria, "type");
         List<Long> shopIds = extractCriteriaValues(criteria, "shop-id")
                 .stream()
                 .map(Long::parseLong)

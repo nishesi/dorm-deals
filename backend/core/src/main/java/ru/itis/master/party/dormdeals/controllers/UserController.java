@@ -2,7 +2,6 @@ package ru.itis.master.party.dormdeals.controllers;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -11,11 +10,10 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import ru.itis.master.party.dormdeals.controllers.api.UserApi;
-import ru.itis.master.party.dormdeals.dto.MessageDto;
-import ru.itis.master.party.dormdeals.dto.user.NewUserDto;
-import ru.itis.master.party.dormdeals.dto.user.UpdateUserDto;
-import ru.itis.master.party.dormdeals.dto.user.UserDto;
 import ru.itis.master.party.dormdeals.dto.order.OrderDto;
+import ru.itis.master.party.dormdeals.dto.user.NewUserForm;
+import ru.itis.master.party.dormdeals.dto.user.UpdateUserForm;
+import ru.itis.master.party.dormdeals.dto.user.UserDto;
 import ru.itis.master.party.dormdeals.security.details.UserDetailsImpl;
 import ru.itis.master.party.dormdeals.services.OrderService;
 import ru.itis.master.party.dormdeals.services.UserService;
@@ -28,8 +26,8 @@ public class UserController implements UserApi {
     private final OrderService orderService;
 
     @Override
-    public ResponseEntity<?> addUser(@Valid NewUserDto userDto) {
-        return ResponseEntity.accepted().body(new MessageDto(userService.register(userDto)));
+    public ResponseEntity<Message> addUser(@Valid NewUserForm userDto) {
+        return ResponseEntity.accepted().body(new Message(userService.register(userDto)));
     }
 
     @Override
@@ -38,7 +36,7 @@ public class UserController implements UserApi {
     }
 
     @Override
-    public UserDto updateUser(@Valid UpdateUserDto userDto,
+    public UserDto updateUser(@Valid UpdateUserForm userDto,
                               @AuthenticationPrincipal UserDetailsImpl userDetails) {
         return userService.updateUser(userDetails.getUser().getId(), userDto);
     }

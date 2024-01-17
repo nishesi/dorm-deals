@@ -10,10 +10,10 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import io.swagger.v3.oas.annotations.tags.Tags;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import ru.itis.master.party.dormdeals.dto.ExceptionDto;
-import ru.itis.master.party.dormdeals.dto.order.NewOrderDto;
+import ru.itis.master.party.dormdeals.aspects.RestExceptionHandler.ExceptionDto;
+import ru.itis.master.party.dormdeals.dto.order.NewOrderForm;
+import ru.itis.master.party.dormdeals.dto.order.NewOrderMessageForm;
 import ru.itis.master.party.dormdeals.dto.order.OrderDto;
-import ru.itis.master.party.dormdeals.dto.order.NewOrderMessageDto;
 import ru.itis.master.party.dormdeals.models.jpa.order.Order;
 import ru.itis.master.party.dormdeals.security.details.UserDetailsImpl;
 import ru.itis.master.party.dormdeals.validation.responses.ValidationErrorsDto;
@@ -36,7 +36,7 @@ public interface OrderApi {
     @PostMapping
     ResponseEntity<?> createOrder(
             @RequestBody
-            NewOrderDto newOrderDto,
+            NewOrderForm newOrderForm,
             @Parameter(hidden = true)
             UserDetailsImpl userDetails);
 
@@ -102,7 +102,7 @@ public interface OrderApi {
             @PathVariable("order-id")
             Long orderId,
             @RequestBody
-            NewOrderMessageDto newOrderMessageDto,
+            NewOrderMessageForm newOrderMessageForm,
             @Parameter(hidden = true)
             UserDetailsImpl userDetails);
 }

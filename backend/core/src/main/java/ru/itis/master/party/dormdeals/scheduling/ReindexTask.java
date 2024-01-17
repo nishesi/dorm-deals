@@ -6,7 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
-import ru.itis.master.party.dormdeals.dto.converters.ProductConverter;
+import ru.itis.master.party.dormdeals.mapper.ProductMapper;
 import ru.itis.master.party.dormdeals.models.elasticsearch.ItemElastic;
 import ru.itis.master.party.dormdeals.repositories.ItemElasticRepository;
 import ru.itis.master.party.dormdeals.repositories.jpa.ProductRepository;
@@ -22,7 +22,7 @@ public class ReindexTask {
     private static final int PAGE_SIZE = 50_000;
     private final ProductRepository productRepository;
     private final ItemElasticRepository itemElasticRepository;
-    private final ProductConverter productConverter;
+    private final ProductMapper productMapper;
     private final ExecutorService executorService = Executors.newFixedThreadPool(30);
 
     @Scheduled(fixedDelay = 12, timeUnit = TimeUnit.HOURS)
@@ -44,7 +44,7 @@ public class ReindexTask {
         return () -> {
             List<ItemElastic> list = productRepository.findAll(PageRequest.of(i, PAGE_SIZE))
                     .stream().parallel()
-                    .map(productConverter::toItemElastic)
+                    .map(productMapper::toItemElastic)
                     .toList();
             itemElasticRepository.saveAll(list);
         };

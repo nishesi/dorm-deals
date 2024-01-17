@@ -15,7 +15,7 @@ import ru.itis.master.party.dormdeals.models.jpa.CartProduct;
 public class CartProductDto {
 
     @Schema(description = "информация о товаре")
-    private ProductDto productDto;
+    private Product product;
 
     @Schema(description = "количество в корзине", example = "100")
     private int count;
@@ -25,4 +25,12 @@ public class CartProductDto {
 
     @Schema(description = "изображение товара в корзине")
     private String coverImage;
+
+    public record Product(
+            Long id,
+            String name,
+            Float price,
+            Integer countInStorage
+    ) {
+    }
 }

@@ -6,12 +6,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestController;
+import ru.itis.master.party.dormdeals.aspects.RestExceptionHandler;
+import ru.itis.master.party.dormdeals.aspects.RestExceptionHandler.ExceptionDto;
 import ru.itis.master.party.dormdeals.controllers.api.ResourceApi;
-import ru.itis.master.party.dormdeals.dto.ExceptionDto;
-import ru.itis.master.party.dormdeals.dto.ResourceDto;
-import ru.itis.master.party.dormdeals.services.ResourceService;
 import ru.itis.master.party.dormdeals.enums.EntityType;
 import ru.itis.master.party.dormdeals.enums.FileType;
+import ru.itis.master.party.dormdeals.services.ResourceService;
 
 import java.io.File;
 import java.io.IOException;

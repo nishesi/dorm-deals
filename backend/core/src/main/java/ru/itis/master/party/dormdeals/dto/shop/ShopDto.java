@@ -6,8 +6,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import ru.itis.master.party.dormdeals.dto.DormitoryDto;
-import ru.itis.master.party.dormdeals.dto.user.UserDtoForShopAndReview;
 
 import java.util.List;
 
@@ -32,11 +30,24 @@ public class ShopDto {
     private float rating;
 
     @Schema(description = "место продаж", example = "Пушкина, 9")
-    private List<DormitoryDto> dormitories;
+    private List<Dormitory> dormitories;
 
     @Schema(description = "владелец магазина")
-    private UserDtoForShopAndReview owner;
+    private Owner owner;
 
     @Schema(description = "изображение магазина")
     private String resourceUrl;
+
+    public record Owner(
+            Long id,
+            String firstName,
+            String lastName) {
+    }
+
+    public record Dormitory(
+            Long id,
+            String name,
+            String address
+    ) {
+    }
 }

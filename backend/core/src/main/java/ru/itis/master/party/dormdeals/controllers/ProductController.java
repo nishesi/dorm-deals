@@ -9,9 +9,9 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import ru.itis.master.party.dormdeals.controllers.api.ProductApi;
-import ru.itis.master.party.dormdeals.dto.product.NewProduct;
+import ru.itis.master.party.dormdeals.dto.product.NewProductForm;
 import ru.itis.master.party.dormdeals.dto.product.ProductDto;
-import ru.itis.master.party.dormdeals.dto.product.UpdateProduct;
+import ru.itis.master.party.dormdeals.dto.product.UpdateProductForm;
 import ru.itis.master.party.dormdeals.models.jpa.Product;
 import ru.itis.master.party.dormdeals.security.details.UserDetailsImpl;
 import ru.itis.master.party.dormdeals.services.ProductService;
@@ -23,10 +23,10 @@ public class ProductController implements ProductApi {
     private final ProductService productService;
 
     @Override
-    public ResponseEntity<ProductDto> addProduct(@Valid NewProduct newProduct,
+    public ResponseEntity<ProductDto> addProduct(@Valid NewProductForm newProductForm,
                                                  @AuthenticationPrincipal UserDetailsImpl userDetails) {
         long userId = userDetails.getUser().getId();
-        ProductDto productDto = productService.addProduct(userId, newProduct);
+        ProductDto productDto = productService.addProduct(userId, newProductForm);
         return ResponseEntity.status(HttpStatus.CREATED).body(productDto);
     }
 
@@ -43,7 +43,7 @@ public class ProductController implements ProductApi {
 
     @Override
     public ResponseEntity<ProductDto> updateProduct(Long productId,
-                                                    @Valid UpdateProduct updatedProduct,
+                                                    @Valid UpdateProductForm updatedProduct,
                                                     @AuthenticationPrincipal UserDetailsImpl userDetails) {
         long userId = userDetails.getUser().getId();
         return ResponseEntity.accepted().body(productService.updateProduct(userId, productId, updatedProduct));

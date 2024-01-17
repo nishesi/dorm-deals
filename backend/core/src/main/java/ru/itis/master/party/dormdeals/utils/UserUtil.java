@@ -24,7 +24,7 @@ public class UserUtil {
             return userRepository.getByEmail(authentication.getName())
                     .orElseThrow(() -> new NotFoundException(User.class, "email", authentication.getName()));
         }
-        throw new NotAcceptableException("user not authenticated");
+        throw new NotAcceptableException("author not authenticated");
     }
 
     public void checkOrderOwner(Long ownerOrderId, User thisUser) {

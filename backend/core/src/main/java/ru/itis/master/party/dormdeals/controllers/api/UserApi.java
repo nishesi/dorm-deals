@@ -13,11 +13,10 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import ru.itis.master.party.dormdeals.dto.ExceptionDto;
-import ru.itis.master.party.dormdeals.dto.MessageDto;
+import ru.itis.master.party.dormdeals.aspects.RestExceptionHandler.ExceptionDto;
 import ru.itis.master.party.dormdeals.dto.order.OrderDto;
-import ru.itis.master.party.dormdeals.dto.user.NewUserDto;
-import ru.itis.master.party.dormdeals.dto.user.UpdateUserDto;
+import ru.itis.master.party.dormdeals.dto.user.NewUserForm;
+import ru.itis.master.party.dormdeals.dto.user.UpdateUserForm;
 import ru.itis.master.party.dormdeals.dto.user.UserDto;
 import ru.itis.master.party.dormdeals.security.details.UserDetailsImpl;
 import ru.itis.master.party.dormdeals.validation.responses.ValidationErrorsDto;
@@ -31,10 +30,10 @@ public interface UserApi {
 
     @Operation(summary = "регистрация пользователя")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "202", description = "user",
+            @ApiResponse(responseCode = "202", description = "author",
                     content = {
                             @Content(mediaType = "application/json",
-                                    schema = @Schema(implementation = MessageDto.class))
+                                    schema = @Schema(implementation = Message.class))
                     }
             ),
             @ApiResponse(responseCode = "400", description = "пользователь существует",
@@ -51,13 +50,13 @@ public interface UserApi {
             )
     })
     @PostMapping
-    ResponseEntity<?> addUser(
+    ResponseEntity<Message> addUser(
             @RequestBody
-            NewUserDto userDto);
+            NewUserForm userDto);
 
     @Operation(summary = "Получение информации о пользователе")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "user",
+            @ApiResponse(responseCode = "200", description = "author",
                     content = {
                             @Content(mediaType = "application/json",
                                     schema = @Schema(implementation = UserDto.class))
@@ -77,7 +76,7 @@ public interface UserApi {
 
     @Operation(summary = "обновление информации о пользователе")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "202", description = "user",
+            @ApiResponse(responseCode = "202", description = "author",
                     content = {
                             @Content(mediaType = "application/json",
                                     schema = @Schema(implementation = UserDto.class))
@@ -99,14 +98,14 @@ public interface UserApi {
     @PutMapping
     UserDto updateUser(
             @RequestBody
-            UpdateUserDto userDto,
+            UpdateUserForm userDto,
             @Parameter(hidden = true)
             UserDetailsImpl userDetails);
 
     @Operation(summary = "удаление пользователя")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "user deleted"),
-            @ApiResponse(responseCode = "404", description = "user not found",
+            @ApiResponse(responseCode = "200", description = "author deleted"),
+            @ApiResponse(responseCode = "404", description = "author not found",
                     content = {
                             @Content(mediaType = "application/json",
                                     schema = @Schema(implementation = ExceptionDto.class))
@@ -154,4 +153,8 @@ public interface UserApi {
             @RequestParam("file")
             MultipartFile file,
             @Parameter(hidden = true) UserDetailsImpl userDetails);
+
+    @Schema(description = "сообщение", example = "фух сервер не упал, твой запрос обработался")
+    record Message(String message) {
+    }
 }

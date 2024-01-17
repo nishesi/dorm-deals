@@ -1,7 +1,7 @@
 package ru.itis.master.party.dormdeals.services;
 
 import org.springframework.web.multipart.MultipartFile;
-import ru.itis.master.party.dormdeals.dto.ResourceDto;
+import ru.itis.master.party.dormdeals.controllers.api.ResourceApi;
 import ru.itis.master.party.dormdeals.enums.EntityType;
 import ru.itis.master.party.dormdeals.enums.FileType;
 import ru.itis.master.party.dormdeals.exceptions.NotAcceptableException;
@@ -14,11 +14,11 @@ public interface ResourceService {
 
     void deleteFile(FileType fileType, EntityType entityType, String id);
 
-    ResourceDto getResource(
+    ResourceApi.ResourceDto getResource(
             FileType fileType, EntityType entityType, String id
     ) throws NotFoundException;
 
-    ResourceDto getResourceInRange(
+    ResourceApi.ResourceDto getResourceInRange(
             FileType fileType, EntityType entityType, String id, String range
     ) throws NotFoundException;
 }

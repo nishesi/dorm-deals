@@ -18,7 +18,7 @@ public class OrderProduct extends AbstractEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "order_product_id")
-    private long id;
+    private Long id;
 
     @ManyToOne
     @JoinColumn(name = "order_id", nullable = false)

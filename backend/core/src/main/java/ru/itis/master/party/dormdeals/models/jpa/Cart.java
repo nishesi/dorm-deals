@@ -33,8 +33,8 @@ public class Cart extends AbstractEntity {
             mappedBy = "cart",
             cascade = CascadeType.ALL,
             orphanRemoval = true,
-            fetch = FetchType.EAGER
-    )
+            fetch = FetchType.EAGER)
+    @Builder.Default
     @ToString.Exclude
     private List<CartProduct> productsInCart = new ArrayList<>();
 

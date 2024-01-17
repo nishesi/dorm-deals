@@ -4,8 +4,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.itis.master.party.dormdeals.dto.CartCookie;
 import ru.itis.master.party.dormdeals.dto.product.CartProductDto;
-import ru.itis.master.party.dormdeals.dto.converters.CartProductConverter;
 import ru.itis.master.party.dormdeals.exceptions.NotEnoughException;
+import ru.itis.master.party.dormdeals.mapper.ProductMapper;
 import ru.itis.master.party.dormdeals.models.jpa.Cart;
 import ru.itis.master.party.dormdeals.models.jpa.CartProduct;
 import ru.itis.master.party.dormdeals.repositories.jpa.CartRepository;
@@ -20,21 +20,21 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class CartServiceImpl implements CartService {
-    private final CartProductConverter cartProductConverter;
+    private final ProductMapper productMapper;
     private final CartRepository cartRepository;
 
     private final ProductRepository productRepository;
 
     @Override
     public List<CartProductDto> getCart(long userId) {
-        return cartProductConverter.listFromCartProduct(cartRepository.findByUserId(userId).getProductsInCart());
+        return productMapper.toCartProductDtoListFroCartProductList(cartRepository.findByUserId(userId).getProductsInCart());
     }
 
     @Override
     public void cartSynchronization(long userId, List<CartCookie> cartsCookie) {
         Cart cart = cartRepository.findByUserId(userId);
 
-        if (cartsCookie.size() == 0) {
+        if (cartsCookie.isEmpty()) {
             cart.getProductsInCart().clear();
             cartRepository.save(cart);
             return;

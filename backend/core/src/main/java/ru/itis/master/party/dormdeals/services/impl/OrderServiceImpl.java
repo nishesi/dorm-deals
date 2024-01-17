@@ -7,9 +7,9 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
-import ru.itis.master.party.dormdeals.dto.converters.OrderConverter;
-import ru.itis.master.party.dormdeals.dto.order.NewOrderDto;
-import ru.itis.master.party.dormdeals.dto.order.NewOrderMessageDto;
+import ru.itis.master.party.dormdeals.mapper.OrderMapper;
+import ru.itis.master.party.dormdeals.dto.order.NewOrderForm;
+import ru.itis.master.party.dormdeals.dto.order.NewOrderMessageForm;
 import ru.itis.master.party.dormdeals.dto.order.OrderDto;
 import ru.itis.master.party.dormdeals.exceptions.NotAcceptableException;
 import ru.itis.master.party.dormdeals.exceptions.NotEnoughException;
@@ -43,7 +43,7 @@ public class OrderServiceImpl implements OrderService {
     private final OrderRepository orderRepository;
     private final ShopRepository shopRepository;
     private final UserRepository userRepository;
-    private final OrderConverter orderConverter;
+    private final OrderMapper orderMapper;
 
     private static void reserveProductAmounts(List<OrderProduct> orderProducts) {
         orderProducts.forEach(orderProduct -> {
@@ -74,15 +74,15 @@ public class OrderServiceImpl implements OrderService {
 
         Pageable pageable = PageRequest.of(0, 20, Sort.by("addedDate"));
         Page<OrderMessage> orderMessages = orderMessageRepository.findAllByOrderId(id, pageable);
-        return orderConverter.from(order, orderMessages);
+        return orderMapper.toOrderDtoWithMessages(order, orderMessages);
     }
 
     @Override
     @Transactional
-    public void createOrder(long userId, NewOrderDto newOrderDto) {
-        Map<Long, Integer> productIdAndCount = newOrderDto.getProducts().stream().collect(Collectors.toMap(
-                NewOrderDto.OrderProduct::getProductId,
-                NewOrderDto.OrderProduct::getCount));
+    public void createOrder(long userId, NewOrderForm newOrderForm) {
+        Map<Long, Integer> productIdAndCount = newOrderForm.products().stream().collect(Collectors.toMap(
+                NewOrderForm.Product::id,
+                NewOrderForm.Product::count));
 
         List<Product> products = productRepository.findAllById(productIdAndCount.keySet());
 
@@ -171,7 +171,7 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     @Transactional
-    public void addOrderMessage(long userId, Long orderId, NewOrderMessageDto orderMessage) {
+    public void addOrderMessage(long userId, Long orderId, NewOrderMessageForm orderMessage) {
         Order order = orderRepository.findWithShopById(orderId)
                 .orElseThrow(() -> new NotFoundException(Order.class, "id", orderId));
 
@@ -184,7 +184,7 @@ public class OrderServiceImpl implements OrderService {
         OrderMessage message = OrderMessage.builder()
                 .order(order)
                 .user(userRepository.getReferenceById(userId))
-                .message(orderMessage.getMessage())
+                .message(orderMessage.message())
                 .addedDate(ZonedDateTime.now())
                 .build();
 
@@ -199,13 +199,13 @@ public class OrderServiceImpl implements OrderService {
             throw new NotAcceptableException("have not permission");
 
         Page<Order> orders = orderRepository.findAllWithCustomerByShopId(shopId, pageable);
-        return orderConverter.fromForSeller(orders);
+        return orderMapper.toOrderDtoPageForShop(orders);
     }
 
     @Override
     public Page<OrderDto> getUserOrders(long userId, Pageable pageable) {
         Page<Order> orders = orderRepository.findAllWithShopByCustomerId(userId, pageable);
-        return orderConverter.fromForCustomer(orders);
+        return orderMapper.toOrderDtoPageForShop(orders);
     }
 
     public void sendNotificationAfterUpdate(Long orderId) {

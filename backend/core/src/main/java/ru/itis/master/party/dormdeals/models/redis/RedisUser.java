@@ -13,7 +13,7 @@ import java.util.List;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@RedisHash("user")
+@RedisHash("author")
 public class RedisUser {
     @Id
     private String id;

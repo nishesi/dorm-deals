@@ -15,5 +15,5 @@ import java.time.ZonedDateTime;
 public class NotificationDto {
     private Long id;
     private String message;
-    private ZonedDateTime dateTime;
+    private ZonedDateTime createdAt;
 }

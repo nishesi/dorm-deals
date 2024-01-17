@@ -28,7 +28,7 @@ public class Product extends AbstractEntity {
     @Column(length = 1000)
     private String description;
 
-    private String category;
+    private String type;
 
     private String brand;
 
@@ -62,10 +62,12 @@ public class Product extends AbstractEntity {
     @JoinTable(name = "favorites",
             joinColumns = @JoinColumn(name = "product_id"),
             inverseJoinColumns = @JoinColumn(name = "user_id"))
+    @Builder.Default
     @ToString.Exclude
     private List<User> users = new ArrayList<>();
 
     @OneToMany(mappedBy = "product", fetch = FetchType.LAZY)
+    @Builder.Default
     @ToString.Exclude
     private List<Review> reviews = new ArrayList<>();
 

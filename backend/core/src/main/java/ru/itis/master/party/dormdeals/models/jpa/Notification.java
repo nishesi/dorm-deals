@@ -39,7 +39,7 @@ public class Notification extends AbstractEntity {
 
     private Boolean receiverRead;
 
-    private ZonedDateTime createdDateTime;
+    private ZonedDateTime createdAt;
 
     public enum Type {
         ORDER_NOTIFICATION,

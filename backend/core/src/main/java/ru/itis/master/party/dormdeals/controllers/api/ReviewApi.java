@@ -10,8 +10,8 @@ import io.swagger.v3.oas.annotations.tags.Tags;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import ru.itis.master.party.dormdeals.dto.ExceptionDto;
-import ru.itis.master.party.dormdeals.dto.review.NewReviewDto;
+import ru.itis.master.party.dormdeals.aspects.RestExceptionHandler.ExceptionDto;
+import ru.itis.master.party.dormdeals.dto.review.NewReviewForm;
 import ru.itis.master.party.dormdeals.dto.review.ReviewDto;
 import ru.itis.master.party.dormdeals.security.details.UserDetailsImpl;
 import ru.itis.master.party.dormdeals.validation.responses.ValidationErrorsDto;
@@ -43,7 +43,7 @@ public interface ReviewApi {
                     })
     })
     @PostMapping("/{product-id}/review")
-    ResponseEntity<ReviewDto> addReviewOnProduct(@RequestBody @Valid NewReviewDto newReviewDto,
+    ResponseEntity<ReviewDto> addReviewOnProduct(@RequestBody @Valid NewReviewForm newReviewForm,
                                                  @PathVariable("product-id") Long productId,
                                                  UserDetailsImpl userDetails);
 
@@ -68,7 +68,7 @@ public interface ReviewApi {
                     })
     })
     @PutMapping("/{product-id}/review")
-    ResponseEntity<ReviewDto> updateReviewOnProduct(@RequestBody @Valid NewReviewDto newReviewDto,
+    ResponseEntity<ReviewDto> updateReviewOnProduct(@RequestBody @Valid NewReviewForm newReviewForm,
                                                     @PathVariable("product-id") Long productId,
                                                     UserDetailsImpl userDetails);
     @Operation(summary = "Удаление отзыва")

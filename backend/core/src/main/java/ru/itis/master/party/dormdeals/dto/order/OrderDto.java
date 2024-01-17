@@ -7,8 +7,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.format.annotation.DateTimeFormat;
-import ru.itis.master.party.dormdeals.dto.shop.ShopDto;
-import ru.itis.master.party.dormdeals.dto.user.UserDto;
 
 import java.time.ZonedDateTime;
 import java.util.List;
@@ -24,16 +22,16 @@ public class OrderDto {
     private Long id;
 
     @Schema(description = "Заказчик")
-    private UserDto customer;
+    private Customer customer;
 
     @Schema(description = "Магазин")
-    private ShopDto shop;
+    private Shop shop;
 
     @Schema(description = "информация о содержимом заказа")
-    private List<OrderProductDto> orderProducts;
+    private List<Product> products;
 
     @Schema(description = "история переписки закзачика и продавца")
-    private Page<OrderMessageDto> orderMessages;
+    private Page<Message> messages;
 
     @Schema(description = "Время заказа", example = "16-03-2023 21:40")
     @DateTimeFormat(pattern = "dd-MM-yyyy hh-mm-ss XX")
@@ -41,4 +39,32 @@ public class OrderDto {
 
     @Schema(description = "Стоимость заказа")
     private float price;
+
+    public record Customer(
+            Long id,
+            String firstName,
+            String lastName
+    ) {
+    }
+
+    public record Shop(
+            Long id,
+            String name
+    ) {
+    }
+
+    public record Product(
+            Long id,
+            String name,
+            Integer count,
+            Float price
+    ) {
+    }
+
+    public record Message(
+            Long userId,
+            String message,
+            ZonedDateTime addedDate
+    ) {
+    }
 }

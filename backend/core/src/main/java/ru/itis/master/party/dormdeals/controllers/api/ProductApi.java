@@ -12,10 +12,10 @@ import io.swagger.v3.oas.annotations.tags.Tags;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import ru.itis.master.party.dormdeals.dto.*;
-import ru.itis.master.party.dormdeals.dto.product.NewProduct;
+import ru.itis.master.party.dormdeals.aspects.RestExceptionHandler.ExceptionDto;
+import ru.itis.master.party.dormdeals.dto.product.NewProductForm;
 import ru.itis.master.party.dormdeals.dto.product.ProductDto;
-import ru.itis.master.party.dormdeals.dto.product.UpdateProduct;
+import ru.itis.master.party.dormdeals.dto.product.UpdateProductForm;
 import ru.itis.master.party.dormdeals.models.jpa.Product;
 import ru.itis.master.party.dormdeals.security.details.UserDetailsImpl;
 import ru.itis.master.party.dormdeals.validation.responses.ValidationErrorsDto;
@@ -50,7 +50,7 @@ public interface ProductApi {
     ResponseEntity<ProductDto> addProduct(
             @Parameter(description = "Данные нового товара")
             @RequestBody
-            NewProduct newProduct,
+            NewProductForm newProductForm,
             @Parameter(hidden = true)
             UserDetailsImpl userDetails);
 
@@ -117,7 +117,7 @@ public interface ProductApi {
             @PathVariable("product-id")
             Long productId,
             @RequestBody
-            UpdateProduct updatedProduct,
+            UpdateProductForm updatedProduct,
             @Parameter(hidden = true)
             UserDetailsImpl userDetails);
 

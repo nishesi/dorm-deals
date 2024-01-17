@@ -5,16 +5,15 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-import ru.itis.master.party.dormdeals.dto.converters.ProductConverter;
 import ru.itis.master.party.dormdeals.enums.EntityType;
 import ru.itis.master.party.dormdeals.enums.FileType;
-import ru.itis.master.party.dormdeals.dto.converters.CartProductConverter;
 import ru.itis.master.party.dormdeals.dto.product.CartProductDto;
-import ru.itis.master.party.dormdeals.dto.product.NewProduct;
+import ru.itis.master.party.dormdeals.dto.product.NewProductForm;
 import ru.itis.master.party.dormdeals.dto.product.ProductDto;
-import ru.itis.master.party.dormdeals.dto.product.UpdateProduct;
+import ru.itis.master.party.dormdeals.dto.product.UpdateProductForm;
 import ru.itis.master.party.dormdeals.exceptions.NotAcceptableException;
 import ru.itis.master.party.dormdeals.exceptions.NotFoundException;
+import ru.itis.master.party.dormdeals.mapper.ProductMapper;
 import ru.itis.master.party.dormdeals.models.jpa.Product;
 import ru.itis.master.party.dormdeals.models.jpa.Review;
 import ru.itis.master.party.dormdeals.models.jpa.Shop;
@@ -35,31 +34,30 @@ public class ProductServiceImpl implements ProductService {
     private final ProductRepository productRepository;
     private final ResourceService resourceService;
     private final ShopRepository shopRepository;
-    private final CartProductConverter cartProductConverter;
-    private final ProductConverter productConverter;
+    private final ProductMapper productMapper;
 
     @Value("${default.page-size}")
     private int defaultPageSize;
 
     @Override
     @Transactional
-    public ProductDto addProduct(long userId, NewProduct newProduct) {
+    public ProductDto addProduct(long userId, NewProductForm newProductForm) {
         Shop shop = shopRepository.findByOwnerId(userId)
                 .orElseThrow(() -> new NotFoundException(Shop.class, "ownerId", userId));
 
         Product product = Product.builder()
-                .name(newProduct.getName())
-                .description(newProduct.getDescription())
-                .category(newProduct.getCategory())
-                .price(newProduct.getPrice())
-                .countInStorage(newProduct.getCountInStorage())
+                .name(newProductForm.name())
+                .description(newProductForm.description())
+                .type(newProductForm.type())
+                .price(newProductForm.price())
+                .countInStorage(newProductForm.countInStorage())
                 .shop(shop)
                 .state(ACTIVE)
                 .rating(0)
                 .build();
 
         product = productRepository.save(product);
-        return productConverter.convertProductInProductDto(product);
+        return productMapper.toProductDto(product);
     }
 
     @Override
@@ -80,24 +78,24 @@ public class ProductServiceImpl implements ProductService {
         if (product.getState() != ACTIVE && !Objects.equals(userId, product.getShop().getOwner().getId()))
             throw new NotAcceptableException("have not permission");
 
-        return productConverter.convertProductInProductDto(product);
+        return productMapper.toProductDto(product);
     }
 
     @Override
     @Transactional
-    public ProductDto updateProduct(long userId, Long productId, UpdateProduct updatedProduct) {
+    public ProductDto updateProduct(long userId, Long productId, UpdateProductForm updatedProduct) {
         Product product = productRepository.findWithShopById(productId)
                 .orElseThrow(() -> new NotFoundException(Product.class, "id", productId));
 
         if (product.getShop().getOwner().getId() != userId)
             throw new NotAcceptableException("have not permission");
 
-        product.setName(updatedProduct.getName());
-        product.setDescription(updatedProduct.getDescription());
-        product.setPrice(updatedProduct.getPrice());
-        product.setCountInStorage(updatedProduct.getCountInStorage());
+        product.setName(updatedProduct.name());
+        product.setDescription(updatedProduct.description());
+        product.setPrice(updatedProduct.price());
+        product.setCountInStorage(updatedProduct.countInStorage());
 
-        return productConverter.convertProductInProductDto(product);
+        return productMapper.toProductDto(product);
     }
 
     @Override
@@ -116,7 +114,7 @@ public class ProductServiceImpl implements ProductService {
     @Transactional
     public List<CartProductDto> getCartProducts(List<Long> productsId) {
         List<Product> products = productRepository.findAllWithResourcesByIdIn(productsId);
-        return cartProductConverter.listFromProduct(products);
+        return productMapper.toCartProductDtoListFromProductList(products);
     }
 
     @Override

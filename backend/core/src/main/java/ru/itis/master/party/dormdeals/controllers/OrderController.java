@@ -9,9 +9,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import ru.itis.master.party.dormdeals.controllers.api.OrderApi;
+import ru.itis.master.party.dormdeals.dto.order.NewOrderForm;
+import ru.itis.master.party.dormdeals.dto.order.NewOrderMessageForm;
 import ru.itis.master.party.dormdeals.dto.order.OrderDto;
-import ru.itis.master.party.dormdeals.dto.order.NewOrderDto;
-import ru.itis.master.party.dormdeals.dto.order.NewOrderMessageDto;
 import ru.itis.master.party.dormdeals.models.jpa.order.Order;
 import ru.itis.master.party.dormdeals.security.details.UserDetailsImpl;
 import ru.itis.master.party.dormdeals.services.OrderService;
@@ -24,10 +24,10 @@ public class OrderController implements OrderApi {
 
     @Override
     @PostMapping
-    public ResponseEntity<?> createOrder(@Valid NewOrderDto newOrderDto,
+    public ResponseEntity<?> createOrder(@Valid NewOrderForm newOrderForm,
                                          @AuthenticationPrincipal UserDetailsImpl userDetails) {
         long userId = userDetails.getUser().getId();
-        orderService.createOrder(userId, newOrderDto);
+        orderService.createOrder(userId, newOrderForm);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
@@ -49,10 +49,10 @@ public class OrderController implements OrderApi {
     @Override
     public ResponseEntity<?> addMessage(
             Long orderId,
-            @Valid NewOrderMessageDto newOrderMessageDto,
+            @Valid NewOrderMessageForm newOrderMessageForm,
             @AuthenticationPrincipal UserDetailsImpl userDetails
     ) {
-        orderService.addOrderMessage(userDetails.getUser().getId(), orderId, newOrderMessageDto);
+        orderService.addOrderMessage(userDetails.getUser().getId(), orderId, newOrderMessageForm);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 }

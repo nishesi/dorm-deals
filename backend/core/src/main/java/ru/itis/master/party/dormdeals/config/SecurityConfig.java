@@ -48,7 +48,7 @@ public class SecurityConfig {
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
                 .authorizeHttpRequests(requests -> requests
-                        // User
+                        // Author
 
                         .requestMatchers("/auth/token", "/email/confirm/**").permitAll()
                         .requestMatchers(HttpMethod.POST, "/logout").permitAll()

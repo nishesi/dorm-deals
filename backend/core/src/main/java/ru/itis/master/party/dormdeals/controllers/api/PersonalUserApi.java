@@ -11,8 +11,8 @@ import io.swagger.v3.oas.annotations.tags.Tags;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import ru.itis.master.party.dormdeals.aspects.RestExceptionHandler;
 import ru.itis.master.party.dormdeals.dto.CartCookie;
-import ru.itis.master.party.dormdeals.dto.ExceptionDto;
 import ru.itis.master.party.dormdeals.dto.product.CartProductDto;
 import ru.itis.master.party.dormdeals.dto.product.ProductDto;
 import ru.itis.master.party.dormdeals.security.details.UserDetailsImpl;
@@ -21,7 +21,7 @@ import java.util.List;
 
 @RequestMapping("/my")
 @Tags(value = {
-        @Tag(name = "Personal User Logic")
+        @Tag(name = "Personal Author Logic")
 })
 public interface PersonalUserApi {
 
@@ -31,7 +31,7 @@ public interface PersonalUserApi {
             @ApiResponse(responseCode = "404", description = "Сведения об ошибке",
                     content = {
                             @Content(mediaType = "application/json",
-                                    schema = @Schema(implementation = ExceptionDto.class))
+                                    schema = @Schema(implementation = RestExceptionHandler.ExceptionDto.class))
                     }
             )
     })
@@ -62,7 +62,7 @@ public interface PersonalUserApi {
             @ApiResponse(responseCode = "404", description = "Сведения об ошибке",
                     content = {
                             @Content(mediaType = "application/json",
-                                    schema = @Schema(implementation = ExceptionDto.class))
+                                    schema = @Schema(implementation = RestExceptionHandler.ExceptionDto.class))
                     }
             )
     })

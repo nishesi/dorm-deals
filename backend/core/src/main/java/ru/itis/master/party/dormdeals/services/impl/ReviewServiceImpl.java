@@ -3,11 +3,11 @@ package ru.itis.master.party.dormdeals.services.impl;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import ru.itis.master.party.dormdeals.dto.converters.ReviewConverter;
-import ru.itis.master.party.dormdeals.dto.review.NewReviewDto;
+import ru.itis.master.party.dormdeals.dto.review.NewReviewForm;
 import ru.itis.master.party.dormdeals.dto.review.ReviewDto;
 import ru.itis.master.party.dormdeals.exceptions.NotAcceptableException;
 import ru.itis.master.party.dormdeals.exceptions.NotFoundException;
+import ru.itis.master.party.dormdeals.mapper.ReviewMapper;
 import ru.itis.master.party.dormdeals.models.jpa.Product;
 import ru.itis.master.party.dormdeals.models.jpa.Review;
 import ru.itis.master.party.dormdeals.models.jpa.Shop;
@@ -28,11 +28,11 @@ public class ReviewServiceImpl implements ReviewService {
     private final ProductRepository productRepository;
     private final UserRepository userRepository;
     private final ShopRepository shopRepository;
-    private final ReviewConverter reviewConverter;
+    private final ReviewMapper reviewMapper;
 
     @Override
     @Transactional
-    public ReviewDto addReview(NewReviewDto newReviewDto, Long productId, Long userId) {
+    public ReviewDto addReview(NewReviewForm newReviewForm, Long productId, Long userId) {
 
         if (reviewRepository.existsByUserIdAndProductId(userId, productId)) {
             throw new NotAcceptableException("У вас уже есть отзыв на этот товар");
@@ -43,8 +43,8 @@ public class ReviewServiceImpl implements ReviewService {
         Shop shop = product.getShop();
 
         Review review = reviewRepository.save(Review.builder()
-                .message(newReviewDto.getMessage())
-                .score(newReviewDto.getScore())
+                .message(newReviewForm.getMessage())
+                .score(newReviewForm.getScore())
                 .user(user)
                 .product(product)
                 .build());
@@ -52,29 +52,25 @@ public class ReviewServiceImpl implements ReviewService {
         product.setRating(getRatingProduct(productId));
         shop.setRating(getRatingShop(shop.getId()));
 
-        productRepository.save(product);
+        product = productRepository.save(product);
         shopRepository.save(shop);
 
-
-        return reviewConverter.from(review, user, product);
+        return reviewMapper.toReviewDto(review);
     }
 
 
     @Override
     @Transactional
-    public ReviewDto updateReview(NewReviewDto newReviewDto, Long productId, Long userId) {
-        Review reviewForUpdate = reviewRepository.findByProductIdAndUserId(productId, userId)
+    public ReviewDto updateReview(NewReviewForm newReviewForm, Long productId, Long userId) {
+        Review review = reviewRepository.findByProductIdAndUserId(productId, userId)
                 .orElseThrow(() -> new NotFoundException(Review.class, "id", productId));
-        reviewForUpdate.setScore(newReviewDto.getScore());
-        reviewForUpdate.setMessage(newReviewDto.getMessage());
-        reviewRepository.save(reviewForUpdate);
+        review.setScore(newReviewForm.getScore());
+        review.setMessage(newReviewForm.getMessage());
+        reviewRepository.save(review);
 
-        updateRatingProductAndShop(reviewForUpdate);
+        updateRatingProductAndShop(review);
 
-        User user = reviewForUpdate.getUser();
-        Product product = reviewForUpdate.getProduct();
-
-        return reviewConverter.from(reviewForUpdate, user, product);
+        return reviewMapper.toReviewDto(review);
     }
 
     @Override
